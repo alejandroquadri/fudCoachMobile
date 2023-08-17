@@ -8,10 +8,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export const FoodLog = () => {
+export const SignIn = () => {
   return (
     <View style={styles.container}>
-      <Text>Food Log</Text>
+      <Text>Sign Up</Text>
     </View>
   );
 };

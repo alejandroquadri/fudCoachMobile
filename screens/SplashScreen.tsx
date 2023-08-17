@@ -1,17 +1,24 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { COLORS } from '../shared/constants';
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    backgroundColor: COLORS.green,
     flex: 1,
     justifyContent: 'center',
   },
+  text: {
+    color: COLORS.white,
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
 });
 
-export const FoodLog = () => {
+export const SplashScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Food Log</Text>
+      <Text style={styles.text}>FUD COACH</Text>
     </View>
   );
 };
