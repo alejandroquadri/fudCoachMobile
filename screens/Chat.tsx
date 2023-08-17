@@ -1,13 +1,8 @@
-import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// import { createDrawerNavigator } from '@react-navigation/drawer';
-// import Goals from './Goals';
-
-// const Drawer = createDrawerNavigator();
-
+import { COLORS } from '../shared/constants';
 
 export const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -35,24 +30,26 @@ export const Chat = () => {
       keyboardDidHideListener.remove();
     };
   }, []);
-  
+
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: COLORS.white,
+      flex: 1,
+      paddingBottom: isKeyboardVisible ? 0 : insets.bottom,
+    },
+  });
 
   return (
-    <View
-    style={{
-      // paddingTop: insets.top,
-      paddingBottom: isKeyboardVisible ? 0 : insets.bottom,
-      backgroundColor: 'white',
-      flex: 1,}}
-      >
-
+    <View style={styles.container}>
       <GiftedChat
         messages={messages}
-        onSend={newMessages => setMessages(GiftedChat.append(messages, newMessages))}
+        onSend={newMessages =>
+          setMessages(GiftedChat.append(messages, newMessages))
+        }
         user={{
           _id: 1,
         }}
       />
     </View>
   );
-}
+};
