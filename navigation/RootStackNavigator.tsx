@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AuthContext, AuthContextType } from './Authcontext'; // Adjust the path accordingly
-import { SignIn, SplashScreen } from '../screens';
+import { SignIn, SignUp, SplashScreen } from '../screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ChatDrawerNavigator from './DrawerNavigator';
+import * as SecureStore from 'expo-secure-store';
 
 const Stack = createNativeStackNavigator();
 
@@ -11,11 +12,11 @@ export const RootStackNavigator: React.FC = () => {
   const [userToken, setUserToken] = useState<string | null>(null);
 
   const getUserToken = async () => {
-    const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
     try {
-      await sleep(3000);
-      const token: string | null = null; // This is just for the example, you'd get the token from your auth mechanism
+      const token = await SecureStore.getItemAsync('userToken'); // Fetch the token from secure storage
       setUserToken(token);
+    } catch (error) {
+      console.error('Error fetching user token:', error);
     } finally {
       setIsLoading(false);
     }
@@ -29,12 +30,16 @@ export const RootStackNavigator: React.FC = () => {
     () => ({
       signIn: async (token: string) => {
         setUserToken(token);
+        await SecureStore.setItemAsync('userToken', token);
       },
-      signOut: () => {
+      signOut: async () => {
+        console.log('viene un sign out');
+
+        await SecureStore.deleteItemAsync('userToken');
         setUserToken(null);
       },
     }),
-    []
+    [userToken]
   );
 
   if (isLoading) {
@@ -46,7 +51,8 @@ export const RootStackNavigator: React.FC = () => {
       <Stack.Navigator>
         {userToken == null ? (
           <>
-            <Stack.Screen name="SignIn" component={SignIn} />
+            <Stack.Screen name="Sign In" component={SignIn} />
+            <Stack.Screen name="Sign Up" component={SignUp} />
             {/* You can add other screens related to the authentication flow here */}
           </>
         ) : (
@@ -63,61 +69,3 @@ export const RootStackNavigator: React.FC = () => {
     </AuthContext.Provider>
   );
 };
-
-// import { useEffect, useState } from 'react';
-// import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-// import ChatDrawerNavigator from './DrawerNavigator';
-// import { SignIn, SplashScreen } from '../screens';
-
-// const Stack = createNativeStackNavigator();
-
-// export const RootStackNavigator = () => {
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [userToken, setUserToken] = useState<string | null>(null);
-
-//   const getUserToken = async () => {
-//     // testing purposes
-//     const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-//     try {
-//       // custom logic
-//       await sleep(3000);
-//       const token = null;
-//       setUserToken(token);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     getUserToken();
-//   }, []);
-
-//   if (isLoading) {
-//     // We haven't finished checking for the token yet
-//     return <SplashScreen />;
-//   }
-
-//   return (
-//     <Stack.Navigator>
-//       {userToken == null ? (
-//         // No token found, user isn't signed in
-//         <Stack.Screen
-//           name="SignIn"
-//           component={SignIn}
-//           options={{
-//             title: 'Sign in',
-//           }}
-//           initialParams={{ setUserToken }}
-//         />
-//       ) : (
-//         // User is signed in
-//         <Stack.Screen
-//           name="Home"
-//           component={ChatDrawerNavigator}
-//           options={{ headerShown: false }}
-//         />
-//       )}
-//     </Stack.Navigator>
-//   );
-// };

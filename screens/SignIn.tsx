@@ -1,14 +1,32 @@
-import React, { useContext, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { useContext, useState } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Input, Button, Divider } from '@rneui/themed';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { COLORS } from '../shared/constants';
-import { AuthContext, AuthContextType } from '../navigation/Authcontext';
+import * as SecureStore from 'expo-secure-store';
 
-export const SignIn = () => {
+import { COLORS } from '../theme';
+import { AuthContext, AuthContextType } from '../navigation/Authcontext';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { userAPI } from '../api';
+
+type RootStackParamList = {
+  SignIn: undefined;
+  SignUp: undefined;
+};
+
+type SignInScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'SignIn'
+>;
+
+export const SignIn = ({
+  navigation,
+}: {
+  navigation: SignInScreenNavigationProp;
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
   const auth = useContext<AuthContextType | undefined>(AuthContext);
 
@@ -18,15 +36,24 @@ export const SignIn = () => {
 
   const { signIn } = auth;
 
-  const handleSignIn = () => {
-    setLoading(true); // Start the loading state
+  const handleSignIn = async () => {
+    setLoading(true);
+    try {
+      console.log('hago llamada', email, password);
 
-    // Simulate an API call with a 2-second delay
-    setTimeout(() => {
-      const dummyToken = 'your-dummy-token'; // This is just a simulated token
-      signIn(dummyToken); // Call the signIn method from the context with the token
-      setLoading(false); // End the loading state
-    }, 2000);
+      const response = await userAPI.loginEmailPass(email, password);
+      const token = response.data.token;
+      // console.log(response.data);
+
+      await SecureStore.setItemAsync('userToken', token); // Store the token securely
+      signIn(token);
+    } catch (error) {
+      console.log(error);
+
+      Alert.alert('Error', 'Failed to sign in. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,6 +97,12 @@ export const SignIn = () => {
         titleStyle={styles.buttonTitle}
         onPress={() => console.log('Apple Sign In Pressed')}
       />
+      <View style={styles.createAccountContainer}>
+        <Button
+          title="Create account"
+          onPress={() => navigation.navigate('Sign Up')}
+        />
+      </View>
     </View>
   );
 };
@@ -86,6 +119,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+  },
+  createAccountContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
   },
   divider: {
     marginVertical: 20,

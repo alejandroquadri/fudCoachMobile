@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SignIn = () => {
+export const SignUp = () => {
   return (
     <View style={styles.container}>
       <Text>Sign Up</Text>
