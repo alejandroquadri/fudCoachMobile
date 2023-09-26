@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AuthContext, AuthContextType } from './Authcontext'; // Adjust the path accordingly
+import { AuthContext, AuthContextType } from './Authcontext';
 import { SignIn, SignUp, SplashScreen } from '../screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ChatDrawerNavigator from './DrawerNavigator';
 import * as SecureStore from 'expo-secure-store';
+import { User } from '../types';
 
 const Stack = createNativeStackNavigator();
 
 export const RootStackNavigator: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [userToken, setUserToken] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<User | null>(null);
 
   const getUserToken = async () => {
     try {
@@ -22,24 +24,43 @@ export const RootStackNavigator: React.FC = () => {
     }
   };
 
+  const getUserProfile = async () => {
+    try {
+      const profileString = await SecureStore.getItemAsync('userProfile');
+      if (profileString) {
+        const profile: User = JSON.parse(profileString);
+        setUserProfile(profile);
+      }
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
+
   useEffect(() => {
     getUserToken();
+    getUserProfile();
   }, []);
 
   const authContext = useMemo<AuthContextType>(
     () => ({
-      signIn: async (token: string) => {
+      signIn: async (token: string, profile: User) => {
         setUserToken(token);
+        setUserProfile(profile);
+        console.log(profile);
+
         await SecureStore.setItemAsync('userToken', token);
+        await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
       },
       signOut: async () => {
         console.log('viene un sign out');
-
         await SecureStore.deleteItemAsync('userToken');
+        await SecureStore.deleteItemAsync('userProfile');
         setUserToken(null);
+        setUserProfile(null);
       },
+      user: userProfile,
     }),
-    [userToken]
+    [userToken, userProfile]
   );
 
   if (isLoading) {
