@@ -16,6 +16,7 @@ export const RootStackNavigator: React.FC = () => {
   const getUserToken = async () => {
     try {
       const token = await SecureStore.getItemAsync('userToken'); // Fetch the token from secure storage
+      console.log('token', token);
       setUserToken(token);
     } catch (error) {
       console.error('Error fetching user token:', error);
@@ -41,6 +42,7 @@ export const RootStackNavigator: React.FC = () => {
     getUserProfile();
   }, []);
 
+  // uso el useMemo hook porque dependiendo de esto se muestra o no un screen u otro. Por tanto, solo quieo questo se modifique cuando hay un cambio. Si solo quisiera acceder a la variable user (donde esta el profile) no seria necesario usar useMemo
   const authContext = useMemo<AuthContextType>(
     () => ({
       signIn: async (token: string, profile: User) => {
@@ -52,7 +54,7 @@ export const RootStackNavigator: React.FC = () => {
         await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
       },
       signOut: async () => {
-        console.log('viene un sign out');
+        console.log('sign out');
         await SecureStore.deleteItemAsync('userToken');
         await SecureStore.deleteItemAsync('userProfile');
         setUserToken(null);
@@ -60,7 +62,7 @@ export const RootStackNavigator: React.FC = () => {
       },
       user: userProfile,
     }),
-    [userToken, userProfile]
+    [userProfile]
   );
 
   if (isLoading) {

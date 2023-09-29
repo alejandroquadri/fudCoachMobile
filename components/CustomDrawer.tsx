@@ -6,8 +6,8 @@ import {
 } from '@react-navigation/drawer';
 import { useContext } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
-import { COLORS } from '../../theme';
-import { AuthContext, AuthContextType } from '../../navigation/Authcontext';
+import { COLORS } from '../theme';
+import { AuthContext, AuthContextType } from '../navigation/Authcontext';
 
 export const CustomDrawer = (props: DrawerContentComponentProps) => {
   const auth = useContext<AuthContextType | undefined>(AuthContext);

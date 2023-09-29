@@ -43,10 +43,12 @@ export const SignIn = ({
 
       const response = await userAPI.loginEmailPass(email, password);
       const token = response.data.token;
+      const refreshToken = response.data.refreshToken;
       const profile = response.data.user;
       // console.log(response.data);
 
       await SecureStore.setItemAsync('userToken', token);
+      await SecureStore.setItemAsync('refreshUserToken', refreshToken);
       await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
       signIn(token, profile);
     } catch (error) {

@@ -1,7 +1,7 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { FoodLog, Goals, Plans } from '../screens';
 import { Chat } from '../screens';
-import { CustomDrawer } from '../shared/components';
+import { CustomDrawer } from '../components';
 
 const Drawer = createDrawerNavigator();
 
