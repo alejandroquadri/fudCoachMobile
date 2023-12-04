@@ -10,6 +10,7 @@ import { useKeyboard } from '../hooks';
 
 export const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
   const isKeyboardVisible = useKeyboard();
   const auth = useContext<AuthContextType | undefined>(AuthContext);
 
@@ -39,7 +40,9 @@ export const Chat = () => {
       const userMes = message[0].text;
       const userId = user._id;
 
+      setIsTyping(true);
       const apiResponseMessage = await sendChatMessage(userMes, userId);
+      setIsTyping(false);
 
       // Append the API's response message
       setMessages(prevMessages => {
@@ -52,7 +55,7 @@ export const Chat = () => {
     <View style={styles.container}>
       <GiftedChat
         showUserAvatar={true}
-        // isTyping={true}
+        isTyping={isTyping}
         messages={messages}
         onSend={sendMes}
         user={{

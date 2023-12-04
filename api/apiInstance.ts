@@ -1,7 +1,8 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const url = 'http://192.168.0.107:3000';
+const url = 'http://192.168.0.127:3000';
+// const url = 'http://192.168.68.121:3000';
 
 export const api = axios.create({
   baseURL: url, // your API server
@@ -13,7 +14,7 @@ export const api = axios.create({
 // Add a request interceptor. I am using it to add token to headers
 api.interceptors.request.use(
   async config => {
-    // Fetch the token from SecureStore
+    // Fetch the token from SecureStorer
     const token = await SecureStore.getItemAsync('userToken');
 
     // If the token exists, set it in the headers
