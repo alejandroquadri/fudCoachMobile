@@ -3,10 +3,18 @@ import { View } from 'react-native';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import 'react-native-get-random-values';
+import * as SecureStore from 'expo-secure-store';
+
 import { ChatStyles } from '../theme';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
 import { fetchPreviousMessages, sendChatMessage } from '../services';
 import { useKeyboard } from '../hooks';
+
+const storeLastOpenedDate = async () => {
+  const today = new Date().toISOString().split('T')[0];
+  // const today = '2022-12-06';
+  await SecureStore.setItemAsync('lastChatOpenedDate', today);
+};
 
 export const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -23,10 +31,29 @@ export const Chat = () => {
   const { user } = auth;
 
   useEffect(() => {
+    const checkAndShowGreeting = async (userId: string) => {
+      const today = new Date().toISOString().split('T')[0];
+      const lastOpenedDate =
+        await SecureStore.getItemAsync('lastChatOpenedDate');
+      console.log(lastOpenedDate, today);
+
+      if (lastOpenedDate !== today) {
+        setIsTyping(true);
+        const aiGreetings = await sendChatMessage('Greet the human', userId);
+        setIsTyping(false);
+        setMessages(previousMessages =>
+          GiftedChat.append(previousMessages, [aiGreetings])
+        );
+
+        await storeLastOpenedDate();
+      }
+    };
+
     const initializeChat = async () => {
       if (user && user._id) {
         const prevMessages = await fetchPreviousMessages(user._id);
         setMessages(prevMessages);
+        await checkAndShowGreeting(user._id);
       }
     };
 

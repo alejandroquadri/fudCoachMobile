@@ -36,13 +36,21 @@ api.interceptors.response.use(
     return response;
   },
   async error => {
-    console.log(error);
     const originalRequest = error.config;
-
+    console.log('error', error);
+    console.log('error status', error.response.status);
+    console.log('error data', error.response.data);
+    console.log('original request', !originalRequest._retry);
+    console.log(
+      'pasa if',
+      error.response.status === 401,
+      error.response.data.message === 'Unauthorized or Token Expired',
+      !originalRequest._retry
+    );
     // Check if the error is due to an expired or invalid token
     if (
       error.response.status === 401 &&
-      error.response.data === 'Unauthorized' &&
+      error.response.data.message === 'Unauthorized or Token Expired' &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
@@ -76,8 +84,11 @@ async function refreshToken(): Promise<{
   accessToken: string;
   refreshToken: string;
 }> {
+  const refreshToken = await SecureStore.getItemAsync('refreshUserToken');
+  console.log(refreshToken);
+
   // Make a request to the refresh token endpoint
-  const response = await api.post('/users/refreshToken');
+  const response = await api.post('/users/refreshToken', { refreshToken });
 
   // Assuming the new token is returned in the response data
   return response.data;

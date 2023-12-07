@@ -23,6 +23,7 @@ const buildIMessageArray = (messages: ChatMsg[]): IMessage[] => {
     _id: uuidv4(),
     text: mes.content,
     createdAt: new Date(mes.timestamp),
+    // system: true, // esto sirve para que en lugar de aparecer en un glovo aparezca como mensaje del sistema
     user: {
       _id: mes.sender === 'user' ? 1 : 2,
       name: mes.sender === 'user' ? 'User' : 'Food Coach', // You can replace 'User' with the actual user's name if available

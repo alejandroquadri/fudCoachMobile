@@ -14,6 +14,8 @@ export const RootStackNavigator: React.FC = () => {
   const [userProfile, setUserProfile] = useState<User | null>(null);
 
   const getUserToken = async () => {
+    console.log('corro getUserToken');
+
     try {
       const token = await SecureStore.getItemAsync('userToken'); // Fetch the token from secure storage
       console.log('token', token);
@@ -26,6 +28,8 @@ export const RootStackNavigator: React.FC = () => {
   };
 
   const getUserProfile = async () => {
+    console.log('corro GetUserProfile');
+
     try {
       const profileString = await SecureStore.getItemAsync('userProfile');
       if (profileString) {
