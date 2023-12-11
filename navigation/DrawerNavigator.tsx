@@ -17,15 +17,5 @@ const ChatDrawerNavigator = () => {
     </Drawer.Navigator>
   );
 };
-// const ChatDrawerNavigator = () => {
-//   return (
-//     <Drawer.Navigator initialRouteName="Chat">
-//       <Drawer.Screen name="Chat" component={Chat} />
-//       <Drawer.Screen name="Food Log" component={FoodLog} />
-//       <Drawer.Screen name="Goals" component={Goals} />
-//       <Drawer.Screen name="Plans" component={Plans} />
-//     </Drawer.Navigator>
-//   );
-// };
 
 export default ChatDrawerNavigator;

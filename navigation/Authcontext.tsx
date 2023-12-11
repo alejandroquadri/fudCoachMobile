@@ -2,8 +2,18 @@ import { createContext } from 'react';
 import { User } from '../types';
 
 export type AuthContextType = {
-  signIn: (token: string, setUserProfile: User) => Promise<void>;
+  signIn: (
+    token: string,
+    refreshToken: string,
+    setUserProfile: User
+  ) => Promise<void>;
+  signUp: (
+    token: string,
+    refreshToken: string,
+    setUserProfile: User
+  ) => Promise<void>;
   signOut: () => void;
+  updateUser: (user: User) => void;
   user: User | null;
 };
 

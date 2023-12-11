@@ -1,7 +1,8 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const url = 'http://192.168.0.127:3000';
+const url = 'http://192.168.0.129:3000';
+// const url = 'http://192.168.0.12:3000';
 // const url = 'http://192.168.68.121:3000';
 
 export const api = axios.create({
@@ -19,7 +20,6 @@ api.interceptors.request.use(
 
     // If the token exists, set it in the headers
     if (token) {
-      console.log(token);
       config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -37,16 +37,6 @@ api.interceptors.response.use(
   },
   async error => {
     const originalRequest = error.config;
-    console.log('error', error);
-    console.log('error status', error.response.status);
-    console.log('error data', error.response.data);
-    console.log('original request', !originalRequest._retry);
-    console.log(
-      'pasa if',
-      error.response.status === 401,
-      error.response.data.message === 'Unauthorized or Token Expired',
-      !originalRequest._retry
-    );
     // Check if the error is due to an expired or invalid token
     if (
       error.response.status === 401 &&

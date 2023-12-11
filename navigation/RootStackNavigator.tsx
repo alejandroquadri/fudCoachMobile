@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AuthContext, AuthContextType } from './Authcontext';
-import { SignIn, SignUp, SplashScreen } from '../screens';
+import {
+  SignIn,
+  SignUp,
+  SplashScreen,
+  CompleteProfileScreen,
+} from '../screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ChatDrawerNavigator from './DrawerNavigator';
 import * as SecureStore from 'expo-secure-store';
 import { User } from '../types';
+import { userAPI } from '../api';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,11 +20,8 @@ export const RootStackNavigator: React.FC = () => {
   const [userProfile, setUserProfile] = useState<User | null>(null);
 
   const getUserToken = async () => {
-    console.log('corro getUserToken');
-
     try {
       const token = await SecureStore.getItemAsync('userToken'); // Fetch the token from secure storage
-      console.log('token', token);
       setUserToken(token);
     } catch (error) {
       console.error('Error fetching user token:', error);
@@ -28,8 +31,6 @@ export const RootStackNavigator: React.FC = () => {
   };
 
   const getUserProfile = async () => {
-    console.log('corro GetUserProfile');
-
     try {
       const profileString = await SecureStore.getItemAsync('userProfile');
       if (profileString) {
@@ -49,12 +50,20 @@ export const RootStackNavigator: React.FC = () => {
   // uso el useMemo hook porque dependiendo de esto se muestra o no un screen u otro. Por tanto, solo quieo questo se modifique cuando hay un cambio. Si solo quisiera acceder a la variable user (donde esta el profile) no seria necesario usar useMemo
   const authContext = useMemo<AuthContextType>(
     () => ({
-      signIn: async (token: string, profile: User) => {
+      signIn: async (token: string, refreshToken: string, profile: User) => {
         setUserToken(token);
         setUserProfile(profile);
-        console.log(profile);
 
         await SecureStore.setItemAsync('userToken', token);
+        await SecureStore.setItemAsync('refreshUserToken', refreshToken);
+        await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
+      },
+      signUp: async (token: string, refreshToken: string, profile: User) => {
+        setUserToken(token);
+        setUserProfile(profile);
+
+        await SecureStore.setItemAsync('userToken', token);
+        await SecureStore.setItemAsync('refreshUserToken', refreshToken);
         await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
       },
       signOut: async () => {
@@ -63,6 +72,11 @@ export const RootStackNavigator: React.FC = () => {
         await SecureStore.deleteItemAsync('userProfile');
         setUserToken(null);
         setUserProfile(null);
+      },
+      updateUser: async (user: User) => {
+        const response = await userAPI.getProfile(user._id);
+        const updatedUser = response.data;
+        setUserProfile(updatedUser);
       },
       user: userProfile,
     }),
@@ -78,8 +92,12 @@ export const RootStackNavigator: React.FC = () => {
       <Stack.Navigator>
         {userToken == null ? (
           <>
-            <Stack.Screen name="Sign In" component={SignIn} />
-            <Stack.Screen name="Sign Up" component={SignUp} />
+            <Stack.Screen name="Sign in" component={SignIn} />
+            <Stack.Screen name="Sign up" component={SignUp} />
+            <Stack.Screen
+              name="CompleteProfile"
+              component={CompleteProfileScreen}
+            />
             {/* You can add other screens related to the authentication flow here */}
           </>
         ) : (

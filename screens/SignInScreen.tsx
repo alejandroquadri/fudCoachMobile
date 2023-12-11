@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { Input, Button, Divider } from '@rneui/themed';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import * as SecureStore from 'expo-secure-store';
 
 import { COLORS } from '../theme';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
@@ -10,13 +9,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { userAPI } from '../api';
 
 type RootStackParamList = {
-  SignIn: undefined;
-  SignUp: undefined;
+  'Sign in': undefined;
+  'Sign up': undefined;
 };
 
 type SignInScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  'SignIn'
+  'Sign in'
 >;
 
 export const SignIn = ({
@@ -39,18 +38,12 @@ export const SignIn = ({
   const handleSignIn = async () => {
     setLoading(true);
     try {
-      console.log('hago llamada', email, password);
-
       const response = await userAPI.loginEmailPass(email, password);
       const token = response.data.token;
       const refreshToken = response.data.refreshToken;
       const profile = response.data.user;
-      // console.log(response.data);
 
-      await SecureStore.setItemAsync('userToken', token);
-      await SecureStore.setItemAsync('refreshUserToken', refreshToken);
-      await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
-      signIn(token, profile);
+      signIn(token, refreshToken, profile);
     } catch (error) {
       console.log(error);
 
@@ -65,12 +58,14 @@ export const SignIn = ({
       <Input
         placeholder="Email"
         leftIcon={{ type: 'font-awesome', name: 'envelope' }}
+        leftIconContainerStyle={styles.inputs}
         onChangeText={value => setEmail(value)}
         value={email}
       />
       <Input
         placeholder="Password"
         leftIcon={{ type: 'font-awesome', name: 'lock' }}
+        leftIconContainerStyle={styles.inputs}
         secureTextEntry={true}
         onChangeText={value => setPassword(value)}
         value={password}
@@ -78,7 +73,7 @@ export const SignIn = ({
 
       <Button title="Sign In" onPress={handleSignIn} />
 
-      <Divider style={styles.divider} />
+      {/* <Divider style={styles.divider} />
 
       <Button
         title="Google"
@@ -100,11 +95,13 @@ export const SignIn = ({
         buttonStyle={styles.appleButton}
         titleStyle={styles.buttonTitle}
         onPress={() => console.log('Apple Sign In Pressed')}
-      />
+      /> */}
       <View style={styles.createAccountContainer}>
         <Button
           title="Create account"
-          onPress={() => navigation.navigate('Sign Up')}
+          onPress={() => navigation.navigate('Sign up')}
+          buttonStyle={styles.textButton}
+          titleStyle={styles.buttonTitle}
         />
       </View>
     </View>
@@ -112,12 +109,15 @@ export const SignIn = ({
 };
 
 const styles = StyleSheet.create({
-  appleButton: {
-    backgroundColor: COLORS.black,
-    marginVertical: 5,
-  },
+  // appleButton: {
+  //   backgroundColor: COLORS.black,
+  //   marginVertical: 5,
+  // },
+  // buttonTitle: {
+  //   marginLeft: 10,
+  // },
   buttonTitle: {
-    marginLeft: 10,
+    color: COLORS.black,
   },
   container: {
     flex: 1,
@@ -129,15 +129,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  divider: {
-    marginVertical: 20,
+  inputs: {
+    paddingRight: 10,
   },
-  facebookButton: {
-    backgroundColor: COLORS.facebookBlue,
-    marginVertical: 5,
+  textButton: {
+    backgroundColor: COLORS.transparent,
+    borderWidth: 0,
   },
-  googleButton: {
-    backgroundColor: COLORS.googleRed,
-    marginVertical: 5,
-  },
+
+  // divider: {
+  //   marginVertical: 20,
+  // },
+  // facebookButton: {
+  //   backgroundColor: COLORS.facebookBlue,
+  //   marginVertical: 5,
+  // },
+  // googleButton: {
+  //   backgroundColor: COLORS.googleRed,
+  //   marginVertical: 5,
+  // },
 });
