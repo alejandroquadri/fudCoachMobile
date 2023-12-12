@@ -25,10 +25,11 @@
   },
   "rules": {
     "prettier/prettier": 1,
-    "react-native/no-unused-styles": 2,
+    "react-native/no-unused-styles": 1,
     "react-native/split-platform-components": 2,
     "react-native/no-inline-styles": 2,
-    "react-native/no-color-literals": 0,
+    "react-native/no-color-literals": 1,
+    "react-native/sort-styles": 1,
     "react-native/no-raw-text": 2,
     "react/react-in-jsx-scope": "off",
     "react-hooks/rules-of-hooks": "error",
