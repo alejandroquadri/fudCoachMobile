@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Input, Button, ButtonGroup, Text } from '@rneui/themed';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLORS } from '../theme';
+import { MaskedTextInput } from 'react-native-mask-text';
 
 interface RouteParams {
   token: string;
@@ -24,10 +25,10 @@ export const CompleteProfileScreen: React.FC<Props> = ({ route }) => {
   const [birthdate, setBirthdate] = useState(new Date());
   const buttons = ['Male', 'Female'];
   const [gender, setGender] = useState(0);
-  const [selectedWeightUnit, setSelectedWeightUnit] = useState(0); // 0 for kg, 1 for lbs
-  const [selectedHeightUnit, setSelectedHeightUnit] = useState(0); // 0 for cm, 1 for inches
-  const unitsWeight = ['kg', 'lbs'];
-  const unitsHeight = ['cm', 'inches'];
+  const [selectedWeightUnit, setSelectedWeightUnit] = useState(0); // 0 for lbs, 1 for gk
+  const [selectedHeightUnit, setSelectedHeightUnit] = useState(0); // 0 for feet, 1 for cm
+  const unitsWeight = ['lbs', 'kg'];
+  const unitsHeight = ['feet', 'cm'];
 
   useEffect(() => {
     console.log(token, refreshToken);
@@ -51,11 +52,6 @@ export const CompleteProfileScreen: React.FC<Props> = ({ route }) => {
         buttons={buttons}
         containerStyle={styles.buttonGroup}
       />
-      {/* <Input
-        placeholder="Weight"
-        onChangeText={value => setWeight(value)}
-        value={weight}
-      /> */}
       <View style={styles.weightContainer}>
         <Input
           placeholder="Weight"
@@ -64,28 +60,40 @@ export const CompleteProfileScreen: React.FC<Props> = ({ route }) => {
           onChangeText={value => setWeight(value)}
           value={weight}
           keyboardType="numeric"
+          renderErrorMessage={false}
         />
         <ButtonGroup
           buttons={unitsWeight}
           containerStyle={styles.buttonGroupContainer}
           selectedIndex={selectedWeightUnit}
-          onPress={setSelectedWeightUnit}
+          onPress={value => {
+            setWeight('');
+            setSelectedWeightUnit(value);
+          }}
         />
       </View>
       <View style={styles.weightContainer}>
-        <Input
-          placeholder="Height"
-          containerStyle={styles.inputContainer}
-          inputContainerStyle={styles.inputInnerContainer}
-          onChangeText={value => setHeight(value)}
+        <MaskedTextInput
+          mask={selectedHeightUnit === 1 ? "9' 99" : '999'} // Adjust mask based on selected unit
+          onChangeText={(masked, unmasked) => {
+            console.log(masked); // Formatted text
+            // console.log(unmasked); // Raw text
+            setHeight(masked);
+          }}
           value={height}
           keyboardType="numeric"
+          placeholder="Height"
+          style={styles.inputMask}
+          // style={styles.input}
         />
         <ButtonGroup
           buttons={unitsHeight}
           containerStyle={styles.buttonGroupContainer}
           selectedIndex={selectedHeightUnit}
-          onPress={setSelectedHeightUnit}
+          onPress={value => {
+            setHeight('');
+            setSelectedHeightUnit(value);
+          }}
         />
       </View>
       <View>
@@ -114,12 +122,12 @@ const styles = StyleSheet.create({
   },
   buttonGroupContainer: {
     flex: 1, // Adjust the flex ratio as needed
-    marginBottom: 30,
+    marginBottom: 10,
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 20,
+    justifyContent: 'flex-start',
+    padding: 18,
   },
   datePicker: {
     backgroundColor: COLORS.transparent,
@@ -129,7 +137,7 @@ const styles = StyleSheet.create({
   },
   datePickerLabel: {
     color: COLORS.black,
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 5,
     marginLeft: 10,
   },
@@ -140,6 +148,15 @@ const styles = StyleSheet.create({
   inputInnerContainer: {
     // Adjust if you need to style the inner container of the input
   },
+  inputMask: {
+    // borderWidth: 1,
+    borderBottomColor: COLORS.black,
+    borderBottomWidth: 1,
+    flex: 2,
+    fontSize: 18,
+    height: 30,
+    margin: 12,
+  },
   submitButton: {
     marginTop: 30,
   },
@@ -147,10 +164,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-
-  // inlineContainer: {
-  //   alignItems: 'center',
-  //   flexDirection: 'row',
-  //   marginBottom: 15,
-  // },
 });

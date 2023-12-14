@@ -96,7 +96,8 @@ export const SignUp: React.FC<SignUpScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    marginTop: 100,
     padding: 20,
   },
   errorInput: {

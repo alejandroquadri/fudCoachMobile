@@ -2754,6 +2754,11 @@ big-integer@1.6.x, big-integer@^1.6.44:
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.51.tgz#0df92a5d9880560d3ff2d5fd20245c889d130686"
   integrity sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==
 
+bignumber.js@^9.0.1:
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
+  integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
+
 bl@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/bl/-/bl-4.1.0.tgz#451535264182bec2fbbc83a62ab98cf11d9f7b3a"
@@ -6786,6 +6791,13 @@ react-native-lightbox-v2@0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/react-native-lightbox-v2/-/react-native-lightbox-v2-0.9.0.tgz#b97be4d892ebb959069c451948b11da390bc46d8"
   integrity sha512-Fc5VFHFj2vokS+OegyTsANKb1CYoUlOtAv+EBH5wtpJn1b5cey6jVXH7136G5+8OC9JmKWSgKHc5thFwOoZTUg==
+
+react-native-mask-text@^0.14.2:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/react-native-mask-text/-/react-native-mask-text-0.14.2.tgz#7c347d2c7dd1dcfceac9cfa9bf58f729bc1f537f"
+  integrity sha512-WP80f9y4+Kzg+TRmL3Qldp71iu0Sni3pCjyw90JvEM0r274iuWLZd+EylXtP2bYM/C5p1sZWvLstADYocdLGaA==
+  dependencies:
+    bignumber.js "^9.0.1"
 
 react-native-parsed-text@0.0.22:
   version "0.0.22"
