@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Input, Button, ButtonGroup, Text } from '@rneui/themed';
+import { useState, useContext } from 'react';
+import { View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { Button, ButtonGroup, Text } from '@rneui/themed';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
+import { AuthContext, AuthContextType } from '../navigation/Authcontext';
 import { COLORS } from '../theme';
+import { userAPI } from '../api';
 import { MaskedTextInput } from 'react-native-mask-text';
 
 interface RouteParams {
-  token: string;
-  refreshToken: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
 interface Props {
@@ -17,26 +21,68 @@ interface Props {
 }
 
 export const CompleteProfileScreen: React.FC<Props> = ({ route }) => {
-  const { token, refreshToken } = route.params;
+  const { name, email, password } = route.params;
 
-  // const [gender, setGender] = useState('');
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
   const [birthdate, setBirthdate] = useState(new Date());
-  const buttons = ['Male', 'Female'];
+  const genderOpts = ['Male', 'Female'];
   const [gender, setGender] = useState(0);
   const [selectedWeightUnit, setSelectedWeightUnit] = useState(0); // 0 for lbs, 1 for gk
   const [selectedHeightUnit, setSelectedHeightUnit] = useState(0); // 0 for feet, 1 for cm
   const unitsWeight = ['lbs', 'kg'];
   const unitsHeight = ['feet', 'cm'];
+  const [weightError, setWeightError] = useState(true);
+  const [heightError, setHeightError] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    console.log(token, refreshToken);
-  }, [token, refreshToken]);
+  const auth = useContext<AuthContextType | undefined>(AuthContext);
 
-  const handleCompleteProfile = () => {
-    // Handle the complete profile logic here
-    console.log(buttons[gender], weight, height, birthdate);
+  if (!auth) {
+    throw new Error('SignIn must be used within an AuthProvider');
+  }
+
+  const { signUp } = auth;
+
+  const validateWeight = (weight: string) => {
+    if (weight.trim() === '') {
+      setWeightError(true);
+    } else {
+      setWeightError(false);
+    }
+  };
+
+  const validateHeight = (height: string) => {
+    if (height.trim() === '') {
+      setHeightError(true);
+    } else {
+      setHeightError(false);
+    }
+  };
+
+  const handleCompleteProfile = async () => {
+    setLoading(true);
+    try {
+      const response = await userAPI.signUpEmailPass(email, password, {
+        name,
+        birthdate,
+        weight,
+        height,
+        weightUnit: unitsWeight[selectedWeightUnit],
+        heightUnit: unitsHeight[selectedHeightUnit],
+        gender: genderOpts[gender],
+      });
+      const token = response.token;
+      const refreshToken = response.refreshToken;
+      const profile = response.user;
+      signUp(token, refreshToken, profile);
+    } catch (error) {
+      console.log(error);
+
+      Alert.alert('Error', 'Failed to sign in. Please check your credentials.');
+    } finally {
+      // setLoading(false);
+    }
   };
 
   const onDateChange = (_event: unknown, selectedDate: Date | undefined) => {
@@ -45,84 +91,92 @@ export const CompleteProfileScreen: React.FC<Props> = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ButtonGroup
-        onPress={setGender}
-        selectedIndex={gender}
-        buttons={buttons}
-        containerStyle={styles.buttonGroup}
-      />
-      <View style={styles.weightContainer}>
-        <Input
-          placeholder="Weight"
-          containerStyle={styles.inputContainer}
-          inputContainerStyle={styles.inputInnerContainer}
-          onChangeText={value => setWeight(value)}
-          value={weight}
-          keyboardType="numeric"
-          renderErrorMessage={false}
+    <View style={styles.wrapper}>
+      {loading ? (
+        <ActivityIndicator
+          style={styles.spinner}
+          size="large"
+          color={COLORS.black}
         />
-        <ButtonGroup
-          buttons={unitsWeight}
-          containerStyle={styles.buttonGroupContainer}
-          selectedIndex={selectedWeightUnit}
-          onPress={value => {
-            setWeight('');
-            setSelectedWeightUnit(value);
-          }}
+      ) : (
+        <View style={styles.container}>
+          <ButtonGroup
+            onPress={setGender}
+            selectedIndex={gender}
+            buttons={genderOpts}
+          />
+          <View style={styles.measuresContainer}>
+            <MaskedTextInput
+              mask={'999'} // Adjust mask based on selected unit
+              onChangeText={(masked, _unmasked) => {
+                setWeight(masked);
+                validateWeight(masked);
+              }}
+              value={weight}
+              keyboardType="number-pad"
+              placeholder="Weight"
+              style={styles.inputMask}
+            />
+            <ButtonGroup
+              buttons={unitsWeight}
+              containerStyle={styles.unitsButtonGroupContainer}
+              selectedIndex={selectedWeightUnit}
+              onPress={value => {
+                setWeight('');
+                setSelectedWeightUnit(value);
+              }}
+            />
+          </View>
+          <View style={styles.measuresContainer}>
+            <MaskedTextInput
+              mask={selectedHeightUnit === 0 ? "9' 99" : '999'} // Adjust mask based on selected unit
+              onChangeText={(masked, _unmasked) => {
+                setHeight(masked);
+                validateHeight(masked);
+              }}
+              value={height}
+              keyboardType="number-pad"
+              placeholder="Height"
+              style={styles.inputMask}
+            />
+            <ButtonGroup
+              buttons={unitsHeight}
+              containerStyle={styles.unitsButtonGroupContainer}
+              selectedIndex={selectedHeightUnit}
+              onPress={value => {
+                setHeight('');
+                setSelectedHeightUnit(value);
+              }}
+            />
+          </View>
+          <View style={styles.datePickerContainer}>
+            <Text style={styles.datePickerLabel}>Birthdate:</Text>
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={birthdate}
+              mode="date"
+              display="spinner"
+              onChange={onDateChange}
+              style={styles.datePicker}
+            />
+          </View>
+        </View>
+      )}
+      <View style={styles.btnContainer}>
+        <Button
+          title="Sign up"
+          containerStyle={styles.submitButton}
+          onPress={handleCompleteProfile}
+          disabled={weightError || heightError}
         />
       </View>
-      <View style={styles.weightContainer}>
-        <MaskedTextInput
-          mask={selectedHeightUnit === 1 ? "9' 99" : '999'} // Adjust mask based on selected unit
-          onChangeText={(masked, unmasked) => {
-            console.log(masked); // Formatted text
-            // console.log(unmasked); // Raw text
-            setHeight(masked);
-          }}
-          value={height}
-          keyboardType="numeric"
-          placeholder="Height"
-          style={styles.inputMask}
-          // style={styles.input}
-        />
-        <ButtonGroup
-          buttons={unitsHeight}
-          containerStyle={styles.buttonGroupContainer}
-          selectedIndex={selectedHeightUnit}
-          onPress={value => {
-            setHeight('');
-            setSelectedHeightUnit(value);
-          }}
-        />
-      </View>
-      <View>
-        <Text style={styles.datePickerLabel}>Birthdate:</Text>
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={birthdate}
-          mode="date"
-          display="spinner"
-          onChange={onDateChange}
-          style={styles.datePicker}
-        />
-      </View>
-      <Button
-        title="Complete Profile"
-        containerStyle={styles.submitButton}
-        onPress={handleCompleteProfile}
-      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  buttonGroup: {
-    marginBottom: 15,
-  },
-  buttonGroupContainer: {
-    flex: 1, // Adjust the flex ratio as needed
-    marginBottom: 10,
+  btnContainer: {
+    padding: 18,
   },
   container: {
     flex: 1,
@@ -135,33 +189,47 @@ const styles = StyleSheet.create({
     // marginHorizontal: 30,
     // flex: 1, // Adjust as needed for proper sizing
   },
+  datePickerContainer: {
+    marginTop: 30,
+  },
   datePickerLabel: {
-    color: COLORS.black,
+    color: COLORS.fontGrey,
     fontSize: 18,
     marginBottom: 5,
     marginLeft: 10,
-  },
-  inputContainer: {
-    flex: 2, // Adjust the flex ratio as needed
-    marginRight: 5, // Optional: add some margin between the input and buttons
-  },
-  inputInnerContainer: {
-    // Adjust if you need to style the inner container of the input
+    paddingStart: 5,
   },
   inputMask: {
-    // borderWidth: 1,
-    borderBottomColor: COLORS.black,
-    borderBottomWidth: 1,
-    flex: 2,
+    backgroundColor: COLORS.lightGrey,
+    borderBottomWidth: 0,
+    borderRadius: 10,
+    color: COLORS.fontGrey,
     fontSize: 18,
-    height: 30,
-    margin: 12,
+    height: 40,
+    marginStart: 10,
+    marginVertical: 5,
+    paddingStart: 10,
+    width: 200,
+  },
+  measuresContainer: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  spinner: {
+    flex: 1,
+    justifyContent: 'center',
   },
   submitButton: {
     marginTop: 30,
   },
-  weightContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
+  unitsButtonGroupContainer: {
+    flex: 1, // Adjust the flex ratio as needed
+  },
+  wrapper: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    marginBottom: 40,
   },
 });

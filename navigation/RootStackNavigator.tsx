@@ -12,7 +12,15 @@ import * as SecureStore from 'expo-secure-store';
 import { User } from '../types';
 import { userAPI } from '../api';
 
-const Stack = createNativeStackNavigator();
+type RootStackParamList = {
+  'Sign in': undefined;
+  'Sign up': undefined;
+  Profile: { token: string; refreshToken: string };
+  Home: undefined;
+  // define other screens here
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootStackNavigator: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -94,11 +102,7 @@ export const RootStackNavigator: React.FC = () => {
           <>
             <Stack.Screen name="Sign in" component={SignIn} />
             <Stack.Screen name="Sign up" component={SignUp} />
-            <Stack.Screen
-              name="CompleteProfile"
-              component={CompleteProfileScreen}
-            />
-            {/* You can add other screens related to the authentication flow here */}
+            <Stack.Screen name="Profile" component={CompleteProfileScreen} />
           </>
         ) : (
           <>

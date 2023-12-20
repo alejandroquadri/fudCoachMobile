@@ -71,8 +71,6 @@ export const SignIn = ({
         value={password}
       />
 
-      <Button title="Sign In" onPress={handleSignIn} />
-
       {/* <Divider style={styles.divider} />
 
       <Button
@@ -96,7 +94,13 @@ export const SignIn = ({
         titleStyle={styles.buttonTitle}
         onPress={() => console.log('Apple Sign In Pressed')}
       /> */}
-      <View style={styles.createAccountContainer}>
+      <View style={styles.btnContainer}>
+        <Button
+          title="Sign in"
+          onPress={handleSignIn}
+          buttonStyle={styles.signInBtn}
+        />
+
         <Button
           title="Create account"
           onPress={() => navigation.navigate('Sign up')}
@@ -116,21 +120,26 @@ const styles = StyleSheet.create({
   // buttonTitle: {
   //   marginLeft: 10,
   // },
+  btnContainer: {
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    marginHorizontal: 10,
+    marginTop: 20,
+  },
   buttonTitle: {
     color: COLORS.black,
   },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    marginTop: 90,
     padding: 20,
-  },
-  createAccountContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
   },
   inputs: {
     paddingRight: 10,
+  },
+  signInBtn: {
+    // width: '100%',
   },
   textButton: {
     backgroundColor: COLORS.transparent,

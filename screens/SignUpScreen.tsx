@@ -1,94 +1,115 @@
-import { useContext, useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { Input, Button } from '@rneui/themed';
-import { AuthContext, AuthContextType } from '../navigation/Authcontext';
-import { userAPI } from '../api';
-import { COLORS } from '../theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Assuming you have a type for your Stack parameters
 type RootStackParamList = {
-  SignIn: undefined;
-  SignUp: undefined;
-  CompleteProfile: { token: string; refreshToken: string };
+  'Sign in': undefined;
+  'Sign up': undefined;
+  Profile: { name: string; email: string; password: string };
   // ... other screens ...
 };
 
-type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
+type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'Sign up'>;
 
 export const SignUp: React.FC<SignUpScreenProps> = ({ navigation }) => {
+  const emailErrorString = 'Please enter a valid email address';
+  const nameErrorString = 'Name cannot be empty';
+  const passwordErrorString = 'Password must be longer than 6 characters';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState(emailErrorString);
+  const [nameError, setNameError] = useState(nameErrorString);
+  const [passwordError, setPasswordError] = useState(passwordErrorString);
+  const [emailBlurred, setEmailBlurred] = useState(false);
+  const [nameBlurred, setNameBlurred] = useState(false);
+  const [passwordBlurred, setPasswordBlurred] = useState(false);
+
+  const validateName = (name: string) => {
+    if (name.trim() === '') {
+      setNameError(nameErrorString);
+    } else {
+      setNameError('');
+    }
+  };
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email address');
+      setEmailError(emailErrorString);
     } else {
       setEmailError('');
     }
   };
 
-  const auth = useContext<AuthContextType | undefined>(AuthContext);
-
-  if (!auth) {
-    throw new Error('SignIn must be used within an AuthProvider');
-  }
-
-  const { signUp } = auth;
+  const validatePassword = (password: string) => {
+    if (password.length <= 6) {
+      setPasswordError(passwordErrorString);
+    } else {
+      setPasswordError('');
+    }
+  };
 
   const handleSignUp = async () => {
-    if (emailError) {
+    validateEmail(email);
+    validateName(name);
+    validatePassword(password);
+
+    if (!!emailError || !!nameError || !!passwordError) {
       return;
     }
-    setLoading(true);
 
-    // Handle the sign up logic here
-    console.log(email, password, name);
-    try {
-      // const response = await userAPI.signUpEmailPass(email, password, name);
-      // const token = response.token;
-      // const refreshToken = response.refreshToken;
-      // const profile = response.user;
-
-      // signUp(token, refreshToken, profile);
-
-      navigation.navigate('CompleteProfile', {
-        token: 'hola loco',
-        refreshToken: 'hola de nuevo',
-      });
-    } catch (error) {
-      console.log(error);
-
-      Alert.alert('Error', 'Failed to sign in. Please check your credentials.');
-    } finally {
-      setLoading(false);
-    }
+    navigation.navigate('Profile', {
+      name,
+      email,
+      password,
+    });
   };
 
   return (
     <View style={styles.container}>
-      <Input placeholder="Name" value={name} onChangeText={setName} />
+      <Input
+        placeholder="Name"
+        value={name}
+        onChangeText={value => {
+          setName(value);
+          validateName(value);
+        }}
+        onBlur={() => setNameBlurred(true)}
+        errorMessage={nameBlurred && nameError ? nameError : ''}
+      />
       <Input
         placeholder="Email"
         value={email}
+        keyboardType="email-address"
         onChangeText={value => {
-          setEmail(value);
+          setEmail(value.toLowerCase());
+          // setEmail(value);
           validateEmail(value);
         }}
-        // containerStyle={emailError ? styles.errorInput : null}
-        inputStyle={emailError ? styles.errorInput : null}
+        onBlur={() => setEmailBlurred(true)}
+        errorMessage={emailBlurred && emailError ? emailError : ''}
       />
+
       <Input
         placeholder="Password"
         secureTextEntry
         value={password}
-        onChangeText={setPassword}
+        onChangeText={value => {
+          setPassword(value);
+          validatePassword(value);
+        }}
+        onBlur={() => setPasswordBlurred(true)}
+        errorMessage={passwordBlurred && passwordError ? passwordError : ''}
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <Button
+        title="Next"
+        onPress={handleSignUp}
+        buttonStyle={styles.signUpBtnStyle}
+        disabled={!!emailError || !!nameError || !!passwordError}
+      />
     </View>
   );
 };
@@ -97,11 +118,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
-    marginTop: 100,
+    marginTop: 90,
     padding: 20,
   },
-  errorInput: {
-    // backgroundColor: COLORS.errorRed,
-    color: COLORS.errorRed,
+  signUpBtnStyle: {
+    marginTop: 20,
   },
 });

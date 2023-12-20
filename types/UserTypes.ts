@@ -3,8 +3,13 @@ export interface User {
   email: string;
   name: string;
   password: string;
-  weightLogs?: Array<{ wheigtLog: number; date: Date }>;
+  weightLogs: Array<{ weightLog: number; date: Date }>;
+  weightUnit: string;
+  height: string;
+  heightUnit: string;
   birthday: string;
-  weightGoal?: number;
-  finishedIntro?: boolean;
+  gender: string;
+  completedQA: boolean;
+  nickName?: string;
+  qAndAnswers?: Array<string>;
 }

@@ -6,5 +6,7 @@ export const COLORS = {
   googleRed: '#db3236',
   transparent: 'transparent',
   errorRed: 'red',
+  lightGrey: 'lightgrey',
+  fontGrey: '#242424',
   // ... add other colors as needed
 };
