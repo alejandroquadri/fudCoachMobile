@@ -30,6 +30,8 @@ export const RootStackNavigator: React.FC = () => {
   const getUserToken = async () => {
     try {
       const token = await SecureStore.getItemAsync('userToken'); // Fetch the token from secure storage
+      console.log('token', token);
+
       setUserToken(token);
     } catch (error) {
       console.error('Error fetching user token:', error);

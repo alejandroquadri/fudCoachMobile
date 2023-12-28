@@ -4,7 +4,7 @@ import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import 'react-native-get-random-values';
 import * as SecureStore from 'expo-secure-store';
-import { format, subDays, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 
 import { ChatStyles } from '../theme';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
@@ -37,23 +37,23 @@ export const Chat = () => {
         'lastChatOpenedDate'
       )) as string;
 
-      // if (lastOpenedDate !== today) {
-      try {
-        setIsTyping(true);
-        const mes = newUser ? 'New patient' : 'Greet the human';
-        console.log(mes);
-        const aiGreetings = await sendChatMessage(mes, userId);
-        setIsTyping(false);
-        setMessages(previousMessages =>
-          GiftedChat.append(previousMessages, [aiGreetings])
-        );
-        await storeLastOpenedDate();
-      } catch (error) {
-        console.log(error);
-        Alert.alert('Error', 'Coach seems to have problems responding');
-        setIsTyping(false);
+      if (lastOpenedDate !== today) {
+        try {
+          setIsTyping(true);
+          const mes = newUser ? 'New patient' : 'Greet the human';
+          console.log(mes);
+          const aiGreetings = await sendChatMessage(mes, userId);
+          setIsTyping(false);
+          setMessages(previousMessages =>
+            GiftedChat.append(previousMessages, [aiGreetings])
+          );
+          await storeLastOpenedDate();
+        } catch (error) {
+          console.log(error);
+          Alert.alert('Error', 'Coach seems to have problems responding');
+          setIsTyping(false);
+        }
       }
-      // }
     };
 
     const initializeChat = async () => {

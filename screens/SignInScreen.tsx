@@ -59,7 +59,7 @@ export const SignIn = ({
         placeholder="Email"
         leftIcon={{ type: 'font-awesome', name: 'envelope' }}
         leftIconContainerStyle={styles.inputs}
-        onChangeText={value => setEmail(value)}
+        onChangeText={value => setEmail(value.toLowerCase())}
         value={email}
       />
       <Input

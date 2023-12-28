@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const url = 'http://192.168.0.148:3000';
+const url = 'http://192.168.0.100:3000';
 // const url = 'http://192.168.0.12:3000';
 // const url = 'http://192.168.68.121:3000';
 

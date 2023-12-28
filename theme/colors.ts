@@ -8,5 +8,6 @@ export const COLORS = {
   errorRed: 'red',
   lightGrey: 'lightgrey',
   fontGrey: '#242424',
+  bgGrey: '#fff',
   // ... add other colors as needed
 };
