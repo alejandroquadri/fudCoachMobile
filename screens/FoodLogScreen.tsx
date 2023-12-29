@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Button, Card, Icon, Text } from '@rneui/themed';
+import { PieChart } from 'react-native-gifted-charts';
 import { subDays, addDays, format } from 'date-fns';
 import { COLORS } from '../theme';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
@@ -12,6 +13,11 @@ export const FoodLog = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [foodLogData, setFoodLogData] = useState<FLog[]>([]);
   const auth = useContext<AuthContextType | undefined>(AuthContext);
+
+  const pieData = [
+    { value: 70, color: '#177AD5' },
+    { value: 30, color: 'lightgray' },
+  ];
 
   if (!auth) {
     throw new Error('SignIn must be used within an AuthProvider');
@@ -67,6 +73,16 @@ export const FoodLog = () => {
           type="clear"
         />
       </View>
+      <Card containerStyle={styles.chartCardContainer}>
+        <PieChart
+          donut
+          innerRadius={80}
+          data={pieData}
+          centerLabelComponent={() => {
+            return <Text style={styles.centerLabel}>70%</Text>;
+          }}
+        />
+      </Card>
       <View style={styles.content}>
         {/* Content based on currentDate */}
         {isLoading ? (
@@ -97,6 +113,13 @@ export const FoodLog = () => {
 const styles = StyleSheet.create({
   cardContainer: {
     marginHorizontal: 20,
+  },
+  centerLabel: {
+    fontSize: 30, // Adjust as needed
+  },
+  chartCardContainer: {
+    marginHorizontal: 20,
+    marginTop: 20, // Adjust as needed
   },
   container: {
     flex: 1,
