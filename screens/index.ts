@@ -6,3 +6,5 @@ export * from './SignInScreen';
 export * from './SignUpScreen';
 export * from './SplashScreen';
 export * from './CompleteProfileScreen';
+export * from './LifeStyleScreen';
+export * from './WeightGoalScreen';

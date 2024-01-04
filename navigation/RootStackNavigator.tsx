@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AuthContext, AuthContextType } from './Authcontext';
+import { RegistrationProvider } from './RegistrationContext';
 import {
   SignIn,
-  SignUp,
+  // SignUp,
   SplashScreen,
-  CompleteProfileScreen,
+  // CompleteProfileScreen,
 } from '../screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { RegistrationStackNavigator } from './RegistrationStackNavigator';
 import ChatDrawerNavigator from './DrawerNavigator';
 import * as SecureStore from 'expo-secure-store';
 import { User } from '../types';
@@ -14,6 +16,7 @@ import { userAPI } from '../api';
 
 type RootStackParamList = {
   'Sign in': undefined;
+  Registration: undefined;
   'Sign up': undefined;
   Profile: { token: string; refreshToken: string };
   Home: undefined;
@@ -99,12 +102,18 @@ export const RootStackNavigator: React.FC = () => {
 
   return (
     <AuthContext.Provider value={authContext}>
+      {/* <RegistrationProvider> */}
       <Stack.Navigator>
         {userToken == null ? (
           <>
             <Stack.Screen name="Sign in" component={SignIn} />
-            <Stack.Screen name="Sign up" component={SignUp} />
-            <Stack.Screen name="Profile" component={CompleteProfileScreen} />
+            <Stack.Screen
+              name="Registration"
+              component={RegistrationStackNavigator}
+              options={{ headerShown: false }}
+            />
+            {/* <Stack.Screen name="Sign up" component={SignUp} />
+              <Stack.Screen name="Profile" component={CompleteProfileScreen} /> */}
           </>
         ) : (
           <>
@@ -117,6 +126,7 @@ export const RootStackNavigator: React.FC = () => {
           </>
         )}
       </Stack.Navigator>
+      {/* </RegistrationProvider> */}
     </AuthContext.Provider>
   );
 };

@@ -10,7 +10,8 @@ import { userAPI } from '../api';
 
 type RootStackParamList = {
   'Sign in': undefined;
-  'Sign up': undefined;
+  Registration: undefined;
+  // 'Sign up': undefined;
 };
 
 type SignInScreenNavigationProp = NativeStackNavigationProp<
@@ -103,7 +104,8 @@ export const SignIn = ({
 
         <Button
           title="Create account"
-          onPress={() => navigation.navigate('Sign up')}
+          // onPress={() => navigation.navigate('Sign up')}
+          onPress={() => navigation.navigate('Registration')}
           buttonStyle={styles.textButton}
           titleStyle={styles.buttonTitle}
         />

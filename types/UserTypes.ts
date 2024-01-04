@@ -13,3 +13,17 @@ export interface User {
   nickName?: string;
   qAndAnswers?: Array<string>;
 }
+
+export interface RegistrationData {
+  name: string;
+  email: string;
+  password: string;
+  birthdate?: Date;
+  weight?: number;
+  weightUnit?: string;
+  height?: number;
+  heightUnit?: string;
+  gender?: string;
+  lifestyle?: number;
+  weightGoal?: number;
+}

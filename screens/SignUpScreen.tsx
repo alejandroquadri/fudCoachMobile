@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Input, Button } from '@rneui/themed';
+import { Input, Button, Text } from '@rneui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useRegistration } from '../navigation/RegistrationContext';
+import { TouchableOpacity } from 'react-native';
 
 // Assuming you have a type for your Stack parameters
 type RootStackParamList = {
   'Sign in': undefined;
   'Sign up': undefined;
-  Profile: { name: string; email: string; password: string };
+  Profile: undefined;
+  // Profile: { name: string; email: string; password: string };
   // ... other screens ...
 };
 
@@ -52,6 +55,8 @@ export const SignUp: React.FC<SignUpScreenProps> = ({ navigation }) => {
     }
   };
 
+  const { setRegistrationData } = useRegistration();
+
   const handleSignUp = async () => {
     validateEmail(email);
     validateName(name);
@@ -61,11 +66,9 @@ export const SignUp: React.FC<SignUpScreenProps> = ({ navigation }) => {
       return;
     }
 
-    navigation.navigate('Profile', {
-      name,
-      email,
-      password,
-    });
+    setRegistrationData({ name, email, password });
+
+    navigation.navigate('Profile');
   };
 
   return (
@@ -110,6 +113,12 @@ export const SignUp: React.FC<SignUpScreenProps> = ({ navigation }) => {
         buttonStyle={styles.signUpBtnStyle}
         disabled={!!emailError || !!nameError || !!passwordError}
       />
+      <View style={styles.loginContainer}>
+        <Text style={styles.loginText}>Already a user? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Sign in')}>
+          <Text style={styles.loginButton}>Login</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -120,6 +129,19 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginTop: 90,
     padding: 20,
+  },
+  loginButton: {
+    fontSize: 16,
+    color: '#007bff', // Set the color you want for the button text
+    fontWeight: 'bold',
+  },
+  loginContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  loginText: {
+    fontSize: 16,
   },
   signUpBtnStyle: {
     marginTop: 20,
