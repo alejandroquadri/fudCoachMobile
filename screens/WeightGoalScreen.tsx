@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Alert, ActivityIndicator } from 'react-native';
 import { Button, ButtonGroup } from '@rneui/themed';
-import { useRegistration, AuthContext, AuthContextType } from '../navigation';
 import { userAPI } from '../api';
 import { COLORS } from '../theme';
+import { useRegistration } from '../navigation/RegistrationContext';
+import { AuthContextType, AuthContext } from '../navigation/Authcontext';
 
 interface WeightGoal {
   value: number;

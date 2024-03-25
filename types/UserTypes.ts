@@ -8,7 +8,7 @@ export interface User {
   height: string;
   heightUnit: string;
   birthday: string;
-  gender: string;
+  sex: string;
   completedQA: boolean;
   nickName?: string;
   qAndAnswers?: Array<string>;
@@ -23,7 +23,7 @@ export interface RegistrationData {
   weightUnit?: string;
   height?: number;
   heightUnit?: string;
-  gender?: string;
+  sex?: string;
   lifestyle?: number;
   weightGoal?: number;
 }

@@ -31,8 +31,8 @@ export const CompleteProfileScreen: React.FC<CompleteScreenProps> = ({
   const [heightFt, setHeightFt] = useState('');
   const [heightIn, setHeightIn] = useState('');
   const [birthdate, setBirthdate] = useState(new Date());
-  const genderOpts = ['Male', 'Female'];
-  const [gender, setGender] = useState(0);
+  const sexOpts = ['Male', 'Female'];
+  const [sex, setSex] = useState(0);
   const [selectedWeightUnit, setSelectedWeightUnit] = useState(0); // 0 for lbs, 1 for gk
   const [selectedHeightUnit, setSelectedHeightUnit] = useState(0); // 0 for feet, 1 for cm
   const unitsWeight = ['lbs', 'kg'];
@@ -128,7 +128,7 @@ export const CompleteProfileScreen: React.FC<CompleteScreenProps> = ({
       setRegistrationData({
         ...registrationData,
         birthdate,
-        gender: genderOpts[gender],
+        sex: sexOpts[sex].toLowerCase(),
         weight: finalWeight,
         weightUnit: unitsWeight[selectedWeightUnit],
         height: finalHeight,
@@ -159,11 +159,7 @@ export const CompleteProfileScreen: React.FC<CompleteScreenProps> = ({
         />
       ) : (
         <View style={styles.container}>
-          <ButtonGroup
-            onPress={setGender}
-            selectedIndex={gender}
-            buttons={genderOpts}
-          />
+          <ButtonGroup onPress={setSex} selectedIndex={sex} buttons={sexOpts} />
           <View style={styles.measuresContainer}>
             <Input
               onChangeText={weight => {
