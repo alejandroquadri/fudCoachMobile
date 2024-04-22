@@ -14,7 +14,7 @@ interface WeightGoal {
 
 export const WeightGoalScreen = () => {
   const { registrationData, setRegistrationData } = useRegistration();
-  console.log(registrationData);
+  console.log('esto llega al weightscreen', registrationData);
   const [loading, setLoading] = useState(false);
   const [weightUnit, setWeightUnit] = useState(0); // 0 for lb, 1 for kg
   const [weightGoal, setWeightGoal] = useState({} as WeightGoal);
@@ -35,32 +35,46 @@ export const WeightGoalScreen = () => {
   const { signUp } = auth;
 
   useEffect(() => {
+    console.log('corre registrationData.weightUnit');
+
     if (registrationData.weightUnit !== undefined) {
       const unit = registrationData.weightUnit === 'lbs' ? 0 : 1;
       setWeightUnit(unit);
     }
   }, [registrationData.weightUnit]);
 
-  const handleWeightGoalSelect = async (selectedGoal: WeightGoal) => {
+  useEffect(() => {
+    console.log('corre use effect por cambio resitrationData');
+    const doSignUp = async () => {
+      if (registrationData.weightGoal !== undefined) {
+        setLoading(true);
+        try {
+          const response = await userAPI.signUpEmailPass(registrationData);
+          const token = response.token;
+          const refreshToken = response.refreshToken;
+          const profile = response.user;
+          signUp(token, refreshToken, profile);
+        } catch (error) {
+          console.log(error);
+          Alert.alert(
+            'Error',
+            'Failed to sign in. Please check your credentials.'
+          );
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    doSignUp();
+  }, [registrationData, signUp]); // Dependency on weightGoal change
+
+  const handleWeightGoalSelect = (selectedGoal: WeightGoal) => {
     setWeightGoal(selectedGoal);
     setRegistrationData({
       ...registrationData,
       weightGoal: selectedGoal.value,
     });
-    console.log(registrationData);
-    setLoading(true);
-    try {
-      const response = await userAPI.signUpEmailPass(registrationData);
-      const token = response.token;
-      const refreshToken = response.refreshToken;
-      const profile = response.user;
-      signUp(token, refreshToken, profile);
-    } catch (error) {
-      console.log(error);
-      Alert.alert('Error', 'Failed to sign in. Please check your credentials.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   // falta el laoding!!!
@@ -130,3 +144,27 @@ const styles = StyleSheet.create({
 });
 
 export default WeightGoalScreen;
+
+// const handleWeightGoalSelect = async (selectedGoal: WeightGoal) => {
+//   setWeightGoal(selectedGoal);
+//   console.log('selected Goal =>', weightGoal);
+
+//   setRegistrationData({
+//     ...registrationData,
+//     weightGoal: selectedGoal.value,
+//   });
+//   console.log('esta es la regData => ', registrationData);
+//   setLoading(true);
+//   try {
+//     const response = await userAPI.signUpEmailPass(registrationData);
+//     const token = response.token;
+//     const refreshToken = response.refreshToken;
+//     const profile = response.user;
+//     signUp(token, refreshToken, profile);
+//   } catch (error) {
+//     console.log(error);
+//     Alert.alert('Error', 'Failed to sign in. Please check your credentials.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };

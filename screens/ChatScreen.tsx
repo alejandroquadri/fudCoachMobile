@@ -37,7 +37,7 @@ export const Chat = () => {
         'lastChatOpenedDate'
       )) as string;
 
-      if (lastOpenedDate !== today) {
+      if (lastOpenedDate !== today || newUser) {
         try {
           setIsTyping(true);
           const mes = newUser ? 'New patient' : 'Greet the human';
@@ -61,12 +61,12 @@ export const Chat = () => {
         const prevMessages = await fetchPreviousMessages(user._id);
         setMessages(prevMessages);
         const newUser = prevMessages.length < 1;
+        console.log(newUser);
         await checkAndShowGreeting(user._id, newUser);
       }
     };
 
     initializeChat();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const sendMes = async (message: IMessage[]) => {
