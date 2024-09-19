@@ -1,27 +1,29 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { Button, Card, Icon, Text } from '@rneui/themed';
-import { PieChart } from 'react-native-gifted-charts';
-import { subDays, addDays, format } from 'date-fns';
-import { COLORS } from '../theme';
+import { View, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { Text } from '@rneui/themed';
+import { subDays, addDays } from 'date-fns';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
 import { foodLogsApi } from '../api';
+import {
+  CalorieProgressCard,
+  DateSegment,
+  FoodLogCard,
+  ExerciseCard,
+  WaterIntakeCard,
+} from '../components';
+import { FoodLogStyles } from '../theme';
 import { FoodLog as FLog } from '../types';
 
 export const FoodLog = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
   const [foodLogData, setFoodLogData] = useState<FLog[]>([]);
+  const [waterIntake, setWaterIntake] = useState(2);
   const auth = useContext<AuthContextType | undefined>(AuthContext);
 
-  const pieData = [
-    { value: 70, color: '#177AD5' },
-    { value: 30, color: 'lightgray' },
-  ];
+  const styles = FoodLogStyles();
+  if (!auth) throw new Error('AuthContext is undefined');
 
-  if (!auth) {
-    throw new Error('SignIn must be used within an AuthProvider');
-  }
   const { user } = auth;
 
   const fetchFoodLog = useCallback(
@@ -29,9 +31,7 @@ export const FoodLog = () => {
       if (user !== null) {
         try {
           setIsLoading(true);
-
           const foodLogs = await foodLogsApi.getFoodLogs(user._id, date);
-
           setFoodLogData(foodLogs);
         } catch (error) {
           console.error(error);
@@ -48,101 +48,60 @@ export const FoodLog = () => {
     fetchFoodLog(currentDate);
   }, [currentDate, fetchFoodLog]);
 
-  const handleSubtractDay = () => {
+  const handleSubtractDay = () =>
     setCurrentDate(prevDate => subDays(prevDate, 1));
+  const handleAddDay = () => setCurrentDate(prevDate => addDays(prevDate, 1));
+
+  const handleIncrease = () => {
+    if (waterIntake < 8) setWaterIntake(waterIntake + 1);
   };
 
-  const handleAddDay = () => {
-    setCurrentDate(prevDate => addDays(prevDate, 1));
+  const handleDecrease = () => {
+    if (waterIntake > 0) setWaterIntake(waterIntake - 1);
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.dateSegment}>
-        <Button
-          onPress={handleSubtractDay}
-          icon={<Icon name="chevron-left" type="feather" size={24} />}
-          type="clear"
+      <DateSegment
+        currentDate={currentDate}
+        onSubtractDay={handleSubtractDay}
+        onAddDay={handleAddDay}
+      />
+      <ScrollView style={styles.scrollView}>
+        <CalorieProgressCard
+          goal={2372}
+          burned={0}
+          consumed={0}
+          remaining={2372}
         />
-        <Text style={styles.dateText}>
-          {format(currentDate, 'PPP')} {/* Format date as needed */}
-        </Text>
-        <Button
-          onPress={handleAddDay}
-          icon={<Icon name="chevron-right" type="feather" size={24} />}
-          type="clear"
-        />
-      </View>
-      <Card containerStyle={styles.chartCardContainer}>
-        <PieChart
-          donut
-          innerRadius={80}
-          data={pieData}
-          centerLabelComponent={() => {
-            return <Text style={styles.centerLabel}>70%</Text>;
-          }}
-        />
-      </Card>
-      <View style={styles.content}>
-        {/* Content based on currentDate */}
-        {isLoading ? (
-          <ActivityIndicator
-            style={styles.spinner}
-            size="large"
-            color={COLORS.black}
-          />
-        ) : (
-          <View>
-            {foodLogData.map((log, index) => (
-              <Card key={index} containerStyle={styles.cardContainer}>
-                <Card.Title>
-                  <Text>{format(new Date(log.date), 'hh mm')} - </Text>
-                  <Text>{log.foodObj.foodName} </Text>
-                </Card.Title>
-                <Card.Divider />
-                <Text>{log.foodObj.calories}</Text>
-              </Card>
-            ))}
+        {foodLogData.length > 0 ? (
+          <View style={styles.content}>
+            {isLoading ? (
+              <ActivityIndicator
+                style={styles.spinner}
+                size="large"
+                color="black"
+              />
+            ) : (
+              foodLogData.map((log, index) => (
+                <FoodLogCard
+                  key={index}
+                  foodName={log.foodObj.foodName}
+                  calories={log.foodObj.calories}
+                />
+              ))
+            )}
           </View>
+        ) : (
+          <Text style={styles.noFoodLogText}>No food logs available.</Text>
         )}
-      </View>
+        <ExerciseCard exerciseType="Weight Lifting" caloriesBurned={284} />
+        <WaterIntakeCard
+          waterIntake={waterIntake}
+          handleIncrease={handleIncrease}
+          handleDecrease={handleDecrease}
+        />
+      </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    marginHorizontal: 20,
-  },
-  centerLabel: {
-    fontSize: 30, // Adjust as needed
-  },
-  chartCardContainer: {
-    marginHorizontal: 20,
-    marginTop: 20, // Adjust as needed
-  },
-  container: {
-    flex: 1,
-  },
-  content: {
-    alignItems: 'stretch',
-    flexDirection: 'column',
-    flex: 1,
-    justifyContent: 'flex-start',
-  },
-  dateSegment: {
-    alignItems: 'center',
-    backgroundColor: COLORS.bgGrey,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 10, // Set your desired color
-  },
-  dateText: {
-    fontSize: 18,
-    marginHorizontal: 10,
-  },
-  spinner: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-});
