@@ -62,7 +62,8 @@ export const Chat = () => {
         setMessages(prevMessages);
         const newUser = prevMessages.length < 1;
         console.log(newUser);
-        await checkAndShowGreeting(user._id, newUser);
+        // FIX: Lo saque temporariamente para que no haga constantes llamados al AI
+        // await checkAndShowGreeting(user._id, newUser);
       }
     };
 

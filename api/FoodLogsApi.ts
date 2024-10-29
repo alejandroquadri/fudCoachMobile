@@ -1,9 +1,24 @@
 import { api } from './ApiInstance';
-import { FoodLog } from '../types';
+import { ExerciseLog, FoodLog, WaterLog } from '../types';
 
 export const foodLogsApi = {
-  getFoodLogs: async (userId: string, date: Date): Promise<FoodLog[]> =>
+  getFoodLogs: async (userId: string, date: string): Promise<FoodLog[]> =>
     api
-      .post('/food-logs/by-date', { userId, date })
+      .post('/food-logs/by-date', { user_id: userId, date })
+      .then(response => response.data),
+  getExerciseLogs: async (
+    userId: string,
+    date: string
+  ): Promise<ExerciseLog[]> =>
+    api
+      .post('/exercise-logs/by-date', { user_id: userId, date })
+      .then(response => response.data),
+  getWaterLogs: async (userId: string, date: string): Promise<WaterLog> =>
+    api
+      .post('/water-logs/by-date', { user_id: userId, date })
+      .then(response => response.data),
+  upsertWaterLog: async (WaterLog: WaterLog) =>
+    api
+      .post('/water-logs/upsert', { waterLog: WaterLog })
       .then(response => response.data),
 };

@@ -90,9 +90,12 @@ export const FoodLogStyles = () => {
     },
     exerciseHeader: {
       alignItems: 'center',
+      borderBottomColor: '#E0E0E0',
+      borderBottomWidth: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 10,
+      paddingBottom: 10,
     },
     exerciseTitle: {
       fontSize: 18,
@@ -108,6 +111,7 @@ export const FoodLogStyles = () => {
     },
     foodDetails: {
       flex: 1,
+      justifyContent: 'center',
       marginLeft: 10,
     },
     foodIcon: {
@@ -123,10 +127,16 @@ export const FoodLogStyles = () => {
       fontSize: 16,
       fontWeight: 'bold',
     },
+    foodImage: {
+      borderRadius: 20,
+      height: 40,
+      width: 40,
+    },
     foodItemContainer: {
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'space-between',
+      marginVertical: 10,
     },
     foodName: {
       fontSize: 16,
@@ -149,9 +159,12 @@ export const FoodLogStyles = () => {
     },
     mealHeader: {
       alignItems: 'center',
+      borderBottomColor: '#E0E0E0',
+      borderBottomWidth: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 10,
+      paddingBottom: 10,
     },
     mealTitle: {
       fontSize: 18,

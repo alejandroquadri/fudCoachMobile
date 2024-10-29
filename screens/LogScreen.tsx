@@ -1,0 +1,293 @@
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { View, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { Text } from '@rneui/themed';
+import { subDays, addDays, parse, format } from 'date-fns';
+import { AuthContext, AuthContextType } from '../navigation/Authcontext';
+import { foodLogsApi } from '../api';
+import {
+  CalorieProgressCard,
+  DateSegment,
+  FoodLogCard,
+  ExerciseCard,
+  WaterIntakeCard,
+} from '../components';
+import { FoodLogStyles } from '../theme';
+import { FoodLog, ExerciseLog, WaterLog } from '../types';
+
+// Grouping function for food logs
+
+const groupFoodLogsByMeal = (foodLogs: FoodLog[]) => {
+  const groupedLogs = {
+    breakfast: [] as FoodLog[],
+    lunch: [] as FoodLog[],
+    dinner: [] as FoodLog[],
+    snack: [] as FoodLog[],
+  };
+
+  foodLogs.forEach(log => {
+    const parsedDate = parse(log.hour, 'HH:mm', new Date());
+    const hour = parsedDate.getHours();
+
+    if (hour >= 7 && hour < 12) {
+      groupedLogs.breakfast.push(log);
+    } else if (hour >= 12 && hour < 15) {
+      groupedLogs.lunch.push(log);
+    } else if (hour >= 19 && hour <= 24) {
+      groupedLogs.dinner.push(log);
+    } else {
+      groupedLogs.snack.push(log);
+    }
+  });
+
+  return groupedLogs;
+};
+
+export const LogScreen = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [isLoadingFoodLog, setIsLoadingFoodLog] = useState(false);
+  const [isLoadingExerciseLog, setIsLoadingExerciseLog] = useState(false);
+  const [isLoadingWaterLog, setIsLoadingWaterLog] = useState(false);
+
+  const [groupedFoodLogs, setGroupedFoodLogs] = useState({
+    breakfast: [] as FoodLog[],
+    lunch: [] as FoodLog[],
+    dinner: [] as FoodLog[],
+    snack: [] as FoodLog[],
+  });
+  const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
+  const [waterIntake, setWaterIntake] = useState(2);
+  const [waterLog, setWaterLog] = useState<WaterLog>();
+
+  const auth = useContext<AuthContextType | undefined>(AuthContext);
+
+  const styles = FoodLogStyles();
+  if (!auth) throw new Error('AuthContext is undefined');
+
+  const { user } = auth;
+
+  const fetchFoodLog = useCallback(
+    async (date: Date) => {
+      if (user !== null) {
+        try {
+          setIsLoadingFoodLog(true);
+          const formattedDate = format(date, 'yyyy-MM-dd');
+          const foodLogs = await foodLogsApi.getFoodLogs(
+            user._id,
+            formattedDate
+          );
+
+          // Group logs by meal
+          const groupedLogs = groupFoodLogsByMeal(foodLogs);
+          setGroupedFoodLogs(groupedLogs);
+        } catch (error) {
+          console.error(error);
+          Alert.alert('Error', 'Failed to fetch food log data.');
+        } finally {
+          setIsLoadingFoodLog(false);
+        }
+      }
+    },
+    [user]
+  );
+
+  const fetchExerciseLog = useCallback(
+    async (date: Date) => {
+      if (user !== null) {
+        try {
+          setIsLoadingExerciseLog(true);
+          const formattedDate = format(date, 'yyyy-MM-dd');
+          const exerciseLogs = await foodLogsApi.getExerciseLogs(
+            user._id,
+            formattedDate
+          );
+          setExerciseLogs(exerciseLogs);
+        } catch (error) {
+          console.error(error);
+          Alert.alert('Error', 'Failed to fetch exercise log data.');
+        } finally {
+          setIsLoadingExerciseLog(false);
+        }
+      }
+    },
+    [user]
+  );
+
+  const fetchWaterLog = useCallback(
+    async (date: Date) => {
+      if (user !== null) {
+        try {
+          setIsLoadingWaterLog(true);
+          const formattedDate = format(date, 'yyyy-MM-dd');
+          const waterLogs = await foodLogsApi.getWaterLogs(
+            user._id,
+            formattedDate
+          );
+          console.log(waterLogs);
+          setWaterLog(waterLogs);
+        } catch (error) {
+          console.error(error);
+          Alert.alert('Error', 'Failed to fetch exercise log data.');
+        } finally {
+          setIsLoadingWaterLog(false);
+        }
+      }
+    },
+    [user]
+  );
+
+  useEffect(() => {
+    fetchFoodLog(currentDate);
+    fetchExerciseLog(currentDate);
+    fetchWaterLog(currentDate);
+  }, [currentDate, fetchFoodLog, fetchExerciseLog, fetchWaterLog]);
+
+  const handleSubtractDay = () =>
+    setCurrentDate(prevDate => subDays(prevDate, 1));
+  const handleAddDay = () => setCurrentDate(prevDate => addDays(prevDate, 1));
+
+  // const handleIncrease = () => {
+  //   if (waterIntake < 8) setWaterIntake(waterIntake + 1);
+  // };
+  //
+  // const handleDecrease = () => {
+  //   if (waterIntake > 0) setWaterIntake(waterIntake - 1);
+  // };
+
+  const handleIncrease = async () => {
+    try {
+      if (user?._id === undefined) {
+        throw new Error('User Logged out');
+      }
+      let updatedWaterLog: WaterLog;
+
+      if (!waterLog) {
+        // Create a new WaterLog if none exists
+        updatedWaterLog = {
+          user_id: user._id,
+          date: format(currentDate, 'yyyy-MM-dd'),
+          waterCups: 1,
+        };
+      } else if (waterLog.waterCups < 8) {
+        // Increment water cups if waterLog already exists
+        updatedWaterLog = {
+          ...waterLog,
+          waterCups: waterLog.waterCups + 1,
+        };
+      } else {
+        // Do nothing if water cups are already at the maximum
+        return;
+      }
+
+      // Update the state
+      setWaterLog(updatedWaterLog);
+
+      // Update the backend
+      await foodLogsApi.upsertWaterLog(updatedWaterLog);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to update water intake.');
+    }
+  };
+
+  const handleDecrease = async () => {
+    if (!waterLog || waterLog.waterCups <= 0) return;
+
+    try {
+      const updatedWaterLog: WaterLog = {
+        ...waterLog,
+        waterCups: waterLog.waterCups - 1,
+      };
+      setWaterLog(updatedWaterLog);
+      await foodLogsApi.upsertWaterLog(updatedWaterLog);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to update water intake.');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <DateSegment
+        currentDate={currentDate}
+        onSubtractDay={handleSubtractDay}
+        onAddDay={handleAddDay}
+      />
+      <ScrollView style={styles.scrollView}>
+        <CalorieProgressCard
+          goal={2372}
+          burned={0}
+          consumed={0}
+          remaining={2372}
+        />
+
+        {/* Render the grouped logs by meal */}
+        {isLoadingFoodLog ? (
+          <ActivityIndicator
+            style={styles.spinner}
+            size="large"
+            color="black"
+          />
+        ) : (
+          <>
+            {/* Render Breakfast Logs */}
+            {groupedFoodLogs.breakfast.length > 0 && (
+              <FoodLogCard
+                mealType="Breakfast"
+                logs={groupedFoodLogs.breakfast}
+              />
+            )}
+
+            {/* Render Lunch Logs */}
+            {groupedFoodLogs.lunch.length > 0 && (
+              <FoodLogCard mealType="Lunch" logs={groupedFoodLogs.lunch} />
+            )}
+
+            {/* Render Dinner Logs */}
+            {groupedFoodLogs.dinner.length > 0 && (
+              <FoodLogCard mealType="Dinner" logs={groupedFoodLogs.dinner} />
+            )}
+
+            {/* Render Snack Logs */}
+            {groupedFoodLogs.snack.length > 0 && (
+              <FoodLogCard mealType="Snack" logs={groupedFoodLogs.snack} />
+            )}
+
+            {/* If no food logs */}
+            {groupedFoodLogs.breakfast.length === 0 &&
+              groupedFoodLogs.lunch.length === 0 &&
+              groupedFoodLogs.dinner.length === 0 &&
+              groupedFoodLogs.snack.length === 0 && (
+                <Text style={styles.noFoodLogText}>
+                  No food logs available.
+                </Text>
+              )}
+          </>
+        )}
+
+        {isLoadingExerciseLog ? (
+          <ActivityIndicator
+            style={styles.spinner}
+            size="large"
+            color="black"
+          />
+        ) : (
+          <ExerciseCard logs={exerciseLogs} />
+        )}
+
+        {isLoadingWaterLog ? (
+          <ActivityIndicator
+            style={styles.spinner}
+            size="large"
+            color="black"
+          />
+        ) : (
+          <WaterIntakeCard
+            waterLog={waterLog}
+            handleIncrease={handleIncrease}
+            handleDecrease={handleDecrease}
+          />
+        )}
+      </ScrollView>
+    </View>
+  );
+};
