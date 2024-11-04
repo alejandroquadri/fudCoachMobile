@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Card, Button, Text } from '@rneui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
-import { FoodLogStyles } from '../theme';
+import { WaterLogStyles } from '../theme';
 import { WaterLog } from '../types';
 
 interface WaterIntakeCardProps {
@@ -16,7 +16,7 @@ export const WaterIntakeCard: React.FC<WaterIntakeCardProps> = ({
   handleIncrease,
   handleDecrease,
 }) => {
-  const styles = FoodLogStyles();
+  const styles = WaterLogStyles();
   const waterCups = waterLog?.waterCups ?? 0;
   return (
     <Card containerStyle={styles.waterCard}>

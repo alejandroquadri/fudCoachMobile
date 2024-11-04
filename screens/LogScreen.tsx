@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { Text } from '@rneui/themed';
+import { View, ScrollView, Alert } from 'react-native';
 import { subDays, addDays, parse, format } from 'date-fns';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
 import { foodLogsApi } from '../api';
@@ -10,8 +9,9 @@ import {
   FoodLogCard,
   ExerciseCard,
   WaterIntakeCard,
+  EmptyCard,
 } from '../components';
-import { FoodLogStyles } from '../theme';
+import { LogStyles } from '../theme';
 import { FoodLog, ExerciseLog, WaterLog } from '../types';
 
 // Grouping function for food logs
@@ -46,7 +46,6 @@ export const LogScreen = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoadingFoodLog, setIsLoadingFoodLog] = useState(false);
   const [isLoadingExerciseLog, setIsLoadingExerciseLog] = useState(false);
-  const [isLoadingWaterLog, setIsLoadingWaterLog] = useState(false);
 
   const [groupedFoodLogs, setGroupedFoodLogs] = useState({
     breakfast: [] as FoodLog[],
@@ -55,12 +54,11 @@ export const LogScreen = () => {
     snack: [] as FoodLog[],
   });
   const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
-  const [waterIntake, setWaterIntake] = useState(2);
   const [waterLog, setWaterLog] = useState<WaterLog>();
 
   const auth = useContext<AuthContextType | undefined>(AuthContext);
 
-  const styles = FoodLogStyles();
+  const styles = LogStyles();
   if (!auth) throw new Error('AuthContext is undefined');
 
   const { user } = auth;
@@ -116,7 +114,6 @@ export const LogScreen = () => {
     async (date: Date) => {
       if (user !== null) {
         try {
-          setIsLoadingWaterLog(true);
           const formattedDate = format(date, 'yyyy-MM-dd');
           const waterLogs = await foodLogsApi.getWaterLogs(
             user._id,
@@ -127,8 +124,6 @@ export const LogScreen = () => {
         } catch (error) {
           console.error(error);
           Alert.alert('Error', 'Failed to fetch exercise log data.');
-        } finally {
-          setIsLoadingWaterLog(false);
         }
       }
     },
@@ -144,14 +139,6 @@ export const LogScreen = () => {
   const handleSubtractDay = () =>
     setCurrentDate(prevDate => subDays(prevDate, 1));
   const handleAddDay = () => setCurrentDate(prevDate => addDays(prevDate, 1));
-
-  // const handleIncrease = () => {
-  //   if (waterIntake < 8) setWaterIntake(waterIntake + 1);
-  // };
-  //
-  // const handleDecrease = () => {
-  //   if (waterIntake > 0) setWaterIntake(waterIntake - 1);
-  // };
 
   const handleIncrease = async () => {
     try {
@@ -222,11 +209,7 @@ export const LogScreen = () => {
 
         {/* Render the grouped logs by meal */}
         {isLoadingFoodLog ? (
-          <ActivityIndicator
-            style={styles.spinner}
-            size="large"
-            color="black"
-          />
+          <EmptyCard cardType={{ type: 'Food' }} isLoading={isLoadingFoodLog} />
         ) : (
           <>
             {/* Render Breakfast Logs */}
@@ -257,36 +240,28 @@ export const LogScreen = () => {
               groupedFoodLogs.lunch.length === 0 &&
               groupedFoodLogs.dinner.length === 0 &&
               groupedFoodLogs.snack.length === 0 && (
-                <Text style={styles.noFoodLogText}>
-                  No food logs available.
-                </Text>
+                <EmptyCard
+                  cardType={{ type: 'Food' }}
+                  isLoading={isLoadingFoodLog}
+                />
               )}
           </>
         )}
 
-        {isLoadingExerciseLog ? (
-          <ActivityIndicator
-            style={styles.spinner}
-            size="large"
-            color="black"
+        {exerciseLogs.length === 0 ? (
+          <EmptyCard
+            cardType={{ type: 'Exerecise' }}
+            isLoading={isLoadingExerciseLog}
           />
         ) : (
           <ExerciseCard logs={exerciseLogs} />
         )}
 
-        {isLoadingWaterLog ? (
-          <ActivityIndicator
-            style={styles.spinner}
-            size="large"
-            color="black"
-          />
-        ) : (
-          <WaterIntakeCard
-            waterLog={waterLog}
-            handleIncrease={handleIncrease}
-            handleDecrease={handleDecrease}
-          />
-        )}
+        <WaterIntakeCard
+          waterLog={waterLog}
+          handleIncrease={handleIncrease}
+          handleDecrease={handleDecrease}
+        />
       </ScrollView>
     </View>
   );

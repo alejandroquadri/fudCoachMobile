@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Card, Button, Text } from '@rneui/themed';
-import { FoodLogStyles } from '../theme';
+import { ExerciseLogStyles } from '../theme';
 import { ExerciseLog } from '../types';
 
 interface ExerciseCardProps {
@@ -9,13 +9,13 @@ interface ExerciseCardProps {
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({ logs }) => {
-  const styles = FoodLogStyles();
+  const styles = ExerciseLogStyles();
   console.log(logs);
   const totalCalories = logs.reduce((sum, log) => sum + log.caloriesBurned, 0);
 
   return (
     <Card containerStyle={styles.exerciseCard}>
-      <View style={styles.mealHeader}>
+      <View style={styles.exerciseHeader}>
         <Text style={styles.exerciseTitle}>Exercise</Text>
         <Text style={styles.exerciseBurned}>({totalCalories} burned)</Text>
         <Button title="+ Add Exercise" type="clear" onPress={() => {}} />

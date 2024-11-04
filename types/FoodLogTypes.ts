@@ -16,6 +16,10 @@ export interface FoodLog {
   };
 }
 
+export interface EmptyCardInterface {
+  type: string;
+}
+
 export interface WaterLog {
   _id?: string;
   user_id: string;

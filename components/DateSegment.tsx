@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Button, Icon, Text } from '@rneui/themed';
 import { format } from 'date-fns';
-import { FoodLogStyles } from '../theme';
+import { DateSegmentStyles } from '../theme';
 
 interface DateSegmentProps {
   currentDate: Date;
@@ -15,7 +15,7 @@ export const DateSegment: React.FC<DateSegmentProps> = ({
   onSubtractDay,
   onAddDay,
 }) => {
-  const styles = FoodLogStyles();
+  const styles = DateSegmentStyles();
   return (
     <View style={styles.dateSegment}>
       <Button

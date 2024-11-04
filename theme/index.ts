@@ -1,3 +1,4 @@
 export * from './Colors';
 export * from './ChatStyles';
-export * from './FoodLogStyles';
+export * from './LogStyles';
+export * from './GoalsStyles';

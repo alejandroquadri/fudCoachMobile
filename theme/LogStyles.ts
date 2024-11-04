@@ -1,6 +1,79 @@
 import { StyleSheet } from 'react-native';
 import { COLORS } from './Colors';
 
+export const LogStyles = () => {
+  return StyleSheet.create({
+    container: {
+      backgroundColor: COLORS.bgGrey,
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    spinner: {
+      flex: 1,
+      justifyContent: 'center',
+    },
+    noFoodLogText: {
+      color: 'gray',
+      fontSize: 16,
+      marginTop: 20,
+      textAlign: 'center',
+    },
+  });
+};
+
+export const EmtpyCardStyles = () => {
+  return StyleSheet.create({
+    emptyCard: {
+      backgroundColor: '#FFF',
+      borderRadius: 10,
+      marginHorizontal: 20,
+      marginTop: 10,
+      padding: 15,
+    },
+    emptyHeader: {
+      alignItems: 'center',
+      borderBottomColor: '#E0E0E0',
+      borderBottomWidth: 1,
+      flexDirection: 'row',
+      // justifyContent: 'space-between',
+      marginBottom: 10,
+      paddingBottom: 10,
+    },
+    emptyTitle: {
+      // flex: 1,
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginEnd: 10,
+    },
+    spinner: {
+      alignSelf: 'flex-start',
+    },
+    emptyTextContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginVertical: 10,
+    },
+  });
+};
+export const DateSegmentStyles = () => {
+  return StyleSheet.create({
+    dateSegment: {
+      alignItems: 'center',
+      backgroundColor: COLORS.bgGrey,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      padding: 10,
+    },
+    dateText: {
+      fontSize: 18,
+      marginHorizontal: 10,
+    },
+  });
+};
+
 export const FoodLogStyles = () => {
   return StyleSheet.create({
     calorieColumn: {
@@ -43,67 +116,11 @@ export const FoodLogStyles = () => {
       justifyContent: 'center',
       marginLeft: 10,
     },
-    container: {
-      backgroundColor: COLORS.bgGrey,
-      flex: 1,
-    },
     content: {
       alignItems: 'stretch',
       flexDirection: 'column',
       flex: 1,
       justifyContent: 'flex-start',
-    },
-    cupsContainer: {
-      flexDirection: 'row',
-      flex: 1,
-      justifyContent: 'space-around',
-      marginHorizontal: 10,
-    },
-    dateSegment: {
-      alignItems: 'center',
-      backgroundColor: COLORS.bgGrey,
-      flexDirection: 'row',
-      justifyContent: 'center',
-      padding: 10,
-    },
-    dateText: {
-      fontSize: 18,
-      marginHorizontal: 10,
-    },
-    exerciseBurned: {
-      color: 'gray',
-      fontSize: 14,
-    },
-    exerciseCalories: {
-      color: 'gray',
-      fontSize: 14,
-    },
-    exerciseCard: {
-      backgroundColor: '#FFF',
-      borderRadius: 10,
-      marginHorizontal: 20,
-      marginTop: 10,
-      padding: 15,
-    },
-    exerciseDetails: {
-      marginTop: 10,
-    },
-    exerciseHeader: {
-      alignItems: 'center',
-      borderBottomColor: '#E0E0E0',
-      borderBottomWidth: 1,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 10,
-      paddingBottom: 10,
-    },
-    exerciseTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-    },
-    exerciseType: {
-      fontSize: 16,
-      fontWeight: 'bold',
     },
     foodCalories: {
       color: 'gray',
@@ -142,9 +159,6 @@ export const FoodLogStyles = () => {
       fontSize: 16,
       fontWeight: 'bold',
     },
-    glassIcon: {
-      marginHorizontal: 8,
-    },
     mealCalories: {
       color: 'gray',
       fontSize: 14,
@@ -170,12 +184,6 @@ export const FoodLogStyles = () => {
       fontSize: 18,
       fontWeight: 'bold',
     },
-    noFoodLogText: {
-      color: 'gray',
-      fontSize: 16,
-      marginTop: 20,
-      textAlign: 'center',
-    },
     progressCard: {
       backgroundColor: '#FFF',
       marginHorizontal: 20,
@@ -187,13 +195,57 @@ export const FoodLogStyles = () => {
       fontWeight: 'bold',
       marginBottom: 10,
     },
-    scrollView: {
-      flex: 1,
+  });
+};
+
+export const ExerciseLogStyles = () => {
+  return StyleSheet.create({
+    exerciseBurned: {
+      color: 'gray',
+      fontSize: 14,
     },
-    spinner: {
-      flex: 1,
-      justifyContent: 'center',
+    exerciseCalories: {
+      color: 'gray',
+      fontSize: 14,
     },
+    exerciseCard: {
+      backgroundColor: '#FFF',
+      borderRadius: 10,
+      marginHorizontal: 20,
+      marginTop: 10,
+      padding: 15,
+    },
+    exerciseDetails: {
+      marginTop: 10,
+    },
+    exerciseHeader: {
+      alignItems: 'center',
+      borderBottomColor: '#E0E0E0',
+      borderBottomWidth: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 10,
+      paddingBottom: 10,
+    },
+    exerciseTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    exerciseType: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    foodItemContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginVertical: 10,
+    },
+  });
+};
+
+export const WaterLogStyles = () => {
+  return StyleSheet.create({
     totalWater: {
       fontSize: 14,
       fontWeight: 'bold',
@@ -226,6 +278,15 @@ export const FoodLogStyles = () => {
     waterTitle: {
       fontSize: 18,
       fontWeight: 'bold',
+    },
+    cupsContainer: {
+      flexDirection: 'row',
+      flex: 1,
+      justifyContent: 'space-around',
+      marginHorizontal: 10,
+    },
+    glassIcon: {
+      marginHorizontal: 8,
     },
   });
 };
