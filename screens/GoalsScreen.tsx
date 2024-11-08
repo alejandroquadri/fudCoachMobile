@@ -70,12 +70,6 @@ export const Goals = () => {
       const mockData = createWeightLogs(95, '2022-01-01', 15);
 
       setWeightData(mockData);
-      // const chartData = pruneLogs(mockData, 5);
-      // const chartData = buildChartData(mockData);
-      // setChartData(chartData);
-      // const minValue = calcMinValue(chartData);
-      // setMinValueWeight(minValue - 3);
-      // console.log('busco min value y chart data', minValue, chartData);
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Failed to fetch food log data.');
@@ -104,7 +98,6 @@ export const Goals = () => {
   useEffect(() => {
     const buildChartData = (weightLogs: WeightLogInterface[]) => {
       let prunedData = pruneLogs(weightLogs, 5);
-      console.log(unit);
       if (unit === 'lb') {
         prunedData = convertWeigthToPounds(prunedData);
       }
@@ -117,21 +110,12 @@ export const Goals = () => {
       setChartData(newChartData);
       const newMinValue = calcMinValue(newChartData);
       setMinValueWeight(newMinValue - 3);
-      console.log(newChartData, newMinValue);
     }
   }, [unit, weightData]);
 
   const handleUnitToggle = (newUnit: string) => {
-    console.log('unit toggle', unit, newUnit);
     if (newUnit !== unit) {
       setUnit(newUnit);
-      // const newChartData = buildChartData(weightData);
-      // setChartData(newChartData);
-      // const newMinValue = calcMinValue(newChartData);
-      // setMinValueWeight(newMinValue - 3);
-      // console.log(newChartData, newMinValue);
-    } else {
-      console.log('misma unidad, no hago nada');
     }
   };
 
