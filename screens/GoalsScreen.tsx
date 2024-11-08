@@ -6,6 +6,7 @@ import { GoalStyles } from '../theme';
 import { WeightLogInterface } from '../types';
 import { format } from 'date-fns';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
+import { convertKilogramsToPounds, round } from '../services';
 
 interface ChartDataInterface {
   label: string;
@@ -28,7 +29,8 @@ const createWeightLogs = (
     });
 
     currentDate.setDate(currentDate.getDate() + 7);
-    currentWeight -= 3.5;
+    const random = Math.random() > 0.5 ? 1 : -1;
+    currentWeight -= 3.5 * random;
   }
 
   return weightLogs;
@@ -68,11 +70,12 @@ export const Goals = () => {
       const mockData = createWeightLogs(95, '2022-01-01', 15);
 
       setWeightData(mockData);
-      const chartData = pruneLogs(mockData, 5);
-      setChartData(chartData);
-      const minValue = calcMinValue(chartData);
-      setMinValueWeight(minValue);
-      console.log('busco min value y chart data', minValue, chartData);
+      // const chartData = pruneLogs(mockData, 5);
+      // const chartData = buildChartData(mockData);
+      // setChartData(chartData);
+      // const minValue = calcMinValue(chartData);
+      // setMinValueWeight(minValue - 3);
+      // console.log('busco min value y chart data', minValue, chartData);
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Failed to fetch food log data.');
@@ -81,14 +84,64 @@ export const Goals = () => {
     }
   }, [user]);
 
+  // create ChartData
+
+  // convert wieght logs to pounds
+  const convertWeigthToPounds = (weightLogs: ChartDataInterface[]) => {
+    return weightLogs.map(log => {
+      const pounds = round(convertKilogramsToPounds(log.value), 0);
+      return {
+        label: log.label,
+        value: pounds,
+      };
+    });
+  };
+
   useEffect(() => {
     fetchWeightLogs();
   }, [fetchWeightLogs]);
 
-  const handleUnitToggle = (unit: string) => {
-    setUnit(unit);
+  useEffect(() => {
+    const buildChartData = (weightLogs: WeightLogInterface[]) => {
+      let prunedData = pruneLogs(weightLogs, 5);
+      console.log(unit);
+      if (unit === 'lb') {
+        prunedData = convertWeigthToPounds(prunedData);
+      }
+      return prunedData;
+    };
+
+    // Rebuild chart data whenever the unit or weightData changes
+    if (weightData.length > 0) {
+      const newChartData = buildChartData(weightData);
+      setChartData(newChartData);
+      const newMinValue = calcMinValue(newChartData);
+      setMinValueWeight(newMinValue - 3);
+      console.log(newChartData, newMinValue);
+    }
+  }, [unit, weightData]);
+
+  const handleUnitToggle = (newUnit: string) => {
+    console.log('unit toggle', unit, newUnit);
+    if (newUnit !== unit) {
+      setUnit(newUnit);
+      // const newChartData = buildChartData(weightData);
+      // setChartData(newChartData);
+      // const newMinValue = calcMinValue(newChartData);
+      // setMinValueWeight(newMinValue - 3);
+      // console.log(newChartData, newMinValue);
+    } else {
+      console.log('misma unidad, no hago nada');
+    }
   };
 
+  const getLogInCurrentUnit = (log: number, unit: string) => {
+    if (unit === 'lb') {
+      return round(convertKilogramsToPounds(log), 0);
+    } else {
+      return log;
+    }
+  };
   return (
     <ScrollView style={styles.container}>
       {/* Weight Progress Card */}
@@ -120,18 +173,19 @@ export const Goals = () => {
         </View>
 
         {/* Weight Line Chart */}
-        <LineChart
-          data={chartData}
-          height={220}
-          color={'#177AD5'}
-          thickness={1}
-          dataPointsColor={'#177AD5'}
-          dataPointsHeight={50}
-          dataPointsWidth={50}
-          curved
-          yAxisOffset={minValueWeight - 3}
-        />
-
+        {chartData.length > 0 && (
+          <LineChart
+            data={chartData}
+            height={220}
+            color={'#177AD5'}
+            thickness={1}
+            dataPointsColor={'#177AD5'}
+            dataPointsHeight={50}
+            dataPointsWidth={50}
+            curved
+            yAxisOffset={minValueWeight}
+          />
+        )}
         {/* Last Recorded Weight and Record Button */}
         <View style={styles.recordSection}>
           <Text style={styles.lastWeightText}>
@@ -150,7 +204,9 @@ export const Goals = () => {
               {format(new Date(entry.date), 'MMMM dd, yyyy')}
             </Text>
             <View style={styles.historySpacer}></View>
-            <Text style={styles.historyWeight}>{entry.weightLog} kg</Text>
+            <Text style={styles.historyWeight}>
+              {getLogInCurrentUnit(entry.weightLog, unit)} {unit}
+            </Text>
             <Icon size={20} name="close" type="material" color="gray" />
           </View>
         ))}
