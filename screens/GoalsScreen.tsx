@@ -7,6 +7,7 @@ import { WeightLogInterface } from '../types';
 import { format } from 'date-fns';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
 import { convertKilogramsToPounds, round } from '../services';
+import { weightLogsApi } from '../api';
 
 interface ChartDataInterface {
   label: string;
@@ -58,6 +59,7 @@ export const Goals = () => {
   const [weightData, setWeightData] = useState<WeightLogInterface[]>([]);
   const [chartData, setChartData] = useState<ChartDataInterface[]>([]);
   const [minValueWeight, setMinValueWeight] = useState<number>(0);
+  const [focusedData, setFocusedData] = useState(null);
 
   const auth = useContext<AuthContextType | undefined>(AuthContext);
 
@@ -66,15 +68,18 @@ export const Goals = () => {
   const { user } = auth;
 
   const fetchWeightLogs = useCallback(async () => {
-    try {
-      const mockData = createWeightLogs(95, '2022-01-01', 15);
+    if (user !== null) {
+      try {
+        // const mockData = createWeightLogs(95, '2022-01-01', 15);
 
-      setWeightData(mockData);
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Failed to fetch food log data.');
-    } finally {
-      // TODO: something else
+        const weightLogs = await weightLogsApi.getWeightLogs(user._id!);
+        setWeightData(weightLogs);
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'Failed to fetch food log data.');
+      } finally {
+        // TODO: something else
+      }
     }
   }, [user]);
 
@@ -126,6 +131,21 @@ export const Goals = () => {
       return log;
     }
   };
+
+  const handleDeleteLog = async (logId: string) => {
+    try {
+      await weightLogsApi.deleteWeightLog(logId);
+      fetchWeightLogs();
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to delete weight log.');
+    }
+  };
+
+  const handleDataPointPress = (item, index) => {
+    setFocusedData(item);
+  };
+
   return (
     <ScrollView style={styles.container}>
       {/* Weight Progress Card */}
@@ -162,12 +182,14 @@ export const Goals = () => {
             data={chartData}
             height={220}
             color={'#177AD5'}
-            thickness={1}
+            yAxisColor={'white'}
+            xAxisColor={'white'}
+            thickness={2}
             dataPointsColor={'#177AD5'}
-            dataPointsHeight={50}
-            dataPointsWidth={50}
+            dataPointsRadius={5}
             curved
             yAxisOffset={minValueWeight}
+            noOfSections={4} // Number of sections on the Y-axis
           />
         )}
         {/* Last Recorded Weight and Record Button */}
@@ -191,7 +213,13 @@ export const Goals = () => {
             <Text style={styles.historyWeight}>
               {getLogInCurrentUnit(entry.weightLog, unit)} {unit}
             </Text>
-            <Icon size={20} name="close" type="material" color="gray" />
+            <Icon
+              onPress={() => handleDeleteLog(entry._id!)}
+              size={20}
+              name="close"
+              type="material"
+              color="gray"
+            />
           </View>
         ))}
       </View>
