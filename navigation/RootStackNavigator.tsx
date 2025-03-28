@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AuthContext, AuthContextType } from './Authcontext';
-import { RegistrationProvider } from './RegistrationContext';
+// import { RegistrationProvider } from './RegistrationContext';
 import {
   SignIn,
   // SignUp,
   SplashScreen,
+  EditWeightScreen,
   // CompleteProfileScreen,
 } from '../screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -20,6 +21,7 @@ type RootStackParamList = {
   'Sign up': undefined;
   Profile: { token: string; refreshToken: string };
   Home: undefined;
+  EditWeight: undefined;
   // define other screens here
 };
 
@@ -112,8 +114,6 @@ export const RootStackNavigator: React.FC = () => {
               component={RegistrationStackNavigator}
               options={{ headerShown: false }}
             />
-            {/* <Stack.Screen name="Sign up" component={SignUp} />
-              <Stack.Screen name="Profile" component={CompleteProfileScreen} /> */}
           </>
         ) : (
           <>
@@ -121,6 +121,11 @@ export const RootStackNavigator: React.FC = () => {
               name="Home"
               component={ChatDrawerNavigator}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="EditWeight"
+              component={EditWeightScreen}
+              options={{ title: 'Edit Weight' }}
             />
             {/* Add other screens that should be accessible after the user is authenticated */}
           </>

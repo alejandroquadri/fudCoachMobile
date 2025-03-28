@@ -1,5 +1,5 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { LogScreen, Goals, Plans } from '../screens';
+import { LogScreen, Goals, Profile } from '../screens';
 import { Chat } from '../screens';
 import { CustomDrawer } from '../components';
 
@@ -13,7 +13,7 @@ const ChatDrawerNavigator = () => {
       <Drawer.Screen name="Chat" component={Chat} />
       <Drawer.Screen name="Meal Logs" component={LogScreen} />
       <Drawer.Screen name="Goals" component={Goals} />
-      <Drawer.Screen name="Plans" component={Plans} />
+      <Drawer.Screen name="Profile" component={Profile} />
     </Drawer.Navigator>
   );
 };

@@ -1,10 +1,11 @@
 export * from './ChatScreen';
 export * from './GoalsScreen';
 export * from './LogScreen';
-export * from './PlansScreen';
+export * from './ProfileScreen';
 export * from './SignInScreen';
 export * from './SignUpScreen';
 export * from './SplashScreen';
 export * from './CompleteProfileScreen';
 export * from './LifeStyleScreen';
 export * from './WeightGoalScreen';
+export { EditWeightScreen } from './EditWeightScreen';
