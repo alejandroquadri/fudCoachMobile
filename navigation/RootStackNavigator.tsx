@@ -6,24 +6,28 @@ import {
   // SignUp,
   SplashScreen,
   EditWeightScreen,
+  EditHeightScreen,
   // CompleteProfileScreen,
 } from '../screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RegistrationStackNavigator } from './RegistrationStackNavigator';
 import ChatDrawerNavigator from './DrawerNavigator';
 import * as SecureStore from 'expo-secure-store';
-import { User } from '../types';
+import { RootStackParamList, User } from '../types';
 import { userAPI } from '../api';
+import { EditBirthdateScreen } from '../screens/EditBrithdateScreen';
 
-type RootStackParamList = {
-  'Sign in': undefined;
-  Registration: undefined;
-  'Sign up': undefined;
-  Profile: { token: string; refreshToken: string };
-  Home: undefined;
-  EditWeight: undefined;
-  // define other screens here
-};
+// type RootStackParamList = {
+//   'Sign in': undefined;
+//   'Sign up': undefined;
+//   Registration: undefined;
+//   // Profile: { token: string; refreshToken: string };
+//   u
+//   Profile: undefined;
+//   Home: undefined;
+//   EditWeight: undefined;
+//   // define other screens here
+// };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -126,6 +130,15 @@ export const RootStackNavigator: React.FC = () => {
               name="EditWeight"
               component={EditWeightScreen}
               options={{ title: 'Edit Weight' }}
+            />
+            <Stack.Screen
+              name="EditHeight"
+              component={EditHeightScreen}
+              options={{ title: 'Edit Height' }}
+            />
+            <Stack.Screen
+              name="EditBirthdate"
+              component={EditBirthdateScreen}
             />
             {/* Add other screens that should be accessible after the user is authenticated */}
           </>

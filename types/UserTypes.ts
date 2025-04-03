@@ -5,7 +5,7 @@ export interface User {
   password: string;
   weightLogs: Array<{ weightLog: number; date: Date }>;
   weightUnit: string;
-  height: string;
+  height: number;
   heightUnit: string;
   birthday: string;
   sex: string;

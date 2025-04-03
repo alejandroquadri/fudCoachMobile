@@ -7,7 +7,6 @@ import { MaskedTextInput } from 'react-native-mask-text';
 import { useRegistration } from '../navigation/RegistrationContext';
 
 import { COLORS } from '../theme';
-import { RootStackParamList } from '../navigation';
 import {
   convertCentimetersToFeet,
   convertFeetToCentimeters,
@@ -15,10 +14,11 @@ import {
   convertPoundsToKilograms,
   round,
 } from '../services';
+import { RootStackParamList } from '../types';
 
 type CompleteScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  'Profile'
+  'OnboardingProfile'
 >;
 
 export const CompleteProfileScreen: React.FC<CompleteScreenProps> = ({

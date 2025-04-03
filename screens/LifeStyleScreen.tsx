@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '@rneui/themed';
-import { RootStackParamList } from '../navigation/RegistrationStackNavigator';
 import { useRegistration } from '../navigation/RegistrationContext';
+import { RootStackParamList } from '../types';
 
 interface LifeStyle {
   value: number;

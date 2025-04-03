@@ -4,15 +4,16 @@ import { Input, Button, Text } from '@rneui/themed';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useRegistration } from '../navigation/RegistrationContext';
 import { TouchableOpacity } from 'react-native';
+import { RootStackParamList } from '../types';
 
 // Assuming you have a type for your Stack parameters
-type RootStackParamList = {
-  'Sign in': undefined;
-  'Sign up': undefined;
-  Profile: undefined;
-  // Profile: { name: string; email: string; password: string };
-  // ... other screens ...
-};
+// type RootStackParamList = {
+//   'Sign in': undefined;
+//   'Sign up': undefined;
+//   Profile: undefined;
+//   // Profile: { name: string; email: string; password: string };
+//   // ... other screens ...
+// };
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'Sign up'>;
 

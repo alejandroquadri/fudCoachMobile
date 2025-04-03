@@ -8,4 +8,6 @@ export * from './SplashScreen';
 export * from './CompleteProfileScreen';
 export * from './LifeStyleScreen';
 export * from './WeightGoalScreen';
-export { EditWeightScreen } from './EditWeightScreen';
+// export { EditWeightScreen } from './EditWeightScreen';
+export * from './EditWeightScreen';
+export * from './EditHeightScreen';

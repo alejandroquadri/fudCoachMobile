@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, Platform, Dimensions } from 'react-native';
+// import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { Button } from '@rneui/themed';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../types';
+import RNDateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
+
+export const EditBirthdateScreen = () => {
+  const navigation = useNavigation();
+  const route = useRoute<RouteProp<RootStackParamList, 'EditBirthdate'>>();
+  const onSave = route.params?.onSave;
+
+  const today = new Date();
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    new Date('1990-01-01')
+  );
+
+  const handleSave = () => {
+    console.log(selectedDate);
+    if (onSave) onSave(selectedDate.toLocaleDateString());
+    navigation.goBack();
+  };
+
+  const handleChange = (event: DateTimePickerEvent, date?: Date) => {
+    const dateTs = date ? date : new Date(event.nativeEvent.timestamp);
+    setSelectedDate(dateTs);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Edit Birthdate</Text>
+
+      <RNDateTimePicker
+        value={selectedDate}
+        mode="date"
+        display="spinner"
+        maximumDate={today}
+        onChange={handleChange}
+        style={styles.datePicker}
+      />
+
+      <Button
+        title="Save changes"
+        buttonStyle={styles.saveButton}
+        titleStyle={styles.saveButtonText}
+        onPress={handleSave}
+      />
+    </View>
+  );
+};
+
+const { width } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingTop: 64,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 24,
+  },
+  datePicker: {
+    width: '70%',
+    marginBottom: 24,
+  },
+  saveButton: {
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 24,
+    marginTop: 'auto',
+    marginBottom: 32,
+  },
+  saveButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

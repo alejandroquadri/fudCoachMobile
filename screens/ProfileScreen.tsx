@@ -1,19 +1,71 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import React, { useContext } from 'react';
+import { View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { Text, Button } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
-type RootStackParamList = {
-  Home: undefined;
-  EditWeight: undefined;
-  // Add the rest if needed
-};
+import { RootStackParamList } from '../types';
+import { AuthContextType, AuthContext } from '../navigation';
+import { updateProfile } from '../services';
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const Profile = () => {
+  const auth = useContext<AuthContextType | undefined>(AuthContext);
+  if (!auth) {
+    throw new Error('SignIn must be used within an AuthProvider');
+  }
+  const { user } = auth;
+  if (user === null) {
+    throw new Error('User not found');
+  }
+  console.log(user);
   const navigation = useNavigation<RootStackNavigationProp>();
+
+  const handleEditGoalWeight = () => {
+    navigation.navigate('EditWeight', {
+      onSave: (newWeightKg: number) => {
+        console.log('Received from child:', newWeightKg);
+        // your update logic
+      },
+    });
+  };
+
+  const handleEditCurrentWeight = () => {
+    navigation.navigate('EditWeight', {
+      onSave: (newWeightKg: number) => {
+        console.log('Received from child:', newWeightKg);
+        // your update logic
+      },
+    });
+  };
+
+  const handleEditHeight = () => {
+    navigation.navigate('EditHeight', {
+      onSave: async (newHeightCm: number) => {
+        console.log('Received from child:', newHeightCm);
+        // your update logic
+        try {
+          user.height = newHeightCm;
+          await updateProfile(user);
+          console.log('user saved ok');
+          return 'ok';
+        } catch (error) {
+          console.log(error);
+          Alert.alert('Error', 'Error saving new height');
+        }
+      },
+    });
+  };
+
+  const handleBirthdate = () => {
+    navigation.navigate('EditBirthdate', {
+      onSave: (newDate: string) => {
+        console.log('Received from child:', newDate);
+        // TODO: Logic
+      },
+    });
+  };
+
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
       <View style={styles.card}>
@@ -26,12 +78,14 @@ export const Profile = () => {
             title="Change Goal"
             buttonStyle={styles.changeGoalButton}
             titleStyle={styles.changeGoalButtonText}
+            onPress={handleEditGoalWeight}
           />
         </View>
       </View>
 
       <View style={styles.card}>
-        <Pressable onPress={() => navigation.navigate('EditWeight')}>
+        {/* <Pressable onPress={() => navigation.navigate('EditWeight')}> */}
+        <Pressable onPress={handleEditCurrentWeight}>
           <View style={styles.itemRow}>
             <Text style={styles.label}>Current weight</Text>
             <Text style={styles.value}>90 kg</Text>
@@ -39,17 +93,26 @@ export const Profile = () => {
         </Pressable>
         <View style={styles.separator} />
 
-        <View style={styles.itemRow}>
-          <Text style={styles.label}>Height</Text>
-          <Text style={styles.value}>176 cm</Text>
-        </View>
+        <Pressable onPress={handleEditHeight}>
+          <View style={styles.itemRow}>
+            <Text style={styles.label}>Height</Text>
+            <Text style={styles.value}>176 cm</Text>
+          </View>
+        </Pressable>
         <View style={styles.separator} />
 
-        <View style={styles.itemRow}>
-          <Text style={styles.label}>Date of birth</Text>
-          <Text style={styles.value}>11/03/1983</Text>
-        </View>
+        <Pressable onPress={handleBirthdate}>
+          <View style={styles.itemRow}>
+            <Text style={styles.label}>Date of birth</Text>
+            <Text style={styles.value}>11/03/1983</Text>
+          </View>
+        </Pressable>
         <View style={styles.separator} />
+        {/* <View style={styles.itemRow}> */}
+        {/*   <Text style={styles.label}>Date of birth</Text> */}
+        {/*   <Text style={styles.value}>11/03/1983</Text> */}
+        {/* </View> */}
+        {/* <View style={styles.separator} /> */}
 
         <View style={styles.itemRow}>
           <Text style={styles.label}>Gender</Text>

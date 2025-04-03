@@ -6,14 +6,7 @@ import {
   LifeStyleScreen,
   WeightGoalScreen,
 } from '../screens';
-
-export type RootStackParamList = {
-  'Sign up': undefined;
-  Profile: undefined;
-  LifeStyle: undefined;
-  WeightGoal: undefined;
-  // define other screens here
-};
+import { RootStackParamList } from '../types';
 
 const RegistrationStack = createNativeStackNavigator<RootStackParamList>();
 
@@ -27,7 +20,7 @@ export const RegistrationStackNavigator = () => {
           options={{ headerShown: true }}
         />
         <RegistrationStack.Screen
-          name="Profile"
+          name="OnboardingProfile"
           component={CompleteProfileScreen}
         />
         <RegistrationStack.Screen
