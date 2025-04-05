@@ -17,6 +17,7 @@ android/
 *.p12
 *.key
 *.mobileprovision
+*.zip
 
 # Metro
 .metro-health-check*

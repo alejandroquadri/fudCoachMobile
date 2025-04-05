@@ -14,6 +14,6 @@ export const userAPI = {
     api
       .post('/users/signup', { registrationData })
       .then(response => response.data),
-  getProfile: (id: string): Promise<any> =>
-    api.post('/users/getUserByID', { id }),
+  getProfile: (id: string): Promise<User> =>
+    api.post('/users/getUserByID', { id }).then(response => response.data),
 };

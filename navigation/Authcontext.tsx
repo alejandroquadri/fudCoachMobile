@@ -13,7 +13,7 @@ export type AuthContextType = {
     setUserProfile: User
   ) => Promise<void>;
   signOut: () => void;
-  updateUser: (user: User) => void;
+  refreshUser: (user: User) => void;
   user: User | null;
 };
 

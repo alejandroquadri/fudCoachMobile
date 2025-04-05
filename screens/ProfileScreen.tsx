@@ -1,11 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { Text, Button } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types';
+import { RootStackParamList, User } from '../types';
 import { AuthContextType, AuthContext } from '../navigation';
-import { updateProfile } from '../services';
+import { getProfile, updateProfile } from '../services';
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -14,12 +14,29 @@ export const Profile = () => {
   if (!auth) {
     throw new Error('SignIn must be used within an AuthProvider');
   }
-  const { user } = auth;
+  const { user, refreshUser } = auth;
   if (user === null) {
     throw new Error('User not found');
   }
-  console.log(user);
   const navigation = useNavigation<RootStackNavigationProp>();
+
+  const [profile, setProfile] = useState<User>();
+
+  useEffect(() => {
+    console.log('corre use effect');
+    const fetchProfile = async () => {
+      try {
+        console.log(user._id);
+        const currentProfile = await getProfile(user._id);
+        console.log('traigo usuario corriente', currentProfile);
+        setProfile(currentProfile);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleEditGoalWeight = () => {
     navigation.navigate('EditWeight', {
@@ -41,13 +58,15 @@ export const Profile = () => {
 
   const handleEditHeight = () => {
     navigation.navigate('EditHeight', {
+      currentHeight: profile?.height,
       onSave: async (newHeightCm: number) => {
         console.log('Received from child:', newHeightCm);
-        // your update logic
         try {
-          user.height = newHeightCm;
-          await updateProfile(user);
+          const updatedUser = { ...user, height: newHeightCm };
+          await updateProfile(updatedUser);
           console.log('user saved ok');
+          setProfile(updatedUser);
+          refreshUser(updatedUser);
           return 'ok';
         } catch (error) {
           console.log(error);
@@ -96,7 +115,7 @@ export const Profile = () => {
         <Pressable onPress={handleEditHeight}>
           <View style={styles.itemRow}>
             <Text style={styles.label}>Height</Text>
-            <Text style={styles.value}>176 cm</Text>
+            <Text style={styles.value}>{profile?.height || ''} cm</Text>
           </View>
         </Pressable>
         <View style={styles.separator} />
@@ -108,11 +127,6 @@ export const Profile = () => {
           </View>
         </Pressable>
         <View style={styles.separator} />
-        {/* <View style={styles.itemRow}> */}
-        {/*   <Text style={styles.label}>Date of birth</Text> */}
-        {/*   <Text style={styles.value}>11/03/1983</Text> */}
-        {/* </View> */}
-        {/* <View style={styles.separator} /> */}
 
         <View style={styles.itemRow}>
           <Text style={styles.label}>Gender</Text>

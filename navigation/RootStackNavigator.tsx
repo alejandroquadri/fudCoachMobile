@@ -1,33 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as SecureStore from 'expo-secure-store';
+
 import { AuthContext, AuthContextType } from './Authcontext';
-// import { RegistrationProvider } from './RegistrationContext';
 import {
   SignIn,
-  // SignUp,
   SplashScreen,
   EditWeightScreen,
   EditHeightScreen,
-  // CompleteProfileScreen,
 } from '../screens';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RegistrationStackNavigator } from './RegistrationStackNavigator';
 import ChatDrawerNavigator from './DrawerNavigator';
-import * as SecureStore from 'expo-secure-store';
 import { RootStackParamList, User } from '../types';
-import { userAPI } from '../api';
 import { EditBirthdateScreen } from '../screens/EditBrithdateScreen';
-
-// type RootStackParamList = {
-//   'Sign in': undefined;
-//   'Sign up': undefined;
-//   Registration: undefined;
-//   // Profile: { token: string; refreshToken: string };
-//   u
-//   Profile: undefined;
-//   Home: undefined;
-//   EditWeight: undefined;
-//   // define other screens here
-// };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -92,10 +77,9 @@ export const RootStackNavigator: React.FC = () => {
         setUserToken(null);
         setUserProfile(null);
       },
-      updateUser: async (user: User) => {
-        const response = await userAPI.getProfile(user._id);
-        const updatedUser = response.data;
-        setUserProfile(updatedUser);
+      refreshUser: async (user: User) => {
+        console.log('refreshing user', user);
+        setUserProfile(user);
       },
       user: userProfile,
     }),

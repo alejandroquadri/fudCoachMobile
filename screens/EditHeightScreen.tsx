@@ -28,18 +28,18 @@ const imperialToCm = (feet: number, inches: number) => {
 };
 
 export const EditHeightScreen = () => {
+  const navigation = useNavigation();
+
+  const route = useRoute<RouteProp<RootStackParamList, 'EditHeight'>>();
+  // const onSave = route.params?.onSave;
+  const { currentHeight, onSave } = route.params;
+
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
-  const [selectedCm, setSelectedCm] = useState(175);
+  const [selectedCm, setSelectedCm] = useState(currentHeight || 170);
 
   const { feet, inches } = cmToImperial(selectedCm);
   const [selectedFeet, setSelectedFeet] = useState(feet);
   const [selectedInches, setSelectedInches] = useState(inches);
-
-  const navigation = useNavigation();
-
-  const route = useRoute<RouteProp<RootStackParamList, 'EditHeight'>>();
-  const onSave = route.params?.onSave;
-
   const isMetric = unit === 'metric';
 
   const handleUnitToggle = (value: 'metric' | 'imperial') => {
@@ -72,17 +72,6 @@ export const EditHeightScreen = () => {
       {/* Unit Toggle */}
       <View style={styles.unitSwitchContainer}>
         <TouchableOpacity
-          style={[styles.unitOption, isMetric && styles.unitOptionSelected]}
-          onPress={() => handleUnitToggle('metric')}>
-          <Text
-            style={[
-              styles.unitOptionText,
-              isMetric && styles.unitOptionTextSelected,
-            ]}>
-            Metric
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           style={[styles.unitOption, !isMetric && styles.unitOptionSelected]}
           onPress={() => handleUnitToggle('imperial')}>
           <Text
@@ -91,6 +80,17 @@ export const EditHeightScreen = () => {
               !isMetric && styles.unitOptionTextSelected,
             ]}>
             Imperial
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.unitOption, isMetric && styles.unitOptionSelected]}
+          onPress={() => handleUnitToggle('metric')}>
+          <Text
+            style={[
+              styles.unitOptionText,
+              isMetric && styles.unitOptionTextSelected,
+            ]}>
+            Metric
           </Text>
         </TouchableOpacity>
       </View>
