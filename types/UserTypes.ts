@@ -12,6 +12,12 @@ export interface User {
   completedQA: boolean;
   nickName?: string;
   qAndAnswers?: Array<string>;
+  tdee: number;
+  bmr: number;
+  dailyCaloricTarget: number;
+  dailyCarbsTarget: number;
+  dailyProteinTarget: number;
+  dailyFatTarget: number;
 }
 
 export interface RegistrationData {

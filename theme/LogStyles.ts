@@ -235,11 +235,11 @@ export const ExerciseLogStyles = () => {
       fontSize: 16,
       fontWeight: 'bold',
     },
-    foodItemContainer: {
+    exerciseItemContainer: {
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginVertical: 10,
+      // marginVertical: 0,
     },
   });
 };
@@ -282,11 +282,11 @@ export const WaterLogStyles = () => {
     cupsContainer: {
       flexDirection: 'row',
       flex: 1,
+      alignItems: 'center',
       justifyContent: 'space-around',
-      marginHorizontal: 10,
     },
     glassIcon: {
-      marginHorizontal: 8,
+      marginHorizontal: 0,
     },
   });
 };

@@ -31,7 +31,6 @@ export const EditHeightScreen = () => {
   const navigation = useNavigation();
 
   const route = useRoute<RouteProp<RootStackParamList, 'EditHeight'>>();
-  // const onSave = route.params?.onSave;
   const { currentHeight, onSave } = route.params;
 
   const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');

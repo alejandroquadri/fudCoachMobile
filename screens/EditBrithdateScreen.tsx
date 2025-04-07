@@ -7,20 +7,22 @@ import { RootStackParamList } from '../types';
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
+import { format } from 'date-fns';
 
 export const EditBirthdateScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'EditBirthdate'>>();
-  const onSave = route.params?.onSave;
+  const { currentBirthdate, onSave } = route.params;
 
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState<Date>(
-    new Date('1990-01-01')
+    new Date(currentBirthdate || '1990-01-01')
   );
 
   const handleSave = () => {
-    console.log(selectedDate);
-    if (onSave) onSave(selectedDate.toLocaleDateString());
+    // tener en cuenta que si uno hace console log y quiere imprimir una fehca la consola no la muestra
+    const formatDate = format(selectedDate, 'yyyy-MM-dd');
+    if (onSave) onSave(formatDate);
     navigation.goBack();
   };
 

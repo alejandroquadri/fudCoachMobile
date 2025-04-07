@@ -24,6 +24,8 @@ const groupFoodLogsByMeal = (foodLogs: FoodLog[]) => {
     snack: [] as FoodLog[],
   };
 
+  let totalCalories = 0;
+
   foodLogs.forEach(log => {
     const parsedDate = parse(log.hour, 'HH:mm', new Date());
     const hour = parsedDate.getHours();
@@ -37,9 +39,11 @@ const groupFoodLogsByMeal = (foodLogs: FoodLog[]) => {
     } else {
       groupedLogs.snack.push(log);
     }
+
+    totalCalories += log.foodObj.calories;
   });
 
-  return groupedLogs;
+  return { logs: groupedLogs, totalCalories };
 };
 
 export const LogScreen = () => {
@@ -55,6 +59,8 @@ export const LogScreen = () => {
   });
   const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
   const [waterLog, setWaterLog] = useState<WaterLog>();
+  const [consumedCalories, setConsumedCalories] = useState<number>();
+  const [burnedCalories, setBurnedCalories] = useState<number>();
 
   const auth = useContext<AuthContextType | undefined>(AuthContext);
 
@@ -76,7 +82,8 @@ export const LogScreen = () => {
 
           // Group logs by meal
           const groupedLogs = groupFoodLogsByMeal(foodLogs);
-          setGroupedFoodLogs(groupedLogs);
+          setGroupedFoodLogs(groupedLogs.logs);
+          setConsumedCalories(groupedLogs.totalCalories);
         } catch (error) {
           console.error(error);
           Alert.alert('Error', 'Failed to fetch food log data.');
@@ -93,11 +100,16 @@ export const LogScreen = () => {
       if (user !== null) {
         try {
           setIsLoadingExerciseLog(true);
+          let burned = 0;
           const formattedDate = format(date, 'yyyy-MM-dd');
           const exerciseLogs = await foodLogsApi.getExerciseLogs(
             user._id,
             formattedDate
           );
+          exerciseLogs.forEach(log => {
+            burned += log.caloriesBurned;
+          });
+          setBurnedCalories(burned);
           setExerciseLogs(exerciseLogs);
         } catch (error) {
           console.error(error);
@@ -119,7 +131,6 @@ export const LogScreen = () => {
             user._id,
             formattedDate
           );
-          console.log(waterLogs);
           setWaterLog(waterLogs);
         } catch (error) {
           console.error(error);
@@ -201,10 +212,10 @@ export const LogScreen = () => {
       />
       <ScrollView style={styles.scrollView}>
         <CalorieProgressCard
-          goal={2372}
-          burned={0}
-          consumed={0}
-          remaining={2372}
+          goal={user!.tdee}
+          burned={burnedCalories!}
+          consumed={consumedCalories!}
+          remaining={user!.tdee + burnedCalories! - consumedCalories!}
         />
 
         {/* Render the grouped logs by meal */}

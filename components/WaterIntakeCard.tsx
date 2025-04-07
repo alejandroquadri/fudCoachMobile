@@ -33,7 +33,7 @@ export const WaterIntakeCard: React.FC<WaterIntakeCardProps> = ({
             <MaterialIcons
               key={index}
               name="local-drink"
-              size={30}
+              size={23}
               color={index < waterCups ? '#2196F3' : 'lightgray'}
               style={styles.glassIcon}
             />

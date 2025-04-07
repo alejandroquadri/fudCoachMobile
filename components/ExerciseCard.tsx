@@ -10,7 +10,6 @@ interface ExerciseCardProps {
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({ logs }) => {
   const styles = ExerciseLogStyles();
-  console.log(logs);
   const totalCalories = logs.reduce((sum, log) => sum + log.caloriesBurned, 0);
 
   return (
@@ -23,7 +22,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ logs }) => {
 
       {/* Display each exercise log */}
       {logs.map((log, index) => (
-        <View key={index} style={styles.foodItemContainer}>
+        <View key={index} style={styles.exerciseItemContainer}>
           <View style={styles.exerciseDetails}>
             <Text style={styles.exerciseType}>{log.exerciseName}</Text>
             <Text style={styles.exerciseCalories}>

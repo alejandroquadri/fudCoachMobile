@@ -6,8 +6,17 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, User } from '../types';
 import { AuthContextType, AuthContext } from '../navigation';
 import { getProfile, updateProfile } from '../services';
+import { format } from 'date-fns';
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+const dateFormatBuilder = (date: string | undefined) => {
+  if (!date) {
+    return '';
+  } else {
+    return format(new Date(date), 'dd/MM/yyy');
+  }
+};
 
 export const Profile = () => {
   const auth = useContext<AuthContextType | undefined>(AuthContext);
@@ -23,12 +32,9 @@ export const Profile = () => {
   const [profile, setProfile] = useState<User>();
 
   useEffect(() => {
-    console.log('corre use effect');
     const fetchProfile = async () => {
       try {
-        console.log(user._id);
         const currentProfile = await getProfile(user._id);
-        console.log('traigo usuario corriente', currentProfile);
         setProfile(currentProfile);
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -64,7 +70,6 @@ export const Profile = () => {
         try {
           const updatedUser = { ...user, height: newHeightCm };
           await updateProfile(updatedUser);
-          console.log('user saved ok');
           setProfile(updatedUser);
           refreshUser(updatedUser);
           return 'ok';
@@ -78,9 +83,19 @@ export const Profile = () => {
 
   const handleBirthdate = () => {
     navigation.navigate('EditBirthdate', {
-      onSave: (newDate: string) => {
+      currentBirthdate: profile?.birthday,
+      onSave: async (newDate: string) => {
         console.log('Received from child:', newDate);
-        // TODO: Logic
+        try {
+          const updatedUser = { ...user, birthday: newDate };
+          await updateProfile(updatedUser);
+          setProfile(updatedUser);
+          refreshUser(updatedUser);
+          return 'ok';
+        } catch (error) {
+          console.log(error);
+          Alert.alert('Error', 'Error saving new height');
+        }
       },
     });
   };
@@ -123,7 +138,9 @@ export const Profile = () => {
         <Pressable onPress={handleBirthdate}>
           <View style={styles.itemRow}>
             <Text style={styles.label}>Date of birth</Text>
-            <Text style={styles.value}>11/03/1983</Text>
+            <Text style={styles.value}>
+              {dateFormatBuilder(profile?.birthday)}
+            </Text>
           </View>
         </Pressable>
         <View style={styles.separator} />

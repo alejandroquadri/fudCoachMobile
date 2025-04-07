@@ -9,6 +9,6 @@ export type RootStackParamList = {
   Home: undefined;
   EditWeight: { ocurrentWeight?: number; nSave?: (newWeight: number) => void };
   EditHeight: { currentHeight?: number; onSave?: (newHeight: number) => void };
-  EditBirthdate: { currentBirthdate?: number; onSave?: (date: string) => void };
+  EditBirthdate: { currentBirthdate?: string; onSave?: (date: string) => void };
   // define other screens here
 };

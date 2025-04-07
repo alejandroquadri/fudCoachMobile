@@ -4,7 +4,7 @@ import { Text, Icon } from '@rneui/themed';
 import { LineChart } from 'react-native-gifted-charts';
 import { GoalStyles } from '../theme';
 import { WeightLogInterface } from '../types';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
 import { convertKilogramsToPounds, round } from '../services';
 import { weightLogsApi } from '../api';
@@ -13,29 +13,6 @@ interface ChartDataInterface {
   label: string;
   value: number;
 }
-const createWeightLogs = (
-  startingWeight: number,
-  startDate: string,
-  numLogs: number
-): WeightLogInterface[] => {
-  const weightLogs: WeightLogInterface[] = [];
-  const currentDate = new Date(startDate);
-  let currentWeight = startingWeight;
-
-  for (let i = 0; i < numLogs; i++) {
-    weightLogs.push({
-      user_id: 'x1x1x1',
-      date: currentDate.toISOString().split('T')[0],
-      weightLog: currentWeight,
-    });
-
-    currentDate.setDate(currentDate.getDate() + 7);
-    const random = Math.random() > 0.5 ? 1 : -1;
-    currentWeight -= 3.5 * random;
-  }
-
-  return weightLogs;
-};
 
 const pruneLogs = (
   logs: WeightLogInterface[],
@@ -44,7 +21,7 @@ const pruneLogs = (
   // only return last 7 values
   const values = logs.slice(-q);
   return values.map(value => ({
-    label: format(new Date(value.date), 'dd/yy'),
+    label: format(parseISO(value.date), 'dd/MM'),
     value: value.weightLog,
   }));
 };
@@ -70,8 +47,6 @@ export const Goals = () => {
   const fetchWeightLogs = useCallback(async () => {
     if (user !== null) {
       try {
-        // const mockData = createWeightLogs(95, '2022-01-01', 15);
-
         const weightLogs = await weightLogsApi.getWeightLogs(user._id!);
         setWeightData(weightLogs);
       } catch (error) {
@@ -98,7 +73,7 @@ export const Goals = () => {
 
   useEffect(() => {
     fetchWeightLogs();
-  }, [fetchWeightLogs]);
+  }, []);
 
   useEffect(() => {
     const buildChartData = (weightLogs: WeightLogInterface[]) => {
@@ -195,7 +170,14 @@ export const Goals = () => {
         {/* Last Recorded Weight and Record Button */}
         <View style={styles.recordSection}>
           <Text style={styles.lastWeightText}>
-            Last <Text style={styles.lastWeightValue}>83.8 kg</Text>
+            Last{' '}
+            <Text style={styles.lastWeightValue}>
+              {getLogInCurrentUnit(
+                weightData[weightData?.length - 1]?.weightLog,
+                unit
+              )}{' '}
+              {unit}
+            </Text>
           </Text>
         </View>
       </View>
@@ -207,7 +189,7 @@ export const Goals = () => {
         {weightData.map((entry, index) => (
           <View key={index} style={styles.historyItem}>
             <Text style={styles.historyDate}>
-              {format(new Date(entry.date), 'MMMM dd, yyyy')}
+              {format(parseISO(entry.date), 'MMMM dd, yyyy')}
             </Text>
             <View style={styles.historySpacer}></View>
             <Text style={styles.historyWeight}>
