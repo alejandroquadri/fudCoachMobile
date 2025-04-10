@@ -1,12 +1,15 @@
 import { useState, useEffect, useContext } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, View, TouchableOpacity, ViewStyle } from 'react-native';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { Send } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import 'react-native-get-random-values';
 import * as SecureStore from 'expo-secure-store';
 import { format } from 'date-fns';
 
-import { ChatStyles } from '../theme';
+import { Icon } from '@rneui/themed';
+
+import { COLORS, ChatStyles } from '../theme';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
 import { fetchPreviousMessages, sendChatMessage } from '../services';
 import { useKeyboard } from '../hooks';
@@ -94,6 +97,35 @@ export const Chat = () => {
     }
   };
 
+  const renderActions = () => {
+    return (
+      <View style={styles.actionWrapper}>
+        <TouchableOpacity onPress={() => console.log('camera button pressed')}>
+          <Icon
+            name="camera"
+            type="feather"
+            color={COLORS.fontGrey}
+            containerStyle={styles.iconsCamera}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderSend = (props: any) => {
+    return (
+      <Send {...props} containerStyle={styles.sendButtonWrapper}>
+        <Icon
+          name="send"
+          type="feather"
+          color={COLORS.fontGrey}
+          size={22}
+          containerStyle={styles.iconsSend}
+        />
+      </Send>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <GiftedChat
@@ -105,6 +137,9 @@ export const Chat = () => {
           _id: 1,
           name: user?.name || 'User',
         }}
+        renderActions={renderActions}
+        renderSend={renderSend}
+        alwaysShowSend={true}
       />
     </View>
   );
