@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { Alert, View, TouchableOpacity, ViewStyle } from 'react-native';
+import { Alert, View, TouchableOpacity, ViewStyle, Modal } from 'react-native';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { Send } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,8 +11,13 @@ import { Icon } from '@rneui/themed';
 
 import { COLORS, ChatStyles } from '../theme';
 import { AuthContext, AuthContextType } from '../navigation/Authcontext';
-import { fetchPreviousMessages, sendChatMessage } from '../services';
+import {
+  fetchPreviousMessages,
+  sendChatImage,
+  sendChatMessage,
+} from '../services';
 import { useKeyboard } from '../hooks';
+import { CameraScreen } from '../components';
 
 const storeLastOpenedDate = async () => {
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -22,6 +27,7 @@ const storeLastOpenedDate = async () => {
 export const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [cameraVisible, setCameraVisible] = useState(false);
   const isKeyboardVisible = useKeyboard();
   const auth = useContext<AuthContextType | undefined>(AuthContext);
 
@@ -97,10 +103,49 @@ export const Chat = () => {
     }
   };
 
+  const handlePictureTaken = async (imageUri: string) => {
+    if (user && user._id) {
+      const userId = user._id;
+      console.log(user);
+      const imageMessage: IMessage = {
+        _id: new Date().getTime(),
+        createdAt: new Date(),
+        text: '',
+        user: {
+          _id: 1,
+          name: user?.name || 'User',
+        },
+        image: imageUri,
+      };
+
+      setMessages(prevMessages =>
+        GiftedChat.append(prevMessages, [imageMessage])
+      );
+      console.log('got image!', imageUri);
+      setCameraVisible(false);
+      try {
+        setIsTyping(true);
+        const aiResponseMessage = await sendChatImage(imageUri, userId);
+        setIsTyping(false);
+        setMessages(prevMessages =>
+          GiftedChat.append(prevMessages, [aiResponseMessage])
+        );
+      } catch (error) {
+        console.log(error);
+        Alert.alert('Error', 'Coach could not process the image');
+        setIsTyping(false);
+      }
+    }
+  };
+
   const renderActions = () => {
     return (
       <View style={styles.actionWrapper}>
-        <TouchableOpacity onPress={() => console.log('camera button pressed')}>
+        <TouchableOpacity
+          onPress={() => {
+            setCameraVisible(true);
+            console.log('camera button pressed');
+          }}>
           <Icon
             name="camera"
             type="feather"
@@ -141,6 +186,13 @@ export const Chat = () => {
         renderSend={renderSend}
         alwaysShowSend={true}
       />
+
+      <Modal visible={cameraVisible} animationType="slide">
+        <CameraScreen
+          onPictureTaken={handlePictureTaken}
+          onClose={() => setCameraVisible(false)}
+        />
+      </Modal>
     </View>
   );
 };
