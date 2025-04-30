@@ -9,15 +9,17 @@ import { format } from 'date-fns';
 
 import { Icon } from '@rneui/themed';
 
-import { COLORS, ChatStyles } from '../theme';
-import { AuthContext, AuthContextType } from '../navigation/Authcontext';
+import { ChatStyles } from './ChatStyles';
+import { COLORS } from '../../theme';
+
+import { AuthContext, AuthContextType } from '../../navigation/Authcontext';
 import {
   fetchPreviousMessages,
   sendChatImage,
   sendChatMessage,
-} from '../services';
-import { useKeyboard } from '../hooks';
-import { CameraScreen } from '../components';
+} from '../../services';
+import { useKeyboard } from '../../hooks';
+import { CameraScreen } from '../../components';
 
 const storeLastOpenedDate = async () => {
   const today = format(new Date(), 'yyyy-MM-dd');

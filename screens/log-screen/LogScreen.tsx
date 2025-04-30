@@ -1,8 +1,8 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, ScrollView, Alert } from 'react-native';
 import { subDays, addDays, parse, format } from 'date-fns';
-import { AuthContext, AuthContextType } from '../navigation/Authcontext';
-import { foodLogsApi } from '../api';
+import { AuthContext, AuthContextType } from '../../navigation/Authcontext';
+import { foodLogsApi } from '../../api';
 import {
   CalorieProgressCard,
   DateSegment,
@@ -10,9 +10,9 @@ import {
   ExerciseCard,
   WaterIntakeCard,
   EmptyCard,
-} from '../components';
-import { LogStyles } from '../theme';
-import { FoodLog, ExerciseLog, WaterLog } from '../types';
+} from '../../components';
+import { LogStyles } from '../../theme';
+import { FoodLog, ExerciseLog, WaterLog } from '../../types';
 
 // Grouping function for food logs
 

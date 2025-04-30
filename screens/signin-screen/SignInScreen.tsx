@@ -3,10 +3,10 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { Input, Button, Divider } from '@rneui/themed';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { COLORS } from '../theme';
-import { AuthContext, AuthContextType } from '../navigation/Authcontext';
+import { COLORS } from '../../theme';
+import { AuthContext, AuthContextType } from '../../navigation/Authcontext';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { userAPI } from '../api';
+import { userAPI } from '../../api';
 
 type RootStackParamList = {
   'Sign in': undefined;

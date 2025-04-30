@@ -12,7 +12,7 @@ import {
 import { RegistrationStackNavigator } from './RegistrationStackNavigator';
 import ChatDrawerNavigator from './DrawerNavigator';
 import { RootStackParamList, User } from '../types';
-import { EditBirthdateScreen } from '../screens/EditBrithdateScreen';
+import { EditBirthdateScreen } from '../screens/shared/EditBrithdateScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

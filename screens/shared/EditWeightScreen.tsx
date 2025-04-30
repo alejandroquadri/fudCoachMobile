@@ -4,7 +4,7 @@ import { Text, Button } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { useRoute, RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from '../../types';
 const KG_START = 40;
 
 const KG_END = 139;

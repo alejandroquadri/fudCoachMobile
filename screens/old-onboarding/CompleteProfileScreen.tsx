@@ -4,17 +4,17 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, ButtonGroup, Input, Text } from '@rneui/themed';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaskedTextInput } from 'react-native-mask-text';
-import { useRegistration } from '../navigation/RegistrationContext';
+import { useRegistration } from '../../navigation/RegistrationContext';
 
-import { COLORS } from '../theme';
+import { COLORS } from '../../theme';
 import {
   convertCentimetersToFeet,
   convertFeetToCentimeters,
   convertKilogramsToPounds,
   convertPoundsToKilograms,
   round,
-} from '../services';
-import { RootStackParamList } from '../types';
+} from '../../services';
+import { RootStackParamList } from '../../types';
 
 type CompleteScreenProps = NativeStackScreenProps<
   RootStackParamList,

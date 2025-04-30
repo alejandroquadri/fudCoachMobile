@@ -9,7 +9,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { Button } from '@rneui/themed';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../types';
+import { RootStackParamList } from '../../types';
 
 const HEIGHT_CM_OPTIONS = Array.from({ length: 100 }, (_, i) => 140 + i); // 140 cm to 239 cm
 const FEET_OPTIONS = Array.from({ length: 4 }, (_, i) => 4 + i); // 4ft to 7ft
