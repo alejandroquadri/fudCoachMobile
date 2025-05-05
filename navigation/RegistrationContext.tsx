@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { RegistrationData } from '../types';
+import { RegistrationData } from '@types';
 
 interface RegistrationContextProps {
   registrationData: RegistrationData;

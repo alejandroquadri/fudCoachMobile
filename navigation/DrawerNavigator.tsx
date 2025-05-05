@@ -1,7 +1,6 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { LogScreen, Goals, Profile } from '../screens';
-import { Chat } from '../screens';
-import { CustomDrawer } from '../components';
+import { LogScreen, Goals, Profile, Chat } from '@screens';
+import { CustomDrawer } from '@components';
 
 const Drawer = createDrawerNavigator();
 

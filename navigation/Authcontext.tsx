@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { User } from '../types';
+import { User } from '@types';
 
 export type AuthContextType = {
   signIn: (

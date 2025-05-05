@@ -8,11 +8,12 @@ import {
   SplashScreen,
   EditWeightScreen,
   EditHeightScreen,
-} from '../screens';
+  EditBirthdateScreen,
+} from '@screens';
 import { RegistrationStackNavigator } from './RegistrationStackNavigator';
 import ChatDrawerNavigator from './DrawerNavigator';
-import { RootStackParamList, User } from '../types';
-import { EditBirthdateScreen } from '../screens/shared/EditBrithdateScreen';
+import { RootStackParamList, User } from '@types';
+import { OnboardingProvider, OnboardingNavigator } from '@screens/onboarding';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -96,12 +97,20 @@ export const RootStackNavigator: React.FC = () => {
       <Stack.Navigator>
         {userToken == null ? (
           <>
-            <Stack.Screen name="Sign in" component={SignIn} />
-            <Stack.Screen
-              name="Registration"
-              component={RegistrationStackNavigator}
-              options={{ headerShown: false }}
-            />
+            {/* <Stack.Screen name="Sign in" component={SignIn} /> */}
+            {/* <Stack.Screen */}
+            {/*   name="Registration" */}
+            {/*   component={RegistrationStackNavigator} */}
+            {/*   options={{ headerShown: false }} */}
+            {/* /> */}
+
+            <Stack.Screen name="Onboarding" options={{ headerShown: false }}>
+              {() => (
+                <OnboardingProvider>
+                  <OnboardingNavigator />
+                </OnboardingProvider>
+              )}
+            </Stack.Screen>
           </>
         ) : (
           <>
