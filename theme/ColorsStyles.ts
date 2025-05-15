@@ -1,4 +1,9 @@
 export const COLORS = {
+  primaryColor: '#000',
+  primaryContrast: '#fff',
+  backgroundColor: '#F7F7F7',
+  subText: '#555',
+
   white: 'white',
   green: '#57CC99',
   black: '#000',

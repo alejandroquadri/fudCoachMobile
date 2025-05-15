@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Platform, Dimensions } from 'react-native';
-// import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { Button } from '@rneui/themed';
+import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../types';
+import { Button } from '@rneui/themed';
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
+import { DrawerParamList } from '@types';
 
 export const EditBirthdateScreen = () => {
   const navigation = useNavigation();
-  const route = useRoute<RouteProp<RootStackParamList, 'EditBirthdate'>>();
+  const route = useRoute<RouteProp<DrawerParamList, 'EditBirthdate'>>();
   const { currentBirthdate, onSave } = route.params;
 
   const today = new Date();

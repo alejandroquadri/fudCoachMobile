@@ -31,14 +31,14 @@ export const CustomDrawer = (props: DrawerContentComponentProps) => {
     <View style={styles.container}>
       <DrawerContentScrollView>
         <DrawerItemList {...props} />
-        <DrawerItem
-          label="Help"
-          onPress={() => Linking.openURL('https://quadri.com.ar')}
-        />
-        <DrawerItem
-          label="Chat2"
-          onPress={() => props.navigation.navigate('Chat')}
-        />
+        {/* <DrawerItem */}
+        {/*   label="Help" */}
+        {/*   onPress={() => Linking.openURL('https://quadri.com.ar')} */}
+        {/* /> */}
+        {/* <DrawerItem */}
+        {/*   label="Chat2" */}
+        {/*   onPress={() => props.navigation.navigate('Chat')} */}
+        {/* /> */}
         <DrawerItem label="Sign out" onPress={signOutUser} />
       </DrawerContentScrollView>
     </View>

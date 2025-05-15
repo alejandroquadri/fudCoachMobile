@@ -1,4 +1,5 @@
 export * from './old-onboarding';
+export * from './onboarding';
 export * from './shared';
 export * from './chat-screen';
 export * from './progress-screen';

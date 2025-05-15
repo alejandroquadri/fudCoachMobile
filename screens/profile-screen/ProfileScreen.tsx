@@ -3,12 +3,12 @@ import { View, StyleSheet, ScrollView, Pressable, Alert } from 'react-native';
 import { Text, Button } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, User } from '../../types';
+import { DrawerParamList, User } from '../../types';
 import { AuthContextType, AuthContext } from '../../navigation';
 import { getProfile, updateProfile } from '../../services';
 import { format } from 'date-fns';
 
-type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type RootStackNavigationProp = NativeStackNavigationProp<DrawerParamList>;
 
 const dateFormatBuilder = (date: string | undefined) => {
   if (!date) {

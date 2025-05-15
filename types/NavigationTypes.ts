@@ -1,14 +1,23 @@
 export type RootStackParamList = {
-  'Sign in': undefined;
-  'Sign up': undefined;
-  Registration: undefined;
-  OnboardingProfile: undefined;
-  Profile: { token: string; refreshToken: string } | undefined;
-  LifeStyle: undefined;
-  WeightGoal: undefined;
   Home: undefined;
-  EditWeight: { ocurrentWeight?: number; nSave?: (newWeight: number) => void };
-  EditHeight: { currentHeight?: number; onSave?: (newHeight: number) => void };
-  EditBirthdate: { currentBirthdate?: string; onSave?: (date: string) => void };
-  // define other screens here
+  Onboarding: undefined;
+};
+
+export type DrawerParamList = {
+  Chat: undefined;
+  Profile: undefined;
+  Goals: undefined;
+  MealLogs: undefined;
+  EditWeight: {
+    onSave: (weightKg: number) => void;
+  };
+  EditHeight: {
+    currentHeight?: number;
+    onSave: (heightCm: number) => Promise<'ok' | undefined>;
+  };
+  EditBirthdate: {
+    currentBirthdate: string | undefined;
+    onSave: (date: string) => Promise<'ok' | undefined>;
+  };
+  EditGender: undefined;
 };

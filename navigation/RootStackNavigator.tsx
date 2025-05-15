@@ -1,19 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
+import { useEffect, useMemo, useState } from 'react';
 
-import { AuthContext, AuthContextType } from './Authcontext';
-import {
-  SignIn,
-  SplashScreen,
-  EditWeightScreen,
-  EditHeightScreen,
-  EditBirthdateScreen,
-} from '@screens';
-import { RegistrationStackNavigator } from './RegistrationStackNavigator';
-import ChatDrawerNavigator from './DrawerNavigator';
+import { SplashScreen } from '@screens';
+import { OnboardingNavigator, OnboardingProvider } from '@screens/onboarding';
 import { RootStackParamList, User } from '@types';
-import { OnboardingProvider, OnboardingNavigator } from '@screens/onboarding';
+import { AuthContext, AuthContextType } from './Authcontext';
+import { ChatDrawerNavigator } from './DrawerNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -93,17 +86,9 @@ export const RootStackNavigator: React.FC = () => {
 
   return (
     <AuthContext.Provider value={authContext}>
-      {/* <RegistrationProvider> */}
       <Stack.Navigator>
         {userToken == null ? (
           <>
-            {/* <Stack.Screen name="Sign in" component={SignIn} /> */}
-            {/* <Stack.Screen */}
-            {/*   name="Registration" */}
-            {/*   component={RegistrationStackNavigator} */}
-            {/*   options={{ headerShown: false }} */}
-            {/* /> */}
-
             <Stack.Screen name="Onboarding" options={{ headerShown: false }}>
               {() => (
                 <OnboardingProvider>
@@ -119,25 +104,9 @@ export const RootStackNavigator: React.FC = () => {
               component={ChatDrawerNavigator}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name="EditWeight"
-              component={EditWeightScreen}
-              options={{ title: 'Edit Weight' }}
-            />
-            <Stack.Screen
-              name="EditHeight"
-              component={EditHeightScreen}
-              options={{ title: 'Edit Height' }}
-            />
-            <Stack.Screen
-              name="EditBirthdate"
-              component={EditBirthdateScreen}
-            />
-            {/* Add other screens that should be accessible after the user is authenticated */}
           </>
         )}
       </Stack.Navigator>
-      {/* </RegistrationProvider> */}
     </AuthContext.Provider>
   );
 };

@@ -3,10 +3,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboarding } from './context/OnboardingContext';
 import { WelcomeScreen } from './WelcomeScreen';
-import { GenderScreen, ActivityScreen } from '@screens/shared';
+import { EditGenderScreen, ActivityScreen } from '@screens/shared';
+import { SignIn } from '@screens/signin-screen';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 export type OnboardingStackParamList = {
+  SignIn: undefined;
   Welcome: undefined;
   Gender: undefined;
   Activity: undefined;
@@ -35,9 +37,10 @@ export const OnboardingNavigator: FC = () => {
   return (
     <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
       <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
+      <OnboardingStack.Screen name="SignIn" component={SignIn} />
       <OnboardingStack.Screen name="Gender">
         {() => (
-          <GenderScreen
+          <EditGenderScreen
             initialValue={state.gender}
             onSave={selectedGender => {
               dispatch({
@@ -47,6 +50,7 @@ export const OnboardingNavigator: FC = () => {
               });
               dispatch({ type: 'NEXT_STEP' });
             }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
             showProgressBar
             step={2}
             totalSteps={steps.length}

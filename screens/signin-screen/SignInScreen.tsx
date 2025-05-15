@@ -1,23 +1,14 @@
 import { useContext, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import { Input, Button, Divider } from '@rneui/themed';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
-import { COLORS } from '../../theme';
-import { AuthContext, AuthContextType } from '../../navigation/Authcontext';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { userAPI } from '../../api';
+import { Input, Button } from '@rneui/themed';
 
-type RootStackParamList = {
-  'Sign in': undefined;
-  Registration: undefined;
-  // 'Sign up': undefined;
-};
+import { COLORS } from '@theme';
+import { AuthContext, AuthContextType } from '@navigation';
+import { userAPI } from '@api/AuthApi';
+import { RootStackParamList } from '@types';
 
-type SignInScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Sign in'
->;
+type SignInScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const SignIn = ({
   navigation,
@@ -72,29 +63,6 @@ export const SignIn = ({
         value={password}
       />
 
-      {/* <Divider style={styles.divider} />
-
-      <Button
-        title="Google"
-        icon={<Icon name="google" size={24} color="white" />}
-        buttonStyle={styles.googleButton}
-        titleStyle={styles.buttonTitle}
-        onPress={() => console.log('Google Sign In Pressed')}
-      />
-      <Button
-        title="Facebook"
-        icon={<Icon name="facebook" size={24} color="white" />}
-        buttonStyle={styles.facebookButton}
-        titleStyle={styles.buttonTitle}
-        onPress={() => console.log('Facebook Sign In Pressed')}
-      />
-      <Button
-        title="Apple"
-        icon={<Icon name="apple" size={24} color="white" />}
-        buttonStyle={styles.appleButton}
-        titleStyle={styles.buttonTitle}
-        onPress={() => console.log('Apple Sign In Pressed')}
-      /> */}
       <View style={styles.btnContainer}>
         <Button
           title="Sign in"
@@ -104,8 +72,7 @@ export const SignIn = ({
 
         <Button
           title="Create account"
-          // onPress={() => navigation.navigate('Sign up')}
-          onPress={() => navigation.navigate('Registration')}
+          onPress={() => navigation.navigate('Welcome')}
           buttonStyle={styles.textButton}
           titleStyle={styles.buttonTitle}
         />
@@ -115,13 +82,6 @@ export const SignIn = ({
 };
 
 const styles = StyleSheet.create({
-  // appleButton: {
-  //   backgroundColor: COLORS.black,
-  //   marginVertical: 5,
-  // },
-  // buttonTitle: {
-  //   marginLeft: 10,
-  // },
   btnContainer: {
     alignItems: 'stretch',
     justifyContent: 'center',
@@ -147,16 +107,4 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.transparent,
     borderWidth: 0,
   },
-
-  // divider: {
-  //   marginVertical: 20,
-  // },
-  // facebookButton: {
-  //   backgroundColor: COLORS.facebookBlue,
-  //   marginVertical: 5,
-  // },
-  // googleButton: {
-  //   backgroundColor: COLORS.googleRed,
-  //   marginVertical: 5,
-  // },
 });
