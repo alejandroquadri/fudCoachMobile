@@ -6,7 +6,7 @@ import { SplashScreen } from '@screens';
 import { OnboardingNavigator, OnboardingProvider } from '@screens/onboarding';
 import { RootStackParamList, User } from '@types';
 import { AuthContext, AuthContextType } from './Authcontext';
-import { ChatDrawerNavigator } from './DrawerNavigator';
+import { DrawerNavigator } from './DrawerNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -101,7 +101,7 @@ export const RootStackNavigator: React.FC = () => {
           <>
             <Stack.Screen
               name="Home"
-              component={ChatDrawerNavigator}
+              component={DrawerNavigator}
               options={{ headerShown: false }}
             />
           </>

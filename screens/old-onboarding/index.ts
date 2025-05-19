@@ -1,4 +1,4 @@
 export * from './CompleteProfileScreen';
 export * from './SignUpScreen';
-export * from './LifeStyleScreen';
+export * from './LifeStyleScreenOld';
 export * from './WeightGoalScreen';

@@ -10,38 +10,38 @@ import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
 import { COLORS } from '@theme';
 
-interface GenderScreenProps {
-  initialValue?: string;
-  onSave: (gender: string) => void;
+interface ActivityScreenProps {
+  initialValue?: number;
+  onSave: (activityLevel: number) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
   totalSteps?: number;
 }
 
-export const EditGenderScreen = ({
-  initialValue = '',
+export const LifeStyleScreen = ({
+  initialValue = 1.2,
   onSave,
   onBack,
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
-}: GenderScreenProps) => {
-  const [selectedGender, setSelectedGender] = useState(initialValue);
+}: ActivityScreenProps) => {
+  const [selectedActivity, setSelectedActivity] = useState(initialValue);
 
   const handleSave = () => {
-    if (selectedGender) {
-      onSave(selectedGender);
+    if (selectedActivity) {
+      onSave(selectedActivity);
     }
   };
 
-  const renderOption = (value: string, label: string) => {
-    const selected = selectedGender === value;
+  const renderOption = (value: number, label: string) => {
+    const selected = selectedActivity === value;
     return (
       <TouchableOpacity
         key={value}
         style={[styles.option, selected && styles.optionSelected]}
-        onPress={() => setSelectedGender(value)}>
+        onPress={() => setSelectedActivity(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
           {label}
@@ -52,8 +52,6 @@ export const EditGenderScreen = ({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Optional back button */}
-      {/* <OnboardingHeader /> */}
       <View style={styles.header}>
         <View style={styles.backButtonContainer}>
           <TouchableOpacity onPress={onBack}>
@@ -74,21 +72,25 @@ export const EditGenderScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Choose your gender</Text>
+        <Text style={styles.title}>
+          Which of the following best describes your daily lifestyle?
+        </Text>
         <Text style={styles.subtitle}>
           We will use it to calibrate your personalized plan
         </Text>
 
         <View style={styles.optionsContainer}>
-          {renderOption('male', 'Male')}
-          {renderOption('female', 'Female')}
+          {renderOption(1.2, 'Mainly sitting')}
+          {renderOption(1.375, 'Some time on feet')}
+          {renderOption(1.55, 'Majority on feet')}
+          {renderOption(1.725, 'High physical activity')}
         </View>
       </View>
 
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={!selectedGender}
+        disabled={!selectedActivity}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />
@@ -113,7 +115,7 @@ const styles = StyleSheet.create({
   backButtonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: 30, // same as the progress bar's visual height
+    height: 30,
     marginRight: 12,
   },
   progressBar: {
@@ -166,3 +168,60 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+// import React, { useState } from 'react';
+// import { View } from 'react-native';
+// import { StepProgressBar } from '@components';
+// import { Button, ButtonGroup } from '@rneui/themed';
+//
+// interface ActivityScreenProps {
+//   initialValue?: string;
+//   onSave: (activityLevel: string) => void;
+//   showProgressBar?: boolean;
+//   step?: number;
+//   totalSteps?: number;
+// }
+//
+// export const ActivityScreen = ({
+//   initialValue = '',
+//   onSave,
+//   showProgressBar = false,
+//   step = 0,
+//   totalSteps = 0,
+// }: ActivityScreenProps) => {
+//   const [selectedIndex, setSelectedIndex] = useState(
+//     initialValue === 'low'
+//       ? 0
+//       : initialValue === 'moderate'
+//         ? 1
+//         : initialValue === 'high'
+//           ? 2
+//           : -1
+//   );
+//
+//   const handleSave = () => {
+//     const levels = ['low', 'moderate', 'high'];
+//     if (selectedIndex !== -1) {
+//       onSave(levels[selectedIndex]);
+//     }
+//   };
+//
+//   return (
+//     <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
+//       {showProgressBar && (
+//         <StepProgressBar step={step} totalSteps={totalSteps} />
+//       )}
+//       <ButtonGroup
+//         onPress={index => setSelectedIndex(index)}
+//         selectedIndex={selectedIndex}
+//         buttons={['Low', 'Moderate', 'High']}
+//         containerStyle={{ marginBottom: 20 }}
+//       />
+//       <Button
+//         title="Next"
+//         onPress={handleSave}
+//         disabled={selectedIndex === -1}
+//       />
+//     </View>
+//   );
+// };

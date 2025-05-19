@@ -14,7 +14,7 @@ import { DrawerParamList } from '@types';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
-export const ChatDrawerNavigator = () => {
+export const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
       initialRouteName="Chat"

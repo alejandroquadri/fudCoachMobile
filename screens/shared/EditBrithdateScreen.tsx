@@ -8,10 +8,20 @@ import RNDateTimePicker, {
 import { format } from 'date-fns';
 import { DrawerParamList } from '@types';
 
-export const EditBirthdateScreen = () => {
-  const navigation = useNavigation();
+interface EditBrithdayProps {
+  currentBirthdate: string;
+  onSave: (birthDate: string) => void;
+  onBack: () => void;
+}
+
+export const EditBirthdateScreen = ({
+  currentBirthdate,
+  onSave,
+  onBack,
+}: EditBrithdayProps) => {
+  // const navigation = useNavigation();
   const route = useRoute<RouteProp<DrawerParamList, 'EditBirthdate'>>();
-  const { currentBirthdate, onSave } = route.params;
+  // const { currentBirthdate, onSave } = route.params;
 
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState<Date>(
@@ -22,7 +32,7 @@ export const EditBirthdateScreen = () => {
     // tener en cuenta que si uno hace console log y quiere imprimir una fehca la consola no la muestra
     const formatDate = format(selectedDate, 'yyyy-MM-dd');
     if (onSave) onSave(formatDate);
-    navigation.goBack();
+    // navigation.goBack();
   };
 
   const handleChange = (event: DateTimePickerEvent, date?: Date) => {
@@ -53,7 +63,7 @@ export const EditBirthdateScreen = () => {
   );
 };
 
-const { width } = Dimensions.get('window');
+// const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {

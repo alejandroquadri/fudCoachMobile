@@ -10,38 +10,38 @@ import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
 import { COLORS } from '@theme';
 
-interface GenderScreenProps {
-  initialValue?: string;
-  onSave: (gender: string) => void;
+interface TriedOtherAppsScreenProps {
+  initialValue?: boolean;
+  onSave: (tried: boolean) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
   totalSteps?: number;
 }
 
-export const EditGenderScreen = ({
-  initialValue = '',
+export const TriedOtherAppsScreen = ({
+  initialValue = true,
   onSave,
   onBack,
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
-}: GenderScreenProps) => {
-  const [selectedGender, setSelectedGender] = useState(initialValue);
+}: TriedOtherAppsScreenProps) => {
+  const [selectedOption, setSelectedOption] = useState<boolean>(initialValue);
 
   const handleSave = () => {
-    if (selectedGender) {
-      onSave(selectedGender);
+    if (selectedOption !== null) {
+      onSave(selectedOption);
     }
   };
 
-  const renderOption = (value: string, label: string) => {
-    const selected = selectedGender === value;
+  const renderOption = (value: boolean, label: string) => {
+    const selected = selectedOption === value;
     return (
       <TouchableOpacity
-        key={value}
+        key={String(value)}
         style={[styles.option, selected && styles.optionSelected]}
-        onPress={() => setSelectedGender(value)}>
+        onPress={() => setSelectedOption(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
           {label}
@@ -52,8 +52,6 @@ export const EditGenderScreen = ({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Optional back button */}
-      {/* <OnboardingHeader /> */}
       <View style={styles.header}>
         <View style={styles.backButtonContainer}>
           <TouchableOpacity onPress={onBack}>
@@ -74,21 +72,18 @@ export const EditGenderScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Choose your gender</Text>
-        <Text style={styles.subtitle}>
-          We will use it to calibrate your personalized plan
-        </Text>
+        <Text style={styles.title}>Did you try other nutrition apps?</Text>
 
         <View style={styles.optionsContainer}>
-          {renderOption('male', 'Male')}
-          {renderOption('female', 'Female')}
+          {renderOption(true, 'Yes')}
+          {renderOption(false, 'No')}
         </View>
       </View>
 
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={!selectedGender}
+        disabled={selectedOption === null}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />
@@ -113,7 +108,7 @@ const styles = StyleSheet.create({
   backButtonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: 30, // same as the progress bar's visual height
+    height: 30,
     marginRight: 12,
   },
   progressBar: {
@@ -125,12 +120,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: COLORS.subText,
     marginBottom: 30,
     textAlign: 'center',
   },

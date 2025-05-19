@@ -15,7 +15,7 @@ type LifeStyleScreenProps = NativeStackScreenProps<
   'LifeStyle'
 >;
 
-export const LifeStyleScreen: React.FC<LifeStyleScreenProps> = ({
+export const LifeStyleScreenOld: React.FC<LifeStyleScreenProps> = ({
   navigation,
 }) => {
   const { registrationData, setRegistrationData } = useRegistration();
@@ -106,4 +106,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LifeStyleScreen;
+export default LifeStyleScreenOld;

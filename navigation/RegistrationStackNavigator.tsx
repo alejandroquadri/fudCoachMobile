@@ -3,7 +3,7 @@ import { RegistrationProvider } from './RegistrationContext';
 import {
   SignUp,
   CompleteProfileScreen,
-  LifeStyleScreen,
+  LifeStyleScreenOld,
   WeightGoalScreen,
 } from '../screens';
 import { RootStackParamList } from '../types';
@@ -25,7 +25,7 @@ export const RegistrationStackNavigator = () => {
         />
         <RegistrationStack.Screen
           name="LifeStyle"
-          component={LifeStyleScreen}
+          component={LifeStyleScreenOld}
         />
         <RegistrationStack.Screen
           name="WeightGoal"

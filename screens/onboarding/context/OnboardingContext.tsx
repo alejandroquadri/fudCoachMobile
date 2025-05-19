@@ -1,11 +1,7 @@
+import { UserProfile } from '@types';
 import React, { createContext, useReducer, useContext, ReactNode } from 'react';
 
-interface OnboardingState {
-  name: string;
-  email: string;
-  weight: number | null;
-  gender: string;
-  activityLevel: string;
+interface OnboardingState extends Partial<UserProfile> {
   onboardingStep: number;
 }
 
@@ -20,11 +16,6 @@ type Action =
   | { type: 'RESET' };
 
 const initialState: OnboardingState = {
-  name: '',
-  email: '',
-  weight: null,
-  gender: '',
-  activityLevel: '',
   onboardingStep: 0,
 };
 
@@ -34,6 +25,7 @@ const onboardingReducer = (
 ): OnboardingState => {
   switch (action.type) {
     case 'UPDATE_FIELD':
+      console.log('reducer working', action, state);
       return { ...state, [action.field]: action.value };
     case 'NEXT_STEP':
       return { ...state, onboardingStep: state.onboardingStep + 1 };
@@ -53,6 +45,8 @@ const OnboardingContext = createContext<{
 
 export const OnboardingProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(onboardingReducer, initialState);
+
+  console.log('Onboarding context initialized', state);
 
   return (
     <OnboardingContext.Provider value={{ state, dispatch }}>

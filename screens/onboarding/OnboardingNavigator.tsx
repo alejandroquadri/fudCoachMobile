@@ -1,22 +1,38 @@
-import { FC, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboarding } from './context/OnboardingContext';
 import { WelcomeScreen } from './WelcomeScreen';
-import { EditGenderScreen, ActivityScreen } from '@screens/shared';
-import { SignIn } from '@screens/signin-screen';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
+import {
+  EditGenderScreen,
+  LifeStyleScreen,
+  ActivityLevelScreen,
+} from '../shared';
+import { SignIn } from '../signin-screen';
+import { LongTermResults } from './LongTermResults';
 
 export type OnboardingStackParamList = {
   SignIn: undefined;
   Welcome: undefined;
   Gender: undefined;
-  Activity: undefined;
+  LifeStyle: undefined;
+  ActivityLevel: undefined;
+  TriedOtherApps: undefined;
+  LongTermResults: undefined;
 };
 
 const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
 
-const steps = ['Welcome', 'Gender', 'Activity'] as const;
+const steps = [
+  'Welcome',
+  'Gender',
+  'LifeStyle',
+  'ActivityLevel',
+  'TriedOtherApps',
+  'LongTermResults',
+] as const;
 
 export const OnboardingNavigator: FC = () => {
   const { state, dispatch } = useOnboarding();
@@ -33,7 +49,6 @@ export const OnboardingNavigator: FC = () => {
     const nextScreen = steps[state.onboardingStep];
     navigation.navigate(nextScreen);
   }, [state.onboardingStep, navigation]);
-
   return (
     <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
       <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
@@ -57,20 +72,72 @@ export const OnboardingNavigator: FC = () => {
           />
         )}
       </OnboardingStack.Screen>
-      <OnboardingStack.Screen name="Activity">
+      <OnboardingStack.Screen name="LifeStyle">
         {() => (
-          <ActivityScreen
+          <LifeStyleScreen
+            initialValue={state.lifeStyle}
+            onSave={selectedLifestyle => {
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'lifeStyle',
+                value: selectedLifestyle,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={3}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="ActivityLevel">
+        {() => (
+          <ActivityLevelScreen
             initialValue={state.activityLevel}
-            onSave={selectedActivityLevel => {
+            onSave={activityLevel => {
               dispatch({
                 type: 'UPDATE_FIELD',
                 field: 'activityLevel',
-                value: selectedActivityLevel,
+                value: activityLevel,
               });
-              dispatch({ type: 'PREV_STEP' });
+              dispatch({ type: 'NEXT_STEP' });
             }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
             showProgressBar
-            step={3}
+            step={4}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="TriedOtherApps">
+        {() => (
+          <TriedOtherAppsScreen
+            initialValue={state.triedOtherApps}
+            onSave={triedOtherApps => {
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'triedOtherApps',
+                value: triedOtherApps,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={5}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="LongTermResults">
+        {() => (
+          <LongTermResults
+            onNext={() => {
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={6}
             totalSteps={steps.length}
           />
         )}
