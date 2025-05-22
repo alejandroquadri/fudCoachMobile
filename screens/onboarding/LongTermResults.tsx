@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { StepProgressBar } from '@components';
 import { Icon, Button } from '@rneui/themed';
-import { COLORS } from '@theme';
+import { COLORS, SharedStyles } from '@theme';
 
 // import longTermChart from '../../../assets/long_term.png';
 // const longTermChart={require('../../../assets/long_term.png')}
@@ -29,6 +29,8 @@ export const LongTermResults = ({
   step = 0,
   totalSteps = 0,
 }: LongTermResultsProps) => {
+  const styles = SharedStyles();
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -55,7 +57,7 @@ export const LongTermResults = ({
 
         <Image
           source={require('../../assets/long_term.png')} // Update the path to your actual chart asset
-          style={styles.chartImage}
+          style={longTermStyles.chartImage}
           resizeMode="contain"
         />
       </View>
@@ -70,51 +72,10 @@ export const LongTermResults = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 40,
-    justifyContent: 'space-between',
-    flexGrow: 1,
-  },
-  header: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  backButtonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 30,
-    marginRight: 12,
-  },
-  progressBar: {
-    flex: 1,
-  },
-  content: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
+const longTermStyles = StyleSheet.create({
   chartImage: {
     width: '100%',
     height: 250,
     borderRadius: 16,
-  },
-  nextButton: {
-    borderRadius: 16,
-    paddingVertical: 14,
-    backgroundColor: COLORS.primaryColor,
-  },
-  nextButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

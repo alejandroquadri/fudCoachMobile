@@ -9,6 +9,7 @@ import {
   EditGenderScreen,
   LifeStyleScreen,
   ActivityLevelScreen,
+  EditBirthdateScreen,
 } from '../shared';
 import { SignIn } from '../signin-screen';
 import { LongTermResults } from './LongTermResults';
@@ -21,6 +22,7 @@ export type OnboardingStackParamList = {
   ActivityLevel: undefined;
   TriedOtherApps: undefined;
   LongTermResults: undefined;
+  Birthdate: undefined;
 };
 
 const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
@@ -32,6 +34,7 @@ const steps = [
   'ActivityLevel',
   'TriedOtherApps',
   'LongTermResults',
+  'Birthdate',
 ] as const;
 
 export const OnboardingNavigator: FC = () => {
@@ -49,6 +52,7 @@ export const OnboardingNavigator: FC = () => {
     const nextScreen = steps[state.onboardingStep];
     navigation.navigate(nextScreen);
   }, [state.onboardingStep, navigation]);
+
   return (
     <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
       <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
@@ -138,6 +142,25 @@ export const OnboardingNavigator: FC = () => {
             onBack={() => dispatch({ type: 'PREV_STEP' })}
             showProgressBar
             step={6}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="Birthdate">
+        {() => (
+          <EditBirthdateScreen
+            initialValue={state.birthdate}
+            onSave={birthdate => {
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'birthdate',
+                value: birthdate,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={7}
             totalSteps={steps.length}
           />
         )}

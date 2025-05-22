@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
-import { COLORS } from '@theme';
+import { COLORS, SharedStyles } from '@theme';
 
 interface ActivityScreenProps {
   initialValue?: number;
@@ -27,6 +21,7 @@ export const LifeStyleScreen = ({
   step = 0,
   totalSteps = 0,
 }: ActivityScreenProps) => {
+  const styles = SharedStyles();
   const [selectedActivity, setSelectedActivity] = useState(initialValue);
 
   const handleSave = () => {
@@ -40,7 +35,7 @@ export const LifeStyleScreen = ({
     return (
       <TouchableOpacity
         key={value}
-        style={[styles.option, selected && styles.optionSelected]}
+        style={[styles.optionButton, selected && styles.optionSelectedButton]}
         onPress={() => setSelectedActivity(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
@@ -97,131 +92,3 @@ export const LifeStyleScreen = ({
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 40,
-    justifyContent: 'space-between',
-    flexGrow: 1,
-  },
-  header: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  backButtonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 30,
-    marginRight: 12,
-  },
-  progressBar: {
-    flex: 1,
-  },
-  content: {
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: COLORS.subText,
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  optionsContainer: {
-    width: '100%',
-    gap: 12,
-  },
-  option: {
-    backgroundColor: COLORS.backgroundColor,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  optionSelected: {
-    backgroundColor: COLORS.primaryColor,
-  },
-  optionText: {
-    fontSize: 16,
-    color: COLORS.primaryColor,
-  },
-  optionTextSelected: {
-    color: COLORS.primaryContrast,
-    fontWeight: 'bold',
-  },
-  nextButton: {
-    borderRadius: 16,
-    paddingVertical: 14,
-    backgroundColor: COLORS.primaryColor,
-  },
-  nextButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
-
-// import React, { useState } from 'react';
-// import { View } from 'react-native';
-// import { StepProgressBar } from '@components';
-// import { Button, ButtonGroup } from '@rneui/themed';
-//
-// interface ActivityScreenProps {
-//   initialValue?: string;
-//   onSave: (activityLevel: string) => void;
-//   showProgressBar?: boolean;
-//   step?: number;
-//   totalSteps?: number;
-// }
-//
-// export const ActivityScreen = ({
-//   initialValue = '',
-//   onSave,
-//   showProgressBar = false,
-//   step = 0,
-//   totalSteps = 0,
-// }: ActivityScreenProps) => {
-//   const [selectedIndex, setSelectedIndex] = useState(
-//     initialValue === 'low'
-//       ? 0
-//       : initialValue === 'moderate'
-//         ? 1
-//         : initialValue === 'high'
-//           ? 2
-//           : -1
-//   );
-//
-//   const handleSave = () => {
-//     const levels = ['low', 'moderate', 'high'];
-//     if (selectedIndex !== -1) {
-//       onSave(levels[selectedIndex]);
-//     }
-//   };
-//
-//   return (
-//     <View style={{ flex: 1, justifyContent: 'center', padding: 20 }}>
-//       {showProgressBar && (
-//         <StepProgressBar step={step} totalSteps={totalSteps} />
-//       )}
-//       <ButtonGroup
-//         onPress={index => setSelectedIndex(index)}
-//         selectedIndex={selectedIndex}
-//         buttons={['Low', 'Moderate', 'High']}
-//         containerStyle={{ marginBottom: 20 }}
-//       />
-//       <Button
-//         title="Next"
-//         onPress={handleSave}
-//         disabled={selectedIndex === -1}
-//       />
-//     </View>
-//   );
-// };

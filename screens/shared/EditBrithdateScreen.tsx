@@ -1,31 +1,44 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { Button } from '@rneui/themed';
+import { StepProgressBar } from '@components';
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
+import { Button, Icon } from '@rneui/themed';
+import { COLORS, SharedStyles } from '@theme';
 import { format } from 'date-fns';
-import { DrawerParamList } from '@types';
+import React, { useState } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 interface EditBrithdayProps {
-  currentBirthdate: string;
+  initialValue?: string;
   onSave: (birthDate: string) => void;
   onBack: () => void;
+  showProgressBar?: boolean;
+  step?: number;
+  totalSteps?: number;
 }
 
 export const EditBirthdateScreen = ({
-  currentBirthdate,
+  initialValue,
   onSave,
   onBack,
+  showProgressBar = false,
+  step = 0,
+  totalSteps = 0,
 }: EditBrithdayProps) => {
   // const navigation = useNavigation();
-  const route = useRoute<RouteProp<DrawerParamList, 'EditBirthdate'>>();
+  // const route = useRoute<RouteProp<DrawerParamList, 'EditBirthdate'>>();
   // const { currentBirthdate, onSave } = route.params;
 
+  const styles = SharedStyles();
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState<Date>(
-    new Date(currentBirthdate || '1990-01-01')
+    new Date(initialValue || '1990-01-01')
   );
 
   const handleSave = () => {
@@ -41,56 +54,62 @@ export const EditBirthdateScreen = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Edit Birthdate</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity onPress={onBack}>
+            <Icon
+              name="chevron-left"
+              type="feather"
+              size={28}
+              color={COLORS.primaryColor}
+            />
+          </TouchableOpacity>
+        </View>
 
-      <RNDateTimePicker
-        value={selectedDate}
-        mode="date"
-        display="spinner"
-        maximumDate={today}
-        onChange={handleChange}
-        style={styles.datePicker}
-      />
+        {showProgressBar && (
+          <View style={styles.progressBar}>
+            <StepProgressBar step={step} totalSteps={totalSteps} />
+          </View>
+        )}
+      </View>
+
+      <View style={styles.content}>
+        <Text style={styles.title}>When where you born?</Text>
+        <Text style={styles.subtitle}>
+          We will use it to calibrate your personalized plan
+        </Text>
+
+        <View style={birthdateStyles.container}>
+          <RNDateTimePicker
+            value={selectedDate}
+            mode="date"
+            display="spinner"
+            maximumDate={today}
+            onChange={handleChange}
+            style={birthdateStyles.datePicker}
+          />
+        </View>
+      </View>
 
       <Button
-        title="Save changes"
-        buttonStyle={styles.saveButton}
-        titleStyle={styles.saveButtonText}
+        title="Next"
         onPress={handleSave}
+        // disabled={!selectedActivity}
+        buttonStyle={styles.nextButton}
+        titleStyle={styles.nextButtonText}
       />
-    </View>
+    </ScrollView>
   );
 };
 
-// const { width } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
+const birthdateStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 64,
     alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 24,
   },
   datePicker: {
     width: '70%',
     marginBottom: 24,
-  },
-  saveButton: {
-    backgroundColor: '#000',
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 24,
-    marginTop: 'auto',
-    marginBottom: 32,
-  },
-  saveButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

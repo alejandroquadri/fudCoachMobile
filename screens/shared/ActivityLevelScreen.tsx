@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Button, Icon } from '@rneui/themed';
 import { StepProgressBar } from '@components';
-import { COLORS } from '@theme';
+import { COLORS, SharedStyles } from '@theme';
 
 interface ActivityLevelScreenProps {
   initialValue?: number;
@@ -27,6 +21,8 @@ export const ActivityLevelScreen = ({
   step = 0,
   totalSteps = 0,
 }: ActivityLevelScreenProps) => {
+  const styles = SharedStyles();
+
   const [selectedActivity, setSelectedActivity] = useState(initialValue);
 
   const handleSave = () => {
@@ -40,7 +36,7 @@ export const ActivityLevelScreen = ({
     return (
       <TouchableOpacity
         key={value}
-        style={[styles.option, selected && styles.optionSelected]}
+        style={[styles.optionButton, selected && styles.optionSelectedButton]}
         onPress={() => setSelectedActivity(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
@@ -97,73 +93,73 @@ export const ActivityLevelScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 40,
-    justifyContent: 'space-between',
-    flexGrow: 1,
-  },
-  header: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  backButtonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 30,
-    marginRight: 12,
-  },
-  progressBar: {
-    flex: 1,
-  },
-  content: {
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: COLORS.subText,
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  optionsContainer: {
-    width: '100%',
-    gap: 12,
-  },
-  option: {
-    backgroundColor: COLORS.backgroundColor,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  optionSelected: {
-    backgroundColor: COLORS.primaryColor,
-  },
-  optionText: {
-    fontSize: 16,
-    color: COLORS.primaryColor,
-  },
-  optionTextSelected: {
-    color: COLORS.primaryContrast,
-    fontWeight: 'bold',
-  },
-  nextButton: {
-    borderRadius: 16,
-    paddingVertical: 14,
-    backgroundColor: COLORS.primaryColor,
-  },
-  nextButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     paddingHorizontal: 20,
+//     paddingTop: 60,
+//     paddingBottom: 40,
+//     justifyContent: 'space-between',
+//     flexGrow: 1,
+//   },
+//   header: {
+//     marginTop: 10,
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   backButtonContainer: {
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     height: 30,
+//     marginRight: 12,
+//   },
+//   progressBar: {
+//     flex: 1,
+//   },
+//   content: {
+//     alignItems: 'center',
+//   },
+//   title: {
+//     fontSize: 22,
+//     fontWeight: 'bold',
+//     marginBottom: 10,
+//     textAlign: 'center',
+//   },
+//   subtitle: {
+//     fontSize: 14,
+//     color: COLORS.subText,
+//     marginBottom: 30,
+//     textAlign: 'center',
+//   },
+//   optionsContainer: {
+//     width: '100%',
+//     gap: 12,
+//   },
+//   option: {
+//     backgroundColor: COLORS.backgroundColor,
+//     borderRadius: 16,
+//     paddingVertical: 14,
+//     paddingHorizontal: 20,
+//     alignItems: 'center',
+//   },
+//   optionSelected: {
+//     backgroundColor: COLORS.primaryColor,
+//   },
+//   optionText: {
+//     fontSize: 16,
+//     color: COLORS.primaryColor,
+//   },
+//   optionTextSelected: {
+//     color: COLORS.primaryContrast,
+//     fontWeight: 'bold',
+//   },
+//   nextButton: {
+//     borderRadius: 16,
+//     paddingVertical: 14,
+//     backgroundColor: COLORS.primaryColor,
+//   },
+//   nextButtonText: {
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//   },
+// });

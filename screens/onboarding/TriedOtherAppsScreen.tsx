@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
-import { COLORS } from '@theme';
+import { COLORS, SharedStyles } from '@theme';
 
 interface TriedOtherAppsScreenProps {
   initialValue?: boolean;
@@ -27,6 +27,8 @@ export const TriedOtherAppsScreen = ({
   step = 0,
   totalSteps = 0,
 }: TriedOtherAppsScreenProps) => {
+  const styles = SharedStyles();
+
   const [selectedOption, setSelectedOption] = useState<boolean>(initialValue);
 
   const handleSave = () => {
@@ -40,7 +42,7 @@ export const TriedOtherAppsScreen = ({
     return (
       <TouchableOpacity
         key={String(value)}
-        style={[styles.option, selected && styles.optionSelected]}
+        style={[styles.optionButton, selected && styles.optionSelectedButton]}
         onPress={() => setSelectedOption(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
@@ -90,68 +92,3 @@ export const TriedOtherAppsScreen = ({
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 40,
-    justifyContent: 'space-between',
-    flexGrow: 1,
-  },
-  header: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  backButtonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 30,
-    marginRight: 12,
-  },
-  progressBar: {
-    flex: 1,
-  },
-  content: {
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  optionsContainer: {
-    width: '100%',
-    gap: 12,
-  },
-  option: {
-    backgroundColor: COLORS.backgroundColor,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  optionSelected: {
-    backgroundColor: COLORS.primaryColor,
-  },
-  optionText: {
-    fontSize: 16,
-    color: COLORS.primaryColor,
-  },
-  optionTextSelected: {
-    color: COLORS.primaryContrast,
-    fontWeight: 'bold',
-  },
-  nextButton: {
-    borderRadius: 16,
-    paddingVertical: 14,
-    backgroundColor: COLORS.primaryColor,
-  },
-  nextButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});

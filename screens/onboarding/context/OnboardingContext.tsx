@@ -9,7 +9,7 @@ type Action =
   | {
       type: 'UPDATE_FIELD';
       field: keyof OnboardingState;
-      value: string | number;
+      value: string | number | boolean;
     }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
