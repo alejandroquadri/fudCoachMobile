@@ -43,13 +43,14 @@ export interface UserProfile {
   lifeStyle: number;
   activityLevel: number;
   triedOtherApps?: boolean;
+  unitType: 'metric' | 'imperial';
   weight: number; // esto siempre lo voy a guardar en kg
   height: number; // esto siempre lo voy a guardar en cm
   birthdate: string; // un string del tipo YYYY-MM-DD
-  weightDirection?: string; // perder peso | ganar peso | mantenerme | etc
+  goal: number; // perder peso: 0 | ganar peso: 1 | mantenerme: 2
   weightGoal: number; // siempre en kg
-  goalVelocity?: string; // velocidad para alcanzar la meta
-  goalObsticle?: string; // que te impide alcanzar tus metas
-  dietType?: string; // tipo de dieta: clasico | vegano | vegetariano | paleo | etc
+  goalVelocity: number; // perdida de peso por semana
+  goalObsticle: string; // que te impide alcanzar tus metas
+  dietType: string; // tipo de dieta: clasico | vegano | vegetariano | paleo | etc
   qualitativeGoal?: string; // ser mas saludabe | tener mas energia | etc
 }

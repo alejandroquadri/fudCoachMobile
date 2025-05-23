@@ -1,1 +1,1 @@
-export * from './GoalsScreen';
+export * from './ProgressScreen';

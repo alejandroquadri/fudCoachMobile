@@ -6,7 +6,7 @@ export type RootStackParamList = {
 export type DrawerParamList = {
   Chat: undefined;
   Profile: undefined;
-  Goals: undefined;
+  Progress: undefined;
   MealLogs: undefined;
   EditWeight: {
     onSave: (weightKg: number) => void;

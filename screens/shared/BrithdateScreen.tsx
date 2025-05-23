@@ -14,7 +14,7 @@ import {
   View,
 } from 'react-native';
 
-interface EditBrithdayProps {
+interface BirthdateProps {
   initialValue?: string;
   onSave: (birthDate: string) => void;
   onBack: () => void;
@@ -23,14 +23,14 @@ interface EditBrithdayProps {
   totalSteps?: number;
 }
 
-export const EditBirthdateScreen = ({
+export const BirthdateScreen = ({
   initialValue,
   onSave,
   onBack,
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
-}: EditBrithdayProps) => {
+}: BirthdateProps) => {
   // const navigation = useNavigation();
   // const route = useRoute<RouteProp<DrawerParamList, 'EditBirthdate'>>();
   // const { currentBirthdate, onSave } = route.params;

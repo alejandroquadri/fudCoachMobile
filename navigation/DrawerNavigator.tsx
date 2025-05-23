@@ -1,13 +1,13 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import {
   LogScreen,
-  Goals,
+  ProgressScreen,
   Profile,
   Chat,
-  EditWeightScreen,
-  EditHeightScreen,
-  EditBirthdateScreen,
-  EditGenderScreen,
+  WeightScreen,
+  HeightScreen,
+  BirthdateScreen,
+  GenderScreen,
 } from '@screens';
 import { CustomDrawer } from '@components';
 import { DrawerParamList } from '@types';
@@ -21,32 +21,32 @@ export const DrawerNavigator = () => {
       drawerContent={props => <CustomDrawer {...props} />}>
       <Drawer.Screen name="Chat" component={Chat} />
       <Drawer.Screen name="MealLogs" component={LogScreen} />
-      <Drawer.Screen name="Goals" component={Goals} />
+      <Drawer.Screen name="Progress" component={ProgressScreen} />
       <Drawer.Screen name="Profile" component={Profile} />
       <Drawer.Screen
         name="EditWeight"
-        component={EditWeightScreen}
+        component={WeightScreen}
         options={{
           drawerItemStyle: { display: 'none' },
         }}
       />
       <Drawer.Screen
         name="EditHeight"
-        component={EditHeightScreen}
+        component={HeightScreen}
         options={{
           drawerItemStyle: { display: 'none' },
         }}
       />
       <Drawer.Screen
         name="EditBirthdate"
-        component={EditBirthdateScreen}
+        component={BirthdateScreen}
         options={{
           drawerItemStyle: { display: 'none' },
         }}
       />
       <Drawer.Screen
         name="EditGender"
-        component={EditGenderScreen}
+        component={GenderScreen}
         options={{
           drawerItemStyle: { display: 'none' },
         }}

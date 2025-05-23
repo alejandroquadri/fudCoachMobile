@@ -6,13 +6,18 @@ import { useOnboarding } from './context/OnboardingContext';
 import { WelcomeScreen } from './WelcomeScreen';
 import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
 import {
-  EditGenderScreen,
+  GenderScreen,
   LifeStyleScreen,
   ActivityLevelScreen,
-  EditBirthdateScreen,
+  BirthdateScreen,
+  HeightScreen,
+  WeightScreen,
 } from '../shared';
 import { SignIn } from '../signin-screen';
 import { LongTermResults } from './LongTermResults';
+import { GoalScreen } from './GoalScreen';
+import { EcouragementScreen } from './EncouragementScreen';
+import { GoalVelocityScreen } from './GoalVelocityScreen';
 
 export type OnboardingStackParamList = {
   SignIn: undefined;
@@ -23,6 +28,12 @@ export type OnboardingStackParamList = {
   TriedOtherApps: undefined;
   LongTermResults: undefined;
   Birthdate: undefined;
+  Height: undefined;
+  Weight: undefined;
+  Goal: undefined;
+  WeightGoal: undefined;
+  Encouragement: undefined;
+  GoalVelocity: undefined;
 };
 
 const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
@@ -35,6 +46,12 @@ const steps = [
   'TriedOtherApps',
   'LongTermResults',
   'Birthdate',
+  'Height',
+  'Weight',
+  'Goal',
+  'WeightGoal',
+  'Encouragement',
+  'GoalVelocity',
 ] as const;
 
 export const OnboardingNavigator: FC = () => {
@@ -59,7 +76,7 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Screen name="SignIn" component={SignIn} />
       <OnboardingStack.Screen name="Gender">
         {() => (
-          <EditGenderScreen
+          <GenderScreen
             initialValue={state.gender}
             onSave={selectedGender => {
               dispatch({
@@ -148,7 +165,7 @@ export const OnboardingNavigator: FC = () => {
       </OnboardingStack.Screen>
       <OnboardingStack.Screen name="Birthdate">
         {() => (
-          <EditBirthdateScreen
+          <BirthdateScreen
             initialValue={state.birthdate}
             onSave={birthdate => {
               dispatch({
@@ -161,6 +178,140 @@ export const OnboardingNavigator: FC = () => {
             onBack={() => dispatch({ type: 'PREV_STEP' })}
             showProgressBar
             step={7}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="Height">
+        {() => (
+          <HeightScreen
+            initialValue={state.height}
+            unitType={state.unitType}
+            onSave={ret => {
+              console.log('recibo este height', ret);
+              const { unitType, height } = ret;
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'height',
+                value: height,
+              });
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'unitType',
+                value: unitType,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={8}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="Weight">
+        {() => (
+          <WeightScreen
+            initialValue={state.weight}
+            unitType={state.unitType}
+            title="What is your current weight?"
+            onSave={ret => {
+              const { unitType, weight } = ret;
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'weight',
+                value: weight,
+              });
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'unitType',
+                value: unitType,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={9}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="Goal">
+        {() => (
+          <GoalScreen
+            initialValue={state.goal}
+            onSave={goal => {
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'goal',
+                value: goal,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={10}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="WeightGoal">
+        {() => (
+          <WeightScreen
+            initialValue={state.weight}
+            unitType={state.unitType}
+            title="What is your desired weight?"
+            onSave={ret => {
+              const { unitType, weight } = ret;
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'weightGoal',
+                value: weight,
+              });
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'unitType',
+                value: unitType,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={11}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="Encouragement">
+        {() => (
+          <EcouragementScreen
+            weightDelta={state.weight! - state.weightGoal!}
+            unitType={state.unitType!}
+            onNext={() => {
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={12}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="GoalVelocity">
+        {() => (
+          <GoalVelocityScreen
+            initialValue={state.goalVelocity}
+            unitType={state.unitType!}
+            onSave={(goalVelocity: number) => {
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'goalVelocity',
+                value: goalVelocity,
+              });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={13}
             totalSteps={steps.length}
           />
         )}

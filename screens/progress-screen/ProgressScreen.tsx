@@ -30,7 +30,7 @@ const calcMinValue = (logs: { label: string; value: number }[]) => {
   return Math.min(...logs.map(log => log.value));
 };
 
-export const Goals = () => {
+export const ProgressScreen = () => {
   const styles = GoalStyles();
   const [unit, setUnit] = useState<string>('kg');
   const [weightData, setWeightData] = useState<WeightLogInterface[]>([]);

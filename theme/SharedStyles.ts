@@ -33,12 +33,14 @@ export const SharedStyles = () => {
       fontWeight: 'bold',
       marginBottom: 10,
       textAlign: 'center',
+      width: '80%',
     },
     subtitle: {
       fontSize: 14,
       color: COLORS.subText,
       marginBottom: 30,
       textAlign: 'center',
+      width: '80%',
     },
     optionsContainer: {
       width: '100%',

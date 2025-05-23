@@ -1,43 +1,43 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
+import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
 
-interface GenderScreenProps {
-  initialValue?: string;
-  onSave: (gender: string) => void;
+interface GoalScreenProps {
+  initialValue?: number;
+  onSave: (goal: number) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
   totalSteps?: number;
 }
 
-export const EditGenderScreen = ({
-  initialValue = '',
+export const GoalScreen = ({
+  initialValue = 0,
   onSave,
   onBack,
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
-}: GenderScreenProps) => {
+}: GoalScreenProps) => {
   const styles = SharedStyles();
 
-  const [selectedGender, setSelectedGender] = useState(initialValue);
+  const [selectedGoal, setSelectedGoal] = useState(initialValue);
 
   const handleSave = () => {
-    if (selectedGender) {
-      onSave(selectedGender);
+    if (selectedGoal !== null) {
+      onSave(selectedGoal);
     }
   };
 
-  const renderOption = (value: string, label: string) => {
-    const selected = selectedGender === value;
+  const renderOption = (value: number, label: string) => {
+    const selected = selectedGoal === value;
     return (
       <TouchableOpacity
         key={value}
         style={[styles.optionButton, selected && styles.optionSelectedButton]}
-        onPress={() => setSelectedGender(value)}>
+        onPress={() => setSelectedGoal(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
           {label}
@@ -48,8 +48,6 @@ export const EditGenderScreen = ({
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Optional back button */}
-      {/* <OnboardingHeader /> */}
       <View style={styles.header}>
         <View style={styles.backButtonContainer}>
           <TouchableOpacity onPress={onBack}>
@@ -70,21 +68,22 @@ export const EditGenderScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Choose your gender</Text>
+        <Text style={styles.title}>Which is your goal?</Text>
         <Text style={styles.subtitle}>
-          We will use it to calibrate your personalized plan
+          This helps us personalize your training and nutrition strategy
         </Text>
 
         <View style={styles.optionsContainer}>
-          {renderOption('male', 'Male')}
-          {renderOption('female', 'Female')}
+          {renderOption(0, 'Loose weight')}
+          {renderOption(1, 'Keep weight')}
+          {renderOption(2, 'Gain weight')}
         </View>
       </View>
 
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={!selectedGender}
+        disabled={selectedGoal === null}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />
