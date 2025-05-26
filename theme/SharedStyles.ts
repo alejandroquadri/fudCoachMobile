@@ -28,6 +28,13 @@ export const SharedStyles = () => {
     content: {
       alignItems: 'center',
     },
+    titleNoSub: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      marginBottom: 30,
+      textAlign: 'center',
+      width: '80%',
+    },
     title: {
       fontSize: 22,
       fontWeight: 'bold',

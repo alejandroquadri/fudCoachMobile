@@ -3,8 +3,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useOnboarding } from './context/OnboardingContext';
+
 import { WelcomeScreen } from './WelcomeScreen';
 import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
+import { SignIn } from '../signin-screen';
+import { LongTermResults } from './LongTermResults';
+import { GoalScreen } from './GoalScreen';
+import { EcouragementScreen } from './EncouragementScreen';
+import { GoalVelocityScreen } from './GoalVelocityScreen';
+import { MoreEffective } from './MoreEffectiveScreen';
 import {
   GenderScreen,
   LifeStyleScreen,
@@ -13,11 +20,8 @@ import {
   HeightScreen,
   WeightScreen,
 } from '../shared';
-import { SignIn } from '../signin-screen';
-import { LongTermResults } from './LongTermResults';
-import { GoalScreen } from './GoalScreen';
-import { EcouragementScreen } from './EncouragementScreen';
-import { GoalVelocityScreen } from './GoalVelocityScreen';
+import { GoalObstacleScreen } from './GoalObstaclesScreen';
+import { DietTypeScreen } from './DietTypeScreen';
 
 export type OnboardingStackParamList = {
   SignIn: undefined;
@@ -34,6 +38,9 @@ export type OnboardingStackParamList = {
   WeightGoal: undefined;
   Encouragement: undefined;
   GoalVelocity: undefined;
+  MoreEffective: undefined;
+  GoalObstacles: undefined;
+  DietType: undefined;
 };
 
 const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
@@ -52,6 +59,9 @@ const steps = [
   'WeightGoal',
   'Encouragement',
   'GoalVelocity',
+  'MoreEffective',
+  'GoalObstacles',
+  'DietType',
 ] as const;
 
 export const OnboardingNavigator: FC = () => {
@@ -308,10 +318,63 @@ export const OnboardingNavigator: FC = () => {
                 field: 'goalVelocity',
                 value: goalVelocity,
               });
+              dispatch({ type: 'NEXT_STEP' });
             }}
             onBack={() => dispatch({ type: 'PREV_STEP' })}
             showProgressBar
             step={13}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="MoreEffective">
+        {() => (
+          <MoreEffective
+            onNext={() => {
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={14}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+      <OnboardingStack.Screen name="GoalObstacles">
+        {() => (
+          <GoalObstacleScreen
+            initialValue={state.goalObstacle}
+            onSave={goalObstacle => {
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'goalObstacle',
+                value: goalObstacle,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={15}
+            totalSteps={steps.length}
+          />
+        )}
+      </OnboardingStack.Screen>
+
+      <OnboardingStack.Screen name="DietType">
+        {() => (
+          <DietTypeScreen
+            initialValue={state.goalObstacle}
+            onSave={dietType => {
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'dietType',
+                value: dietType,
+              });
+              dispatch({ type: 'NEXT_STEP' });
+            }}
+            onBack={() => dispatch({ type: 'PREV_STEP' })}
+            showProgressBar
+            step={16}
             totalSteps={steps.length}
           />
         )}

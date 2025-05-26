@@ -27,17 +27,18 @@
     "prettier/prettier": 1,
     "react-native/no-unused-styles": 1,
     "react-native/split-platform-components": 2,
-    "react-native/no-inline-styles": 2,
+    "react-native/no-inline-styles": 1,
     "react-native/no-color-literals": "off",
     "react-native/sort-styles": "off",
     "react-native/no-raw-text": 2,
     "react/react-in-jsx-scope": "off",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/exhaustive-deps": "off",
     "react/prop-types": "off",
+    "@typescript-eslint/no-explicit-any": 1,
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-unused-vars": ["warn"]
+    "@typescript-eslint/no-unused-vars": 1
   },
   "settings": {
     "react": {

@@ -4,7 +4,7 @@ import { Button, Icon } from '@rneui/themed';
 import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
 
-interface ActivityLevelScreenProps {
+interface GoalObstacleProps {
   initialValue?: number;
   onSave: (trainingFrequency: number) => void;
   onBack: () => void;
@@ -13,31 +13,31 @@ interface ActivityLevelScreenProps {
   totalSteps?: number;
 }
 
-export const ActivityLevelScreen = ({
+export const GoalObstacleScreen = ({
   initialValue = 0,
   onSave,
   onBack,
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
-}: ActivityLevelScreenProps) => {
+}: GoalObstacleProps) => {
   const styles = SharedStyles();
 
-  const [selectedActivity, setSelectedActivity] = useState(initialValue);
+  const [selectedObstacle, setSelectedObstacle] = useState(initialValue);
 
   const handleSave = () => {
-    if (selectedActivity !== null) {
-      onSave(selectedActivity);
+    if (selectedObstacle !== null) {
+      onSave(selectedObstacle);
     }
   };
 
-  const renderOption = (value: number, label: string) => {
-    const selected = selectedActivity === value;
+  const renderOption = (value: number, label: string, option?: string) => {
+    const selected = selectedObstacle === value;
     return (
       <TouchableOpacity
         key={value}
         style={[styles.optionButton, selected && styles.optionSelectedButton]}
-        onPress={() => setSelectedActivity(value)}>
+        onPress={() => setSelectedObstacle(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
           {label}
@@ -68,24 +68,22 @@ export const ActivityLevelScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>
-          How often do you work out in a typical week?
-        </Text>
-        <Text style={styles.subtitle}>
-          This helps us personalize your training and nutrition strategy
+        <Text style={styles.titleNoSub}>
+          What holds you back from achieving your goals?
         </Text>
 
         <View style={styles.optionsContainer}>
-          {renderOption(0, '0–2 times: Rarely')}
-          {renderOption(1, '3–5 times: A few times a week')}
-          {renderOption(2, '6+ times: Like an athlete')}
+          {renderOption(0, 'Lack of consistency')}
+          {renderOption(1, 'Unhealthy habits')}
+          {renderOption(2, 'Busy lifestyle')}
+          {renderOption(3, "Don't know how")}
         </View>
       </View>
 
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={selectedActivity === null}
+        disabled={selectedObstacle === null}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />

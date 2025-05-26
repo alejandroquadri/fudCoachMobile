@@ -6,3 +6,6 @@ export * from './LongTermResults';
 export * from './GoalScreen';
 export * from './EncouragementScreen';
 export * from './GoalVelocityScreen';
+export * from './MoreEffectiveScreen';
+export * from './GoalObstaclesScreen';
+export * from './DietTypeScreen';

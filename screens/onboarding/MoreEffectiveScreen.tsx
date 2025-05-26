@@ -11,7 +11,7 @@ import { StepProgressBar } from '@components';
 import { Icon, Button } from '@rneui/themed';
 import { COLORS, SharedStyles } from '@theme';
 
-interface LongTermResultsProps {
+interface MoreEffectiveProps {
   onNext: () => void;
   onBack: () => void;
   showProgressBar?: boolean;
@@ -19,13 +19,13 @@ interface LongTermResultsProps {
   totalSteps?: number;
 }
 
-export const LongTermResults = ({
+export const MoreEffective = ({
   onNext,
   onBack,
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
-}: LongTermResultsProps) => {
+}: MoreEffectiveProps) => {
   const styles = SharedStyles();
 
   return (
@@ -50,10 +50,12 @@ export const LongTermResults = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>With Fud Coach, get long term results</Text>
+        <Text style={styles.title}>
+          Loosing weight with Fud Coach is much more effective than on your own
+        </Text>
 
         <Image
-          source={require('../../assets/long_term.png')} // Update the path to your actual chart asset
+          source={require('../../assets/more_efficient.png')} // Update the path to your actual chart asset
           style={longTermStyles.chartImage}
           resizeMode="contain"
         />

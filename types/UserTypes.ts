@@ -50,7 +50,7 @@ export interface UserProfile {
   goal: number; // perder peso: 0 | ganar peso: 1 | mantenerme: 2
   weightGoal: number; // siempre en kg
   goalVelocity: number; // perdida de peso por semana
-  goalObsticle: string; // que te impide alcanzar tus metas
+  goalObstacle: number; // que te impide alcanzar tus metas
   dietType: string; // tipo de dieta: clasico | vegano | vegetariano | paleo | etc
   qualitativeGoal?: string; // ser mas saludabe | tener mas energia | etc
 }
