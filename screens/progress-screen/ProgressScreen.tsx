@@ -2,11 +2,11 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Text, Icon } from '@rneui/themed';
 import { LineChart } from 'react-native-gifted-charts';
-import { GoalStyles } from '../../theme';
-import { WeightLogInterface } from '../../types';
+import { GoalStyles } from '@theme';
+import { WeightLogInterface } from '@types';
 import { format, parseISO } from 'date-fns';
-import { AuthContext, AuthContextType } from '../../navigation/Authcontext';
-import { convertKilogramsToPounds, round } from '../../services';
+import { AuthContext, AuthContextType } from '@navigation';
+import { convertKilogramsToPounds, round } from '@services';
 import { weightLogsApi } from '../../api';
 
 interface ChartDataInterface {

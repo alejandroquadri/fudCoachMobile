@@ -25,7 +25,6 @@ const onboardingReducer = (
 ): OnboardingState => {
   switch (action.type) {
     case 'UPDATE_FIELD':
-      console.log('reducer working', action, state);
       return { ...state, [action.field]: action.value };
     case 'NEXT_STEP':
       return { ...state, onboardingStep: state.onboardingStep + 1 };

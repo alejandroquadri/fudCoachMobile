@@ -42,13 +42,12 @@ export const WeightScreen = ({
 }: WeightProps) => {
   const styles = SharedStyles();
   const [unit, setUnit] = useState<'metric' | 'imperial'>(unitType);
-  const [selectedKg, setSelectedKg] = useState(initialValue || 90);
-  const [displayWeightValue, setDisplayWeightValue] = useState(90);
+  const [selectedKg, setSelectedKg] = useState(initialValue || 75);
+  const [displayWeightValue, setDisplayWeightValue] = useState(165);
 
   const isMetric = unit === 'metric';
 
   const setWeight = (value: number) => {
-    console.log('value changed', value);
     if (isMetric) {
       setSelectedKg(value);
       setDisplayWeightValue(value);
@@ -70,9 +69,6 @@ export const WeightScreen = ({
   };
 
   const handleUnitToggle = (value: 'metric' | 'imperial') => {
-    console.log('selectedKg', selectedKg);
-    console.log('displayWeight', displayWeightValue);
-
     if (value !== unit) {
       if (value === 'metric') {
         setDisplayWeightValue(lbsToKg(displayWeightValue));
@@ -86,11 +82,7 @@ export const WeightScreen = ({
   };
 
   useEffect(() => {
-    if (initialValue !== undefined) {
-      setDisplayWeightValue(
-        unit === 'metric' ? initialValue : kgToLbs(initialValue)
-      );
-    }
+    setDisplayWeightValue(unit === 'metric' ? selectedKg : kgToLbs(selectedKg));
   }, []);
 
   return (
@@ -125,21 +117,6 @@ export const WeightScreen = ({
             <TouchableOpacity
               style={[
                 weightStyles.unitOption,
-                isMetric && weightStyles.unitOptionSelected,
-              ]}
-              onPress={() => handleUnitToggle('metric')}>
-              <Text
-                style={[
-                  weightStyles.unitOptionText,
-                  isMetric && weightStyles.unitOptionTextSelected,
-                ]}>
-                Metric
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                weightStyles.unitOption,
                 !isMetric && weightStyles.unitOptionSelected,
               ]}
               onPress={() => handleUnitToggle('imperial')}>
@@ -151,16 +128,27 @@ export const WeightScreen = ({
                 Imperial
               </Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                weightStyles.unitOption,
+                isMetric && weightStyles.unitOptionSelected,
+              ]}
+              onPress={() => handleUnitToggle('metric')}>
+              <Text
+                style={[
+                  weightStyles.unitOptionText,
+                  isMetric && weightStyles.unitOptionTextSelected,
+                ]}>
+                Metric
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {/* Picker 1 */}
           <View style={weightStyles.pickerContainer}>
             <Picker
               selectedValue={displayWeightValue}
-              onValueChange={val =>
-                // setSelectedKg(isMetric ? Number(val) : lbsToKg(val))
-                setWeight(Number(val))
-              }
+              onValueChange={val => setWeight(Number(val))}
               style={weightStyles.picker}>
               {weightOptions.map(weight => (
                 <Picker.Item

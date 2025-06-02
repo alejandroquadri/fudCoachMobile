@@ -9,3 +9,7 @@ export * from './GoalVelocityScreen';
 export * from './MoreEffectiveScreen';
 export * from './GoalObstaclesScreen';
 export * from './DietTypeScreen';
+export * from './OutcomeScreen';
+export * from './ChartToGoalScreen';
+export * from './SignUpScreen';
+export * from './PrepPlanScreen';

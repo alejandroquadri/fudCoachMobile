@@ -39,6 +39,7 @@ export interface RegistrationData {
 export interface UserProfile {
   name: string;
   email: string;
+  password: string;
   gender: string;
   lifeStyle: number;
   activityLevel: number;
@@ -52,5 +53,5 @@ export interface UserProfile {
   goalVelocity: number; // perdida de peso por semana
   goalObstacle: number; // que te impide alcanzar tus metas
   dietType: string; // tipo de dieta: clasico | vegano | vegetariano | paleo | etc
-  qualitativeGoal?: string; // ser mas saludabe | tener mas energia | etc
+  outcome: string; // ser mas saludabe | tener mas energia | etc
 }
