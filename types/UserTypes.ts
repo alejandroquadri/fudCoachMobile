@@ -54,4 +54,15 @@ export interface UserProfile {
   goalObstacle: number; // que te impide alcanzar tus metas
   dietType: string; // tipo de dieta: clasico | vegano | vegetariano | paleo | etc
   outcome: string; // ser mas saludabe | tener mas energia | etc
+  nutritionGoals: NutritionGoals;
+  weightLogs: Array<{ weightLog: number; date: Date }>;
+}
+
+export interface NutritionGoals {
+  tdee: number;
+  bmr: number;
+  dailyCaloricTarget: number;
+  dailyCarbsTarget: number;
+  dailyProteinTarget: number;
+  dailyFatTarget: number;
 }

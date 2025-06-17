@@ -1,31 +1,35 @@
-import React, { FC, useEffect } from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
+import {
+  NativeStackNavigationProp,
+  createNativeStackNavigator,
+} from '@react-navigation/native-stack';
+import React, { FC, useContext, useEffect } from 'react';
 import { useOnboarding } from './context/OnboardingContext';
 
-import { WelcomeScreen } from './WelcomeScreen';
-import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
-import { SignIn } from '../signin-screen';
-import { LongTermResults } from './LongTermResults';
-import { GoalScreen } from './GoalScreen';
-import { EcouragementScreen } from './EncouragementScreen';
-import { GoalVelocityScreen } from './GoalVelocityScreen';
-import { MoreEffective } from './MoreEffectiveScreen';
+import { AuthContext, AuthContextType } from '@navigation';
 import {
-  GenderScreen,
-  LifeStyleScreen,
   ActivityLevelScreen,
   BirthdateScreen,
+  GenderScreen,
   HeightScreen,
+  LifeStyleScreen,
   WeightScreen,
 } from '../shared';
-import { GoalObstacleScreen } from './GoalObstaclesScreen';
-import { DietTypeScreen } from './DietTypeScreen';
-import { OutcomeScreen } from './OutcomeScreen';
+import { SignIn } from '../signin-screen';
 import { ChartToGoalScreen } from './ChartToGoalScreen';
-import { SignUpScreen } from './SignUpScreen';
+import { DietTypeScreen } from './DietTypeScreen';
+import { EcouragementScreen } from './EncouragementScreen';
+import { GoalObstacleScreen } from './GoalObstaclesScreen';
+import { GoalScreen } from './GoalScreen';
+import { GoalVelocityScreen } from './GoalVelocityScreen';
+import { LongTermResults } from './LongTermResults';
+import { MoreEffective } from './MoreEffectiveScreen';
+import { OutcomeScreen } from './OutcomeScreen';
 import { PrepPlanScreen } from './PrepPlanScreen';
+import { SignUpScreen } from './SignUpScreen';
+import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
+import { WelcomeScreen } from './WelcomeScreen';
+import { Alert } from 'react-native';
 
 export type OnboardingStackParamList = {
   SignIn: undefined;
@@ -81,9 +85,35 @@ export const OnboardingNavigator: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<OnboardingStackParamList>>();
 
+  const auth = useContext<AuthContextType | undefined>(AuthContext);
+  if (!auth) {
+    throw new Error('auth must be used within an AuthProvider');
+  }
+
+  const { signUp } = auth;
+
+  const registerData = async () => {
+    try {
+      console.log('arranco register data', state);
+      // const response = await userAPI.signUpEmailPass();
+      //
+      // const token = response.token;
+      // const refreshToken = response.refreshToken;
+      // const profile = response.user;
+      //
+      // signUp(token, refreshToken, profile);
+    } catch (error) {
+      Alert.alert('Error', 'Failed Sign up');
+    } finally {
+      // TODO: posiblemente saco el loading
+    }
+  };
+
   useEffect(() => {
     if (state.onboardingStep >= steps.length) {
       // TODO: Here you can finalize onboarding, navigate to Home, etc.
+
+      registerData();
       console.log('Onboarding complete');
       return;
     }
@@ -431,7 +461,14 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Screen name="PrepPlan">
         {() => (
           <PrepPlanScreen
-            onNext={() => {
+            currentState={state}
+            onNext={nutritionGoals => {
+              console.log(nutritionGoals);
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'nutritionGoals',
+                value: nutritionGoals,
+              });
               dispatch({ type: 'NEXT_STEP' });
             }}
             onBack={() => dispatch({ type: 'PREV_STEP' })}
@@ -445,13 +482,22 @@ export const OnboardingNavigator: FC = () => {
         {() => (
           <SignUpScreen
             onSave={(name, email, password) => {
-              console.log(name, email, password);
-              // dispatch({
-              //   type: 'UPDATE_FIELD',
-              //   field: 'outcome',
-              //   value: outcome,
-              // });
-              // dispatch({ type: 'NEXT_STEP' });
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'name',
+                value: name,
+              });
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'email',
+                value: email,
+              });
+              dispatch({
+                type: 'UPDATE_FIELD',
+                field: 'password',
+                value: password,
+              });
+              dispatch({ type: 'NEXT_STEP' });
             }}
             onBack={() => dispatch({ type: 'PREV_STEP' })}
             showProgressBar

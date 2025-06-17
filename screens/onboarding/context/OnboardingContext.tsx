@@ -1,7 +1,7 @@
-import { UserProfile } from '@types';
+import { NutritionGoals, UserProfile } from '@types';
 import React, { createContext, useReducer, useContext, ReactNode } from 'react';
 
-interface OnboardingState extends Partial<UserProfile> {
+export interface OnboardingState extends Partial<UserProfile> {
   onboardingStep: number;
 }
 
@@ -9,7 +9,7 @@ type Action =
   | {
       type: 'UPDATE_FIELD';
       field: keyof OnboardingState;
-      value: string | number | boolean;
+      value: string | number | boolean | NutritionGoals;
     }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
@@ -27,6 +27,7 @@ const onboardingReducer = (
     case 'UPDATE_FIELD':
       return { ...state, [action.field]: action.value };
     case 'NEXT_STEP':
+      console.log('next step', state);
       return { ...state, onboardingStep: state.onboardingStep + 1 };
     case 'PREV_STEP':
       return { ...state, onboardingStep: state.onboardingStep - 1 };

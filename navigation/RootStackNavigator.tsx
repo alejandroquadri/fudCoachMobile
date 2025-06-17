@@ -86,27 +86,23 @@ export const RootStackNavigator: React.FC = () => {
 
   return (
     <AuthContext.Provider value={authContext}>
-      <Stack.Navigator>
-        {userToken == null ? (
-          <>
-            <Stack.Screen name="Onboarding" options={{ headerShown: false }}>
-              {() => (
-                <OnboardingProvider>
-                  <OnboardingNavigator />
-                </OnboardingProvider>
-              )}
-            </Stack.Screen>
-          </>
-        ) : (
-          <>
+      <OnboardingProvider>
+        <Stack.Navigator>
+          {userToken == null ? (
+            <Stack.Screen
+              name="Onboarding"
+              component={OnboardingNavigator}
+              options={{ headerShown: false }}
+            />
+          ) : (
             <Stack.Screen
               name="Home"
               component={DrawerNavigator}
               options={{ headerShown: false }}
             />
-          </>
-        )}
-      </Stack.Navigator>
+          )}
+        </Stack.Navigator>
+      </OnboardingProvider>
     </AuthContext.Provider>
   );
 };
