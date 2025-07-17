@@ -30,6 +30,8 @@ import { SignUpScreen } from './SignUpScreen';
 import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
 import { WelcomeScreen } from './WelcomeScreen';
 import { Alert } from 'react-native';
+import { userAPI } from '@api/AuthApi';
+import { UserProfile } from '@types';
 
 export type OnboardingStackParamList = {
   SignIn: undefined;
@@ -95,8 +97,13 @@ export const OnboardingNavigator: FC = () => {
   const registerData = async () => {
     try {
       console.log('arranco register data', state);
-      // const response = await userAPI.signUpEmailPass();
-      //
+      const { onboardingStep, ...userData } = state as {
+        onboardingStep: number;
+      } & UserProfile;
+
+      const response = await userAPI.register(userData);
+      console.log('response data', response);
+
       // const token = response.token;
       // const refreshToken = response.refreshToken;
       // const profile = response.user;
