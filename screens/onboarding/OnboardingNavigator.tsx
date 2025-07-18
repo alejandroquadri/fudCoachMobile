@@ -104,11 +104,11 @@ export const OnboardingNavigator: FC = () => {
       const response = await userAPI.register(userData);
       console.log('response data', response);
 
-      // const token = response.token;
-      // const refreshToken = response.refreshToken;
-      // const profile = response.user;
-      //
-      // signUp(token, refreshToken, profile);
+      const token = response.token;
+      const refreshToken = response.refreshToken;
+      const profile = response.user;
+
+      signUp(token, refreshToken, profile);
     } catch (error) {
       Alert.alert('Error', 'Failed Sign up');
     } finally {
