@@ -88,9 +88,10 @@ export const Chat = () => {
         setMessages(prevMessages => GiftedChat.append(prevMessages, message));
         const userMes = message[0].text;
         const userId = user._id;
-
         setIsTyping(true);
-        const apiResponseMessage = await sendChatMessage(userMes, userId);
+        const apiResponseMessage = await sendChatMessage(userMes, userId).catch(
+          error => console.log('error enviando mensage a ai', error)
+        );
         setIsTyping(false);
         // Append the API's response message
         setMessages(prevMessages => {
