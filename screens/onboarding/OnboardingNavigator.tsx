@@ -271,14 +271,14 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Screen name="Weight">
         {() => (
           <WeightScreen
-            initialValue={state.weight}
+            initialValue={state.initWeight}
             unitType={state.unitType}
             title="What is your current weight?"
             onSave={ret => {
               const { unitType, weight } = ret;
               dispatch({
                 type: 'UPDATE_FIELD',
-                field: 'weight',
+                field: 'initWeight',
                 value: weight,
               });
               dispatch({
