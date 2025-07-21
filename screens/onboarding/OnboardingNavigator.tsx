@@ -317,7 +317,7 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Screen name="WeightGoal">
         {() => (
           <WeightScreen
-            initialValue={state.weightGoal || state.weight}
+            initialValue={state.weightGoal || state.initWeight}
             unitType={state.unitType}
             title="What is your desired weight?"
             onSave={ret => {
@@ -344,7 +344,7 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Screen name="Encouragement">
         {() => (
           <EcouragementScreen
-            weightDelta={state.weight! - state.weightGoal!}
+            weightDelta={state.initWeight! - state.weightGoal!}
             unitType={state.unitType!}
             onNext={() => {
               dispatch({ type: 'NEXT_STEP' });
@@ -451,7 +451,7 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Screen name="ChartToGoal">
         {() => (
           <ChartToGoalScreen
-            currentWeight={state.weight!}
+            currentWeight={state.initWeight!}
             goalWeight={state.weightGoal!}
             pace={state.goalVelocity!}
             unit={state.unitType!}

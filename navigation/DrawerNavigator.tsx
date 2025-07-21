@@ -13,8 +13,11 @@ export const DrawerNavigator = () => {
       <Drawer.Screen name="Chat" component={Chat} />
       <Drawer.Screen name="MealLogs" component={LogScreen} />
       <Drawer.Screen name="Progress" component={ProgressScreen} />
-      {/* <Drawer.Screen name="Profile" component={Profile} /> */}
-      <Drawer.Screen name="Profile" component={ProfileStack} />
+      <Drawer.Screen
+        name="Profile"
+        component={ProfileStack}
+        options={{ headerShown: false }}
+      />
     </Drawer.Navigator>
   );
 };
