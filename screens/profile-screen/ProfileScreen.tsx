@@ -27,7 +27,6 @@ export const ProfileScreen = () => {
     useCallback(() => {
       (async () => {
         try {
-          console.log('este es el usuario en el context', user);
           const fresh = await getProfile(user._id);
           setProfile(fresh);
         } catch (e) {
