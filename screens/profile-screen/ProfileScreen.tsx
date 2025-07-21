@@ -1,25 +1,17 @@
-import React, { useContext, useCallback, useState } from 'react';
-import { View, ScrollView, Pressable, StyleSheet, Alert } from 'react-native';
-import { Text, Button } from '@rneui/themed';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { AuthContext, AuthContextType } from '@navigation';
+import { useCurrentUser } from '@navigation';
+import { useFocusEffect } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Button, Text } from '@rneui/themed';
 import { getProfile } from '@services';
-import type { ProfileStackParamList } from './ProfileStack';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format } from 'date-fns';
+import React, { useCallback, useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import type { ProfileStackParamList } from './ProfileStack';
 
-type Nav = NativeStackNavigationProp<ProfileStackParamList, 'ProfileHome'>;
+type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileHome'>;
 
-export const ProfileScreen = () => {
-  const navigation = useNavigation<Nav>();
-  const auth = useContext(AuthContext) as AuthContextType;
-  if (!auth) {
-    throw new Error('SignIn must be used within an AuthProvider');
-  }
-  const { user } = auth;
-  if (user === null) {
-    throw new Error('User not found');
-  }
+export const ProfileScreen = ({ navigation }: Props) => {
+  const user = useCurrentUser();
   const [profile, setProfile] = useState(user);
 
   /** refetch every time screen is focused */
@@ -54,15 +46,15 @@ export const ProfileScreen = () => {
       </View>
 
       <View style={styles.card}>
-        <Pressable onPress={() => navigation.navigate('EditCurrentWeight')}>
-          <View style={styles.itemRow}>
-            <Text style={styles.label}>Current weight</Text>
-            <Text style={styles.value}>{profile.initWeight} kg</Text>
-          </View>
-        </Pressable>
-        <View style={styles.separator} />
+        {/* <Pressable onPress={() => navigation.navigate('EditCurrentWeight')}> */}
+        {/*   <View style={styles.itemRow}> */}
+        {/*     <Text style={styles.label}>Current weight</Text> */}
+        {/*     <Text style={styles.value}>{profile.initWeight} kg</Text> */}
+        {/*   </View> */}
+        {/* </Pressable> */}
+        {/* <View style={styles.separator} /> */}
 
-        <Pressable onPress={() => navigation.navigate('EditHeight')}>
+        <Pressable onPress={() => navigation.navigate('HeightWrapper')}>
           <View style={styles.itemRow}>
             <Text style={styles.label}>Height</Text>
             <Text style={styles.value}>{profile.height} cm</Text>
