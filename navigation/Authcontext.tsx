@@ -1,20 +1,20 @@
 import { createContext } from 'react';
-import { User } from '@types';
+import { UserProfile } from '@types';
 
 export type AuthContextType = {
   signIn: (
     token: string,
     refreshToken: string,
-    setUserProfile: User
+    setUserProfile: UserProfile
   ) => Promise<void>;
   signUp: (
     token: string,
     refreshToken: string,
-    setUserProfile: User
+    setUserProfile: UserProfile
   ) => Promise<void>;
   signOut: () => void;
-  refreshUser: (user: User) => void;
-  user: User | null;
+  refreshUser: (user: UserProfile) => void;
+  user: UserProfile | null;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(

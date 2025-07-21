@@ -37,6 +37,7 @@ export interface RegistrationData {
 // hacia abajo las interfaces actualizadas
 
 export interface UserProfile {
+  _id: string;
   name: string;
   email: string;
   password: string;

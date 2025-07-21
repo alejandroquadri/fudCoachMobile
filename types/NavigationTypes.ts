@@ -8,16 +8,17 @@ export type DrawerParamList = {
   Profile: undefined;
   Progress: undefined;
   MealLogs: undefined;
-  EditWeight: {
-    onSave: (weightKg: number) => void;
-  };
-  EditHeight: {
-    currentHeight?: number;
-    onSave: (heightCm: number) => Promise<'ok' | undefined>;
-  };
-  EditBirthdate: {
-    currentBirthdate: string | undefined;
-    onSave: (date: string) => Promise<'ok' | undefined>;
-  };
-  EditGender: undefined;
 };
+
+// EditWeight: {
+//   onSave: (weightKg: number) => void;
+// };
+// EditHeight: {
+//   currentHeight?: number;
+//   onSave: (heightCm: number) => Promise<'ok' | undefined>;
+// };
+// EditBirthdate: {
+//   currentBirthdate: string | undefined;
+//   onSave: (date: string) => Promise<'ok' | undefined>;
+// };
+// EditGender: undefined;

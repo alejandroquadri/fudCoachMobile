@@ -1,11 +1,11 @@
 import { profileApi } from '../api/ProfileApi';
-import { User } from '../types';
+import { User, UserProfile } from '../types';
 
-export const updateProfile = async (user: User) => {
+export const updateProfile = async (user: UserProfile) => {
   const response = await profileApi.updateUser(user);
   return response;
 };
 
-export const getProfile = async (id: string) => {
+export const getProfile = async (id: string): Promise<UserProfile> => {
   return profileApi.getProfile(id);
 };
