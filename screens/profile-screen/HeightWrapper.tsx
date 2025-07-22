@@ -19,7 +19,7 @@ export const HeightWrapper = ({ navigation }: Props) => {
     try {
       const updated = { ...user, height, unitType };
       await updateProfile(updated);
-      navigation.goBack(); // previous screen auto-refreshes
+      navigation.goBack();
     } catch (e) {
       console.error(e);
     }
@@ -31,6 +31,7 @@ export const HeightWrapper = ({ navigation }: Props) => {
       unitType={user.unitType}
       onSave={saveHeight}
       onBack={() => navigation.goBack()}
+      standAlone={true}
     />
   );
 };

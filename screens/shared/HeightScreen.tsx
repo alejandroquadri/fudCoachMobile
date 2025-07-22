@@ -30,6 +30,7 @@ interface HeightProps {
   showProgressBar?: boolean;
   step?: number;
   totalSteps?: number;
+  standAlone?: boolean;
 }
 
 export const HeightScreen = ({
@@ -40,6 +41,7 @@ export const HeightScreen = ({
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
+  standAlone = false,
 }: HeightProps) => {
   const styles = SharedStyles();
   const [unit, setUnit] = useState<'metric' | 'imperial'>(unitType);
@@ -172,7 +174,7 @@ export const HeightScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={standAlone ? 'Save' : 'Next'}
         onPress={handleSave}
         // disabled={!selectedActivity}
         buttonStyle={styles.nextButton}

@@ -11,6 +11,7 @@ interface GenderScreenProps {
   showProgressBar?: boolean;
   step?: number;
   totalSteps?: number;
+  standAlone?: boolean;
 }
 
 export const GenderScreen = ({
@@ -20,6 +21,7 @@ export const GenderScreen = ({
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
+  standAlone = false,
 }: GenderScreenProps) => {
   const styles = SharedStyles();
 
@@ -82,7 +84,7 @@ export const GenderScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={standAlone ? 'Save' : 'Next'}
         onPress={handleSave}
         disabled={!selectedGender}
         buttonStyle={styles.nextButton}

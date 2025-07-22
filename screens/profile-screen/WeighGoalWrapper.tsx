@@ -31,6 +31,7 @@ export const WeightGoalWrapper = ({ navigation }: Props) => {
       title="Set your goal weight"
       onSave={saveWeight}
       onBack={() => navigation.goBack()}
+      standAlone={true}
     />
   );
 };

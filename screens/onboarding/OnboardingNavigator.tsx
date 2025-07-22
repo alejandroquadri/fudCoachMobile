@@ -3,10 +3,10 @@ import {
   NativeStackNavigationProp,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
-import React, { FC, useContext, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useOnboarding } from './context/OnboardingContext';
 
-import { AuthContext, AuthContextType } from '@navigation';
+import { useAuth } from '@navigation';
 import {
   ActivityLevelScreen,
   BirthdateScreen,
@@ -87,12 +87,7 @@ export const OnboardingNavigator: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<OnboardingStackParamList>>();
 
-  const auth = useContext<AuthContextType | undefined>(AuthContext);
-  if (!auth) {
-    throw new Error('auth must be used within an AuthProvider');
-  }
-
-  const { signUp } = auth;
+  const { signUp } = useAuth();
 
   const registerData = async () => {
     try {

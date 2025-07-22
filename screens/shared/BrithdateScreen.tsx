@@ -21,6 +21,7 @@ interface BirthdateProps {
   showProgressBar?: boolean;
   step?: number;
   totalSteps?: number;
+  standAlone?: boolean;
 }
 
 export const BirthdateScreen = ({
@@ -30,6 +31,7 @@ export const BirthdateScreen = ({
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
+  standAlone = false,
 }: BirthdateProps) => {
   // const navigation = useNavigation();
   // const route = useRoute<RouteProp<DrawerParamList, 'EditBirthdate'>>();
@@ -93,7 +95,7 @@ export const BirthdateScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={standAlone ? 'Save' : 'Next'}
         onPress={handleSave}
         // disabled={!selectedActivity}
         buttonStyle={styles.nextButton}

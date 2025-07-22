@@ -1,4 +1,4 @@
-import { useCurrentUser } from '@navigation';
+import { useAuth, useCurrentUser } from '@navigation';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, Text } from '@rneui/themed';
@@ -7,11 +7,13 @@ import { format } from 'date-fns';
 import React, { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import type { ProfileStackParamList } from './ProfileStack';
+import { capitalizeFirst } from '@utils';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileHome'>;
 
 export const ProfileScreen = ({ navigation }: Props) => {
   const user = useCurrentUser();
+  const { refreshUser } = useAuth();
   const [profile, setProfile] = useState(user);
 
   /** refetch every time screen is focused */
@@ -21,6 +23,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
         try {
           const fresh = await getProfile(user._id);
           setProfile(fresh);
+          refreshUser(fresh);
         } catch (e) {
           Alert.alert('Error', 'Could not load profile');
         }
@@ -62,7 +65,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
         </Pressable>
         <View style={styles.separator} />
 
-        <Pressable onPress={() => navigation.navigate('EditBirthdate')}>
+        <Pressable onPress={() => navigation.navigate('BirthDateWrapper')}>
           <View style={styles.itemRow}>
             <Text style={styles.label}>Date of birth</Text>
             <Text style={styles.value}>
@@ -74,10 +77,12 @@ export const ProfileScreen = ({ navigation }: Props) => {
         </Pressable>
         <View style={styles.separator} />
 
-        <View style={styles.itemRow}>
-          <Text style={styles.label}>Gender</Text>
-          <Text style={styles.value}>{profile.gender}</Text>
-        </View>
+        <Pressable onPress={() => navigation.navigate('GenderWrapper')}>
+          <View style={styles.itemRow}>
+            <Text style={styles.label}>Gender</Text>
+            <Text style={styles.value}>{capitalizeFirst(profile.gender)}</Text>
+          </View>
+        </Pressable>
       </View>
     </ScrollView>
   );

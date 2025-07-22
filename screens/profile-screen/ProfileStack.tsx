@@ -1,17 +1,18 @@
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View } from 'react-native';
 import { HeightWrapper } from './HeightWrapper';
 import { ProfileScreen } from './ProfileScreen';
 import { WeightGoalWrapper } from './WeighGoalWrapper';
-import { View } from 'react-native';
-// import { EditCurrentWeightScreen } from './edit/EditCurrentWeightScreen';
-// import { EditBirthdateScreen } from './edit/EditBirthdateScreen';
+import { BirthdateWrapper } from './BirthdateWrapper';
+import { GenderWrapper } from './GenderWrapper';
 
 export type ProfileStackParamList = {
   ProfileHome: undefined;
   WeightGoalWrapper: undefined;
   HeightWrapper: undefined;
-  EditBirthdate: undefined;
+  BirthDateWrapper: undefined;
+  GenderWrapper?: undefined;
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -34,6 +35,7 @@ export const ProfileStack = () => (
     />
     <Stack.Screen name="WeightGoalWrapper" component={WeightGoalWrapper} />
     <Stack.Screen name="HeightWrapper" component={HeightWrapper} />
-    {/* <Stack.Screen name="EditBirthdate" component={EditBirthdateScreen} /> */}
+    <Stack.Screen name="BirthDateWrapper" component={BirthdateWrapper} />
+    <Stack.Screen name="GenderWrapper" component={GenderWrapper} />
   </Stack.Navigator>
 );

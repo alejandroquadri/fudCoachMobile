@@ -28,6 +28,7 @@ interface WeightProps {
   showProgressBar?: boolean;
   step?: number;
   totalSteps?: number;
+  standAlone?: boolean;
 }
 
 export const WeightScreen = ({
@@ -39,6 +40,7 @@ export const WeightScreen = ({
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
+  standAlone = false,
 }: WeightProps) => {
   const styles = SharedStyles();
   const [unit, setUnit] = useState<'metric' | 'imperial'>(unitType);
@@ -163,7 +165,7 @@ export const WeightScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={standAlone ? 'Save' : 'Next'}
         onPress={handleSave}
         // disabled={!selectedActivity}
         buttonStyle={styles.nextButton}

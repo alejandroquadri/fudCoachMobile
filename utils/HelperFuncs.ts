@@ -12,3 +12,6 @@ export const imperialToCm = (feet: number, inches: number) => {
   const totalInches = feet * 12 + inches;
   return Math.round(totalInches * 2.54);
 };
+
+export const capitalizeFirst = (str?: string): string =>
+  str ? str[0].toUpperCase() + str.slice(1) : '';
