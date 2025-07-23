@@ -407,7 +407,7 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Screen name="DietType">
         {() => (
           <DietTypeScreen
-            initialValue={state.goalObstacle}
+            initialValue={state.dietType}
             onSave={dietType => {
               dispatch({
                 type: 'UPDATE_FIELD',
@@ -426,7 +426,7 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Screen name="Outcome">
         {() => (
           <OutcomeScreen
-            initialValue={state.goalObstacle}
+            initialValue={state.outcome}
             onSave={outcome => {
               dispatch({
                 type: 'UPDATE_FIELD',

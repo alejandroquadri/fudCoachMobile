@@ -5,7 +5,7 @@ import { LineChart } from 'react-native-gifted-charts';
 import { GoalStyles } from '@theme';
 import { WeightLogInterface } from '@types';
 import { format, parseISO } from 'date-fns';
-import { AuthContext, AuthContextType } from '@navigation';
+import { AuthContext, AuthContextType, useCurrentUser } from '@navigation';
 import { convertKilogramsToPounds, round } from '@services';
 import { weightLogsApi } from '../../api';
 
@@ -38,23 +38,24 @@ export const ProgressScreen = () => {
   const [minValueWeight, setMinValueWeight] = useState<number>(0);
   const [focusedData, setFocusedData] = useState(null);
 
-  const auth = useContext<AuthContextType | undefined>(AuthContext);
+  // const auth = useContext<AuthContextType | undefined>(AuthContext);
+  //
+  // if (!auth) throw new Error('AuthContext is undefined');
+  //
+  // const { user } = auth;
 
-  if (!auth) throw new Error('AuthContext is undefined');
-
-  const { user } = auth;
+  const user = useCurrentUser();
 
   const fetchWeightLogs = useCallback(async () => {
-    if (user !== null) {
-      try {
-        const weightLogs = await weightLogsApi.getWeightLogs(user._id!);
-        setWeightData(weightLogs);
-      } catch (error) {
-        console.error(error);
-        Alert.alert('Error', 'Failed to fetch food log data.');
-      } finally {
-        // TODO: something else
-      }
+    try {
+      const weightLogs = await weightLogsApi.getWeightLogs(user._id!);
+      console.log('obtengo weight logs', weightLogs);
+      setWeightData(weightLogs);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to fetch food log data.');
+    } finally {
+      // TODO: something else
     }
   }, [user]);
 
