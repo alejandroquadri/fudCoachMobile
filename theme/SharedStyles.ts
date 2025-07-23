@@ -80,5 +80,8 @@ export const SharedStyles = () => {
       fontSize: 16,
       fontWeight: 'bold',
     },
+    clearButtonText: {
+      color: COLORS.primaryColor,
+    },
   });
 };

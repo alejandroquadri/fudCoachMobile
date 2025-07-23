@@ -33,10 +33,6 @@ export const BirthdateScreen = ({
   totalSteps = 0,
   standAlone = false,
 }: BirthdateProps) => {
-  // const navigation = useNavigation();
-  // const route = useRoute<RouteProp<DrawerParamList, 'EditBirthdate'>>();
-  // const { currentBirthdate, onSave } = route.params;
-
   const styles = SharedStyles();
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState<Date>(

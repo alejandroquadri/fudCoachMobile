@@ -1,11 +1,11 @@
-import { useContext, useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Input, Button } from '@rneui/themed';
+import { Button, Input } from '@rneui/themed';
+import { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
-import { COLORS } from '@theme';
-import { AuthContext, AuthContextType } from '@navigation';
 import { userAPI } from '@api/AuthApi';
+import { useAuth } from '@navigation';
+import { SharedStyles } from '@theme';
 import { RootStackParamList } from '@types';
 
 type SignInScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -15,17 +15,12 @@ export const SignIn = ({
 }: {
   navigation: SignInScreenNavigationProp;
 }) => {
+  const styles = SharedStyles();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [, setLoading] = useState(false);
 
-  const auth = useContext<AuthContextType | undefined>(AuthContext);
-
-  if (!auth) {
-    throw new Error('SignIn must be used within an AuthProvider');
-  }
-
-  const { signIn } = auth;
+  const { signIn } = useAuth();
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -46,65 +41,48 @@ export const SignIn = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Input
-        placeholder="Email"
-        leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-        leftIconContainerStyle={styles.inputs}
-        onChangeText={value => setEmail(value.toLowerCase())}
-        value={email}
-      />
-      <Input
-        placeholder="Password"
-        leftIcon={{ type: 'font-awesome', name: 'lock' }}
-        leftIconContainerStyle={styles.inputs}
-        secureTextEntry={true}
-        onChangeText={value => setPassword(value)}
-        value={password}
-      />
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={signInStyles.container}>
+        <View style={signInStyles.inputContainer}>
+          <Input
+            placeholder="Email"
+            value={email}
+            keyboardType="email-address"
+            onChangeText={value => setEmail(value.toLowerCase())}
+          />
 
-      <View style={styles.btnContainer}>
+          <Input
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={value => setPassword(value)}
+          />
+        </View>
         <Button
-          title="Sign in"
+          title="Sign In"
           onPress={handleSignIn}
-          buttonStyle={styles.signInBtn}
+          buttonStyle={styles.nextButton}
         />
-
         <Button
           title="Create account"
           onPress={() => navigation.navigate('Welcome')}
-          buttonStyle={styles.textButton}
-          titleStyle={styles.buttonTitle}
+          type="clear"
+          buttonStyle={styles.clearButtonText}
+          titleStyle={styles.clearButtonText}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  btnContainer: {
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    marginHorizontal: 10,
-    marginTop: 20,
-  },
-  buttonTitle: {
-    color: COLORS.black,
-  },
+const signInStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
     marginTop: 90,
     padding: 20,
   },
-  inputs: {
-    paddingRight: 10,
-  },
-  signInBtn: {
-    // width: '100%',
-  },
-  textButton: {
-    backgroundColor: COLORS.transparent,
-    borderWidth: 0,
+  inputContainer: {
+    marginBottom: 50,
   },
 });

@@ -11,7 +11,7 @@ import {
   WaterIntakeCard,
   EmptyCard,
 } from '../../components';
-import { LogStyles } from '../../theme';
+import { LogStyles, SharedStyles } from '../../theme';
 import { FoodLog, ExerciseLog, WaterLog } from '../../types';
 
 // Grouping function for food logs
@@ -64,7 +64,8 @@ export const LogScreen = () => {
 
   const auth = useContext<AuthContextType | undefined>(AuthContext);
 
-  const styles = LogStyles();
+  const styles = SharedStyles();
+  const logStyles = LogStyles();
   if (!auth) throw new Error('AuthContext is undefined');
 
   const { user } = auth;
