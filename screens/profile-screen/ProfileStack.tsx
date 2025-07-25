@@ -6,13 +6,15 @@ import { ProfileScreen } from './ProfileScreen';
 import { WeightGoalWrapper } from './WeighGoalWrapper';
 import { BirthdateWrapper } from './BirthdateWrapper';
 import { GenderWrapper } from './GenderWrapper';
+import { EditNameScreen } from './EditNameScreen';
 
 export type ProfileStackParamList = {
   ProfileHome: undefined;
   WeightGoalWrapper: undefined;
   HeightWrapper: undefined;
   BirthDateWrapper: undefined;
-  GenderWrapper?: undefined;
+  GenderWrapper: undefined;
+  EditNameScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -37,5 +39,6 @@ export const ProfileStack = () => (
     <Stack.Screen name="HeightWrapper" component={HeightWrapper} />
     <Stack.Screen name="BirthDateWrapper" component={BirthdateWrapper} />
     <Stack.Screen name="GenderWrapper" component={GenderWrapper} />
+    <Stack.Screen name="EditNameScreen" component={EditNameScreen} />
   </Stack.Navigator>
 );
