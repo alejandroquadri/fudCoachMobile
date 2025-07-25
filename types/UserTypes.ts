@@ -39,6 +39,7 @@ export interface RegistrationData {
 export interface UserProfile {
   _id: string;
   name: string;
+  avatar?: string;
   email: string;
   password: string;
   gender: string;

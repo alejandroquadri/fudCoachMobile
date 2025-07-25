@@ -26,6 +26,12 @@ export const CustomDrawer = (props: DrawerContentComponentProps) => {
     await signOut();
   };
 
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  };
+
   const DrawerItem = ({
     label,
     iconName,
@@ -61,11 +67,13 @@ export const CustomDrawer = (props: DrawerContentComponentProps) => {
         { paddingTop: insets.top + 16 },
       ]}>
       <View style={styles.profileContainer}>
-        <Image
-          source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }}
-          style={styles.avatar}
-        />
-        {/* <Text style={styles.name}>Pepe</Text> */}
+        {user.avatar ? (
+          <Image source={{ uri: user.avatar }} style={styles.avatar} />
+        ) : (
+          <View style={styles.fallbackAvatar}>
+            <Text style={styles.initials}>{getInitials(user.name)}</Text>
+          </View>
+        )}
         <Text style={styles.name}>{user.name}</Text>
       </View>
 
@@ -104,6 +112,21 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     marginRight: 12,
   },
+  fallbackAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+
+  initials: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
   bottomDivider: {
     height: 1,
     backgroundColor: '#eee',
@@ -141,57 +164,3 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
-
-// import {
-//   DrawerContentComponentProps,
-//   DrawerContentScrollView,
-//   DrawerItem,
-//   DrawerItemList,
-// } from '@react-navigation/drawer';
-// import { useContext } from 'react';
-// import { Linking, StyleSheet, View } from 'react-native';
-// import { COLORS } from '../theme';
-// import { AuthContext, AuthContextType } from '../navigation/Authcontext';
-//
-// export const CustomDrawer = (props: DrawerContentComponentProps) => {
-//   const auth = useContext<AuthContextType | undefined>(AuthContext);
-//
-//   if (!auth) {
-//     throw new Error('CustomDrawer must be used within an AuthProvider');
-//   }
-//
-//   const { signOut } = auth;
-//
-//   const signOutUser = async () => {
-//     console.log('trying to signout');
-//     await signOut();
-//     // props.navigation.reset({
-//     //   index: 0,
-//     //   routes: [{ name: 'SignIn' }],
-//     // });
-//   };
-//
-//   return (
-//     <View style={styles.container}>
-//       <DrawerContentScrollView>
-//         <DrawerItemList {...props} />
-//         {/* <DrawerItem */}
-//         {/*   label="Help" */}
-//         {/*   onPress={() => Linking.openURL('https://quadri.com.ar')} */}
-//         {/* /> */}
-//         {/* <DrawerItem */}
-//         {/*   label="Chat2" */}
-//         {/*   onPress={() => props.navigation.navigate('Chat')} */}
-//         {/* /> */}
-//         <DrawerItem label="Sign out" onPress={signOutUser} />
-//       </DrawerContentScrollView>
-//     </View>
-//   );
-// };
-//
-// const styles = StyleSheet.create({
-//   container: {
-//     backgroundColor: COLORS.green,
-//     flex: 1,
-//   },
-// });
