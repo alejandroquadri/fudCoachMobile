@@ -1,5 +1,5 @@
-import { profileApi } from '../api/ProfileApi';
-import { User, UserProfile } from '../types';
+import { profileApi } from '@api';
+import { UserProfile } from '@types';
 
 export const updateProfile = async (user: UserProfile) => {
   const response = await profileApi.updateUser(user);

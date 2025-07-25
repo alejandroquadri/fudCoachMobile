@@ -1,18 +1,19 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
-import { subDays, addDays, parse, format } from 'date-fns';
-import { AuthContext, AuthContextType } from '../../navigation/Authcontext';
-import { foodLogsApi } from '../../api';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
+import { addDays, format, parse, subDays } from 'date-fns';
+
+import { foodLogsApi } from '@api';
 import {
   CalorieProgressCard,
   DateSegment,
-  FoodLogCard,
-  ExerciseCard,
-  WaterIntakeCard,
   EmptyCard,
-} from '../../components';
-import { LogStyles, SharedStyles } from '../../theme';
-import { FoodLog, ExerciseLog, WaterLog } from '../../types';
+  ExerciseCard,
+  FoodLogCard,
+  WaterIntakeCard,
+} from '@components';
+import { useCurrentUser } from '@navigation';
+import { LogStyles } from '@theme';
+import { ExerciseLog, FoodLog, WaterLog } from '@types';
 
 // Grouping function for food logs
 
@@ -47,6 +48,8 @@ const groupFoodLogsByMeal = (foodLogs: FoodLog[]) => {
 };
 
 export const LogScreen = () => {
+  const styles = LogStyles();
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoadingFoodLog, setIsLoadingFoodLog] = useState(false);
   const [isLoadingExerciseLog, setIsLoadingExerciseLog] = useState(false);
@@ -62,13 +65,7 @@ export const LogScreen = () => {
   const [consumedCalories, setConsumedCalories] = useState<number>();
   const [burnedCalories, setBurnedCalories] = useState<number>();
 
-  const auth = useContext<AuthContextType | undefined>(AuthContext);
-
-  const styles = SharedStyles();
-  const logStyles = LogStyles();
-  if (!auth) throw new Error('AuthContext is undefined');
-
-  const { user } = auth;
+  const user = useCurrentUser();
 
   const fetchFoodLog = useCallback(
     async (date: Date) => {
@@ -213,10 +210,12 @@ export const LogScreen = () => {
       />
       <ScrollView style={styles.scrollView}>
         <CalorieProgressCard
-          goal={user!.tdee}
+          goal={user.nutritionGoals.tdee}
           burned={burnedCalories!}
           consumed={consumedCalories!}
-          remaining={user!.tdee + burnedCalories! - consumedCalories!}
+          remaining={
+            user.nutritionGoals.tdee + burnedCalories! - consumedCalories!
+          }
         />
 
         {/* Render the grouped logs by meal */}

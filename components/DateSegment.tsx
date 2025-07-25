@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Button, Icon, Text } from '@rneui/themed';
+import { Button, Card, Icon, Text } from '@rneui/themed';
 import { format } from 'date-fns';
 import { DateSegmentStyles } from '../theme';
 

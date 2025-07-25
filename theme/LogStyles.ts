@@ -9,6 +9,7 @@ export const LogStyles = () => {
     },
     scrollView: {
       flex: 1,
+      backgroundColor: COLORS.backgroundColor,
     },
     spinner: {
       flex: 1,
@@ -62,7 +63,7 @@ export const DateSegmentStyles = () => {
   return StyleSheet.create({
     dateSegment: {
       alignItems: 'center',
-      backgroundColor: COLORS.bgGrey,
+      backgroundColor: COLORS.backgroundColor,
       flexDirection: 'row',
       justifyContent: 'center',
       padding: 10,
@@ -189,6 +190,7 @@ export const FoodLogStyles = () => {
       marginHorizontal: 20,
       marginTop: 10,
       padding: 15,
+      borderRadius: 10,
     },
     progressTitle: {
       fontSize: 18,
