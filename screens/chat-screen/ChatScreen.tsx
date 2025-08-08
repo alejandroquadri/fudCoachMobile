@@ -1,25 +1,25 @@
-import { useState, useEffect, useContext } from 'react';
-import { Alert, View, TouchableOpacity, ViewStyle, Modal } from 'react-native';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
-import { Send } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import 'react-native-get-random-values';
+import { useContext, useEffect, useState } from 'react';
+import { Alert, Modal, TouchableOpacity, View } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import 'react-native-get-random-values';
 import { format } from 'date-fns';
-
+import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '@rneui/themed';
 
-import { ChatStyles } from './ChatStyles';
 import { COLORS } from '@theme';
+import { ChatStyles } from './ChatStyles';
 
+import { CameraScreen } from '@components';
+import { useKeyboard } from '@hooks';
 import { AuthContext, AuthContextType } from '@navigation';
 import {
   fetchPreviousMessages,
+  saveNotificationToken,
   sendChatImage,
+  registerForPushNotificationsAsync,
   sendChatMessage,
 } from '@services';
-import { useKeyboard } from '@hooks';
-import { CameraScreen } from '@components';
 
 const storeLastOpenedDate = async () => {
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -73,6 +73,12 @@ export const Chat = () => {
         setMessages(prevMessages);
         const newUser = prevMessages.length < 1;
         console.log(newUser);
+
+        const expoPushToken = await registerForPushNotificationsAsync();
+        console.log(expoPushToken);
+        if (expoPushToken) {
+          // await saveNotificationToken(user._id, expoPushToken);
+        }
         // FIX: Lo saque temporariamente para que no haga constantes llamados al AI
         // await checkAndShowGreeting(user._id, newUser);
       }

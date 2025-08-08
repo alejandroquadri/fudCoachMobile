@@ -132,6 +132,28 @@ export const FoodLogStyles = () => {
       justifyContent: 'center',
       marginLeft: 10,
     },
+    foodNameRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+
+    foodNameText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+
+    timeChip: {
+      backgroundColor: '#E0E0E0',
+      borderRadius: 12,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+    },
+
+    timeChipText: {
+      fontSize: 12,
+      color: '#333',
+    },
     foodIcon: {
       alignItems: 'center',
       backgroundColor: '#E0F7FA',

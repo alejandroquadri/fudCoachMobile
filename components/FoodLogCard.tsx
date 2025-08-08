@@ -1,9 +1,10 @@
+import { Card, Text } from '@rneui/themed';
 import React from 'react';
-import { View, Image } from 'react-native';
-import { Card, Button, Text } from '@rneui/themed';
+import { Image, View } from 'react-native';
 import { PieChart } from 'react-native-gifted-charts';
 import { FoodLogStyles } from '../theme';
 import { FoodLog } from '../types';
+import { format, parseISO } from 'date-fns';
 
 interface FoodLogCardProps {
   mealType: string;
@@ -23,9 +24,10 @@ export const FoodLogCard: React.FC<FoodLogCardProps> = ({ mealType, logs }) => {
     <Card containerStyle={styles.mealCard}>
       {/* Meal Header with total calories */}
       <View style={styles.mealHeader}>
-        <Text style={styles.mealTitle}>{mealType}</Text>
+        {/* <Text style={styles.mealTitle}>{mealType}</Text> */}
+        <Text style={styles.mealTitle}>Food</Text>
         <Text style={styles.mealCalories}>({totalCalories} calories)</Text>
-        <Button title="+ Add Meal" type="clear" onPress={() => {}} />
+        {/* <Button title="+ Add Meal" type="clear" onPress={() => {}} /> */}
       </View>
 
       {/* Display each food log */}
@@ -47,7 +49,14 @@ export const FoodLogCard: React.FC<FoodLogCardProps> = ({ mealType, logs }) => {
 
           {/* Food Details */}
           <View style={styles.foodDetails}>
-            <Text style={styles.foodName}>{log.foodObj.foodName}</Text>
+            <View style={styles.foodNameRow}>
+              <Text style={styles.foodNameText}>{log.foodObj.foodName}</Text>
+              <View style={styles.timeChip}>
+                <Text style={styles.timeChipText}>
+                  {format(parseISO(log.createdAt), 'HH:mm')}
+                </Text>
+              </View>
+            </View>
             <Text style={styles.foodCalories}>
               {log.foodObj.calories} calories
             </Text>

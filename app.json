@@ -11,10 +11,20 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mauroq.fudCoach"
+      "bundleIdentifier": "com.mauroq.fudCoach",
+      "infoPlist": {
+        "NSCameraUsageDescription": "We need access to your camera to take food photos.",
+        "NSMicrophoneUsageDescription": "We need access to your microphone for voice input.",
+        "NSUserTrackingUsageDescription": "We use this data to improve your experience.",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {

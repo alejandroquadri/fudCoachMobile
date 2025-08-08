@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { addDays, format, parse, subDays } from 'date-fns';
+import { addDays, format, parse, parseISO, subDays } from 'date-fns';
 
 import { foodLogsApi } from '@api';
 import {
@@ -18,6 +18,7 @@ import { ExerciseLog, FoodLog, WaterLog } from '@types';
 // Grouping function for food logs
 
 const groupFoodLogsByMeal = (foodLogs: FoodLog[]) => {
+  console.log(foodLogs);
   const groupedLogs = {
     breakfast: [] as FoodLog[],
     lunch: [] as FoodLog[],
@@ -28,9 +29,10 @@ const groupFoodLogsByMeal = (foodLogs: FoodLog[]) => {
   let totalCalories = 0;
 
   foodLogs.forEach(log => {
-    const parsedDate = parse(log.hour, 'HH:mm', new Date());
+    const parsedDate = parseISO(log.createdAt);
     const hour = parsedDate.getHours();
 
+    console.log('hora parseada:', log.createdAt, hour);
     if (hour >= 7 && hour < 12) {
       groupedLogs.breakfast.push(log);
     } else if (hour >= 12 && hour < 15) {
@@ -44,7 +46,8 @@ const groupFoodLogsByMeal = (foodLogs: FoodLog[]) => {
     totalCalories += log.foodObj.calories;
   });
 
-  return { logs: groupedLogs, totalCalories };
+  // return { logs: groupedLogs, totalCalories };
+  return { logs: foodLogs, totalCalories };
 };
 
 export const LogScreen = () => {
@@ -60,6 +63,7 @@ export const LogScreen = () => {
     dinner: [] as FoodLog[],
     snack: [] as FoodLog[],
   });
+  const [foodLogs, setFoodLogs] = useState<FoodLog[]>([]);
   const [exerciseLogs, setExerciseLogs] = useState<ExerciseLog[]>([]);
   const [waterLog, setWaterLog] = useState<WaterLog>();
   const [consumedCalories, setConsumedCalories] = useState<number>();
@@ -80,8 +84,9 @@ export const LogScreen = () => {
 
           // Group logs by meal
           const groupedLogs = groupFoodLogsByMeal(foodLogs);
-          setGroupedFoodLogs(groupedLogs.logs);
+          // setGroupedFoodLogs(groupedLogs.logs);
           setConsumedCalories(groupedLogs.totalCalories);
+          setFoodLogs(foodLogs);
         } catch (error) {
           console.error(error);
           Alert.alert('Error', 'Failed to fetch food log data.');
@@ -223,39 +228,49 @@ export const LogScreen = () => {
           <EmptyCard cardType={{ type: 'Food' }} isLoading={isLoadingFoodLog} />
         ) : (
           <>
-            {/* Render Breakfast Logs */}
-            {groupedFoodLogs.breakfast.length > 0 && (
-              <FoodLogCard
-                mealType="Breakfast"
-                logs={groupedFoodLogs.breakfast}
-              />
+            {foodLogs.length > 0 && (
+              <FoodLogCard mealType="Lunch" logs={foodLogs} />
             )}
+
+            {/* Render Breakfast Logs */}
+            {/* {groupedFoodLogs.breakfast.length > 0 && ( */}
+            {/*   <FoodLogCard */}
+            {/*     mealType="Breakfast" */}
+            {/*     logs={groupedFoodLogs.breakfast} */}
+            {/*   /> */}
+            {/* )} */}
 
             {/* Render Lunch Logs */}
-            {groupedFoodLogs.lunch.length > 0 && (
-              <FoodLogCard mealType="Lunch" logs={groupedFoodLogs.lunch} />
-            )}
+            {/* {groupedFoodLogs.lunch.length > 0 && ( */}
+            {/*   <FoodLogCard mealType="Lunch" logs={groupedFoodLogs.lunch} /> */}
+            {/* )} */}
 
             {/* Render Dinner Logs */}
-            {groupedFoodLogs.dinner.length > 0 && (
-              <FoodLogCard mealType="Dinner" logs={groupedFoodLogs.dinner} />
-            )}
+            {/* {groupedFoodLogs.dinner.length > 0 && ( */}
+            {/*   <FoodLogCard mealType="Dinner" logs={groupedFoodLogs.dinner} /> */}
+            {/* )} */}
 
             {/* Render Snack Logs */}
-            {groupedFoodLogs.snack.length > 0 && (
-              <FoodLogCard mealType="Snack" logs={groupedFoodLogs.snack} />
-            )}
+            {/* {groupedFoodLogs.snack.length > 0 && ( */}
+            {/*   <FoodLogCard mealType="Snack" logs={groupedFoodLogs.snack} /> */}
+            {/* )} */}
 
             {/* If no food logs */}
-            {groupedFoodLogs.breakfast.length === 0 &&
-              groupedFoodLogs.lunch.length === 0 &&
-              groupedFoodLogs.dinner.length === 0 &&
-              groupedFoodLogs.snack.length === 0 && (
-                <EmptyCard
-                  cardType={{ type: 'Food' }}
-                  isLoading={isLoadingFoodLog}
-                />
-              )}
+            {foodLogs.length === 0 && (
+              <EmptyCard
+                cardType={{ type: 'Food' }}
+                isLoading={isLoadingFoodLog}
+              />
+            )}
+            {/* {groupedFoodLogs.breakfast.length === 0 && */}
+            {/*   groupedFoodLogs.lunch.length === 0 && */}
+            {/*   groupedFoodLogs.dinner.length === 0 && */}
+            {/*   groupedFoodLogs.snack.length === 0 && ( */}
+            {/*     <EmptyCard */}
+            {/*       cardType={{ type: 'Food' }} */}
+            {/*       isLoading={isLoadingFoodLog} */}
+            {/*     /> */}
+            {/*   )} */}
           </>
         )}
 
