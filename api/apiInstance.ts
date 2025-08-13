@@ -1,8 +1,9 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-// const url = 'http://192.168.0.100:3000';
-const url = 'http://localhost:3000';
+const url = 'http://Mac-Ale.local:3000';
+// const url = '192.168.0.148:3000';
+// const url = 'http://localhost:3000';
 
 export const api = axios.create({
   baseURL: url, // your API server
@@ -55,9 +56,8 @@ api.interceptors.response.use(
       );
 
       // Set the Authorization header to the new token
-      api.defaults.headers.common[
-        'Authorization'
-      ] = `Bearer ${refreshedToken.accessToken}`;
+      api.defaults.headers.common['Authorization'] =
+        `Bearer ${refreshedToken.accessToken}`;
 
       // Retry the original request
       return api(originalRequest);

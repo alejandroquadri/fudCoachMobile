@@ -19,6 +19,7 @@ import {
   sendChatImage,
   registerForPushNotificationsAsync,
   sendChatMessage,
+  ensurePushTokenSynced,
 } from '@services';
 
 const storeLastOpenedDate = async () => {
@@ -74,11 +75,10 @@ export const Chat = () => {
         const newUser = prevMessages.length < 1;
         console.log(newUser);
 
-        const expoPushToken = await registerForPushNotificationsAsync();
-        console.log(expoPushToken);
-        if (expoPushToken) {
-          // await saveNotificationToken(user._id, expoPushToken);
-        }
+        // chequeo si el token para notificaciones esta guardado, si no lo guardo
+        // si no, pido permiso para notificaciones y luego guardo el token
+        await ensurePushTokenSynced(user._id);
+
         // FIX: Lo saque temporariamente para que no haga constantes llamados al AI
         // await checkAndShowGreeting(user._id, newUser);
       }

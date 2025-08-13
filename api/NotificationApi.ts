@@ -1,9 +1,12 @@
+import { NotificationTokenPayload } from '@types';
 import { api } from './ApiInstance';
 
 export const notificationsApi = {
-  saveExpoPushToken: async (userId: string, token: string): Promise<void> => {
+  saveExpoPushToken: async (
+    notificationPayload: NotificationTokenPayload
+  ): Promise<void> => {
     return api
-      .post('/notifications/save-token', { userId, token })
+      .post('/notifications/save-token', { notificationPayload })
       .then(res => res.data);
   },
 };

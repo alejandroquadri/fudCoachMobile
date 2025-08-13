@@ -25,7 +25,10 @@ export const SignIn = ({
   const handleSignIn = async () => {
     setLoading(true);
     try {
+      console.log('trato de loguearme', email, password);
       const response = await userAPI.loginEmailPass(email, password);
+
+      console.log('vuelve', response);
       const token = response.data.token;
       const refreshToken = response.data.refreshToken;
       const profile = response.data.user;
