@@ -15,7 +15,7 @@ import {
   LifeStyleScreen,
   WeightScreen,
 } from '../shared';
-import { SignIn } from '../signin-screen';
+import { SignIn } from './SignInScreen';
 import { ChartToGoalScreen } from './ChartToGoalScreen';
 import { DietTypeScreen } from './DietTypeScreen';
 import { EcouragementScreen } from './EncouragementScreen';

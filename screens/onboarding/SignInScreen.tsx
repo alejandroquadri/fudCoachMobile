@@ -6,15 +6,11 @@ import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { userAPI } from '@api/AuthApi';
 import { useAuth } from '@navigation';
 import { SharedStyles } from '@theme';
-import { RootStackParamList } from '@types';
+import { OnboardingStackParamList } from './OnboardingNavigator';
 
-type SignInScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type Props = NativeStackNavigationProp<OnboardingStackParamList, 'SignIn'>;
 
-export const SignIn = ({
-  navigation,
-}: {
-  navigation: SignInScreenNavigationProp;
-}) => {
+export const SignIn = ({ navigation }: { navigation: Props }) => {
   const styles = SharedStyles();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
