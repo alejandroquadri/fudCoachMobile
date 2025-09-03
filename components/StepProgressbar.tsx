@@ -1,6 +1,7 @@
+import { LinearProgress } from '@rneui/themed';
+import { COLORS } from '@theme';
 import React, { FC } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { LinearProgress, Icon } from '@rneui/themed';
+import { StyleSheet, View } from 'react-native';
 
 interface StepProgressBarProps {
   step: number;
@@ -23,7 +24,7 @@ export const StepProgressBar: FC<StepProgressBarProps> = ({
           value={progress}
           variant="determinate"
           color="black"
-          trackColor="#D3D3D3"
+          trackColor={COLORS.secondaryColor}
           style={styles.progressBar}
         />
       </View>

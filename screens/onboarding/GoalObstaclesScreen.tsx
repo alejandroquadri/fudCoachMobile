@@ -5,8 +5,8 @@ import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
 
 interface GoalObstacleProps {
-  initialValue?: number;
-  onSave: (trainingFrequency: number) => void;
+  initialValue?: string;
+  onSave: (trainingFrequency: string) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
@@ -14,7 +14,7 @@ interface GoalObstacleProps {
 }
 
 export const GoalObstacleScreen = ({
-  initialValue = 0,
+  initialValue = '',
   onSave,
   onBack,
   showProgressBar = false,
@@ -31,7 +31,7 @@ export const GoalObstacleScreen = ({
     }
   };
 
-  const renderOption = (value: number, label: string, option?: string) => {
+  const renderOption = (value: string) => {
     const selected = selectedObstacle === value;
     return (
       <TouchableOpacity
@@ -40,7 +40,7 @@ export const GoalObstacleScreen = ({
         onPress={() => setSelectedObstacle(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {label}
+          {value}
         </Text>
       </TouchableOpacity>
     );
@@ -73,10 +73,10 @@ export const GoalObstacleScreen = ({
         </Text>
 
         <View style={styles.optionsContainer}>
-          {renderOption(0, 'Lack of consistency')}
-          {renderOption(1, 'Unhealthy habits')}
-          {renderOption(2, 'Busy lifestyle')}
-          {renderOption(3, "Don't know how")}
+          {renderOption('Lack of consistency')}
+          {renderOption('Unhealthy habits')}
+          {renderOption('Busy lifestyle')}
+          {renderOption("Don't know how")}
         </View>
       </View>
 

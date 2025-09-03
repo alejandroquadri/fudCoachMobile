@@ -4,3 +4,8 @@ export interface ChatMsg {
   content: string;
   timestamp: Date;
 }
+
+export interface AiState {
+  messages: string[];
+  preferences: Record<string, number | string | boolean>;
+}

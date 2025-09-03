@@ -10,6 +10,7 @@ import {
 import { Button, Icon, Slider } from '@rneui/themed';
 import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
+import { convertPoundsToKilograms } from '@services';
 
 interface GoalVelocityProps {
   initialValue?: number;
@@ -41,7 +42,13 @@ export const GoalVelocityScreen = ({
   const maxRecommendeVelocity = unitType === 'metric' ? 1 : 2.0;
 
   const handleSave = () => {
-    if (onSave) onSave(selectedVel);
+    if (onSave) {
+      const vel =
+        unitType === 'imperial'
+          ? convertPoundsToKilograms(selectedVel)
+          : selectedVel;
+      onSave(vel);
+    }
   };
 
   return (

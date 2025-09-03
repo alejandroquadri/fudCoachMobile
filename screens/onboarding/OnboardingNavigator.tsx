@@ -32,6 +32,7 @@ import { WelcomeScreen } from './WelcomeScreen';
 import { Alert } from 'react-native';
 import { userAPI } from '@api/AuthApi';
 import { UserProfile } from '@types';
+import { createInitialNotificatinJobs } from '@services';
 
 export type OnboardingStackParamList = {
   SignIn: undefined;
@@ -99,6 +100,9 @@ export const OnboardingNavigator: FC = () => {
       const response = await userAPI.register(userData);
       console.log('response data', response);
 
+      // Registro jobs de notifications
+      // await createInitialNotificatinJobs(response.user._id);
+
       const token = response.token;
       const refreshToken = response.refreshToken;
       const profile = response.user;
@@ -113,8 +117,6 @@ export const OnboardingNavigator: FC = () => {
 
   useEffect(() => {
     if (state.onboardingStep >= steps.length) {
-      // TODO: Here you can finalize onboarding, navigate to Home, etc.
-
       registerData();
       console.log('Onboarding complete');
       return;

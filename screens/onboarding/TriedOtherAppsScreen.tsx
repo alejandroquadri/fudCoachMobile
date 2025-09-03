@@ -1,14 +1,8 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
 import { COLORS, SharedStyles } from '@theme';
+import React, { useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface TriedOtherAppsScreenProps {
   initialValue?: boolean;

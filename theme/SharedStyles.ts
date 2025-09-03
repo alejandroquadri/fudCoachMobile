@@ -54,7 +54,7 @@ export const SharedStyles = () => {
       gap: 12,
     },
     optionButton: {
-      backgroundColor: COLORS.backgroundColor,
+      backgroundColor: COLORS.secondaryColor,
       borderRadius: 16,
       paddingVertical: 14,
       paddingHorizontal: 20,

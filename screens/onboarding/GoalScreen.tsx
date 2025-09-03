@@ -5,8 +5,8 @@ import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
 
 interface GoalScreenProps {
-  initialValue?: number;
-  onSave: (goal: number) => void;
+  initialValue?: string;
+  onSave: (goal: string) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
@@ -14,7 +14,7 @@ interface GoalScreenProps {
 }
 
 export const GoalScreen = ({
-  initialValue = 0,
+  initialValue = '',
   onSave,
   onBack,
   showProgressBar = false,
@@ -31,7 +31,7 @@ export const GoalScreen = ({
     }
   };
 
-  const renderOption = (value: number, label: string) => {
+  const renderOption = (value: string) => {
     const selected = selectedGoal === value;
     return (
       <TouchableOpacity
@@ -40,7 +40,7 @@ export const GoalScreen = ({
         onPress={() => setSelectedGoal(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {label}
+          {value}
         </Text>
       </TouchableOpacity>
     );
@@ -74,9 +74,9 @@ export const GoalScreen = ({
         </Text>
 
         <View style={styles.optionsContainer}>
-          {renderOption(0, 'Loose weight')}
-          {renderOption(1, 'Keep weight')}
-          {renderOption(2, 'Gain weight')}
+          {renderOption('Loose weight')}
+          {renderOption('Keep weight')}
+          {renderOption('Gain weight')}
         </View>
       </View>
 

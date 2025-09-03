@@ -1,5 +1,6 @@
 import { notificationsApi } from '@api';
-import { NotificationTokenPayload } from '@types';
+import { CreateJobPayload, NotificationTokenPayload } from '@types';
+import { getIana } from '@utils';
 import * as Application from 'expo-application';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -174,3 +175,36 @@ const getStableDeviceId = async (): Promise<string> => {
   }
   return cached;
 };
+
+export const createInitialNotificatinJobs = (userId: string) => {
+  const iana = getIana();
+  const genericPayload: Omit<CreateJobPayload, 'key' | 'hourLocal'> = {
+    userId: userId,
+    enabled: true,
+    timezone: iana.tz,
+  };
+
+  console.log('intento iniciar not jobs', genericPayload);
+  const dailyPlanner = notificationsApi.createNotificationJob({
+    ...genericPayload,
+    key: 'dailyPlanner',
+    hourLocal: '09:00',
+  });
+
+  const lunchLogReminder = notificationsApi.createNotificationJob({
+    ...genericPayload,
+    key: 'lunchLogReminder',
+    hourLocal: '12:00',
+  });
+  const dinnerLogReminder = notificationsApi.createNotificationJob({
+    ...genericPayload,
+    key: 'dinnerLogReminder',
+    hourLocal: '20:00',
+  });
+  console.log('armo todas las promesas y las mando');
+  return Promise.all([dailyPlanner, lunchLogReminder, dinnerLogReminder]);
+};
+
+// | 'dailyPlanner'
+// | 'lunchLogReminder'
+// | 'dinnerLogReminder';

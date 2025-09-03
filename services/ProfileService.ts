@@ -1,9 +1,11 @@
-import { profileApi } from '@api';
+import { aiApi, profileApi } from '@api';
 import { UserProfile } from '@types';
 
 export const updateProfile = async (user: UserProfile) => {
-  const response = await profileApi.updateUser(user);
-  return response;
+  const profile = profileApi.updateUser(user);
+  const state = aiApi.initPrefernces(user);
+  const [profileRes, stateRes] = await Promise.all([profile, state]);
+  return profileRes;
 };
 
 export const getProfile = async (id: string): Promise<UserProfile> => {

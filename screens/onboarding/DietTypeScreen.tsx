@@ -5,8 +5,8 @@ import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
 
 interface DietTypeProps {
-  initialValue?: number;
-  onSave: (trainingFrequency: number) => void;
+  initialValue?: string;
+  onSave: (dietType: string) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
@@ -14,7 +14,7 @@ interface DietTypeProps {
 }
 
 export const DietTypeScreen = ({
-  initialValue = 0,
+  initialValue = '',
   onSave,
   onBack,
   showProgressBar = false,
@@ -31,7 +31,7 @@ export const DietTypeScreen = ({
     }
   };
 
-  const renderOption = (value: number, label: string, option?: string) => {
+  const renderOption = (value: string) => {
     const selected = selectedDietType === value;
     return (
       <TouchableOpacity
@@ -40,7 +40,7 @@ export const DietTypeScreen = ({
         onPress={() => setSelectedDietType(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {label}
+          {value}
         </Text>
       </TouchableOpacity>
     );
@@ -73,13 +73,13 @@ export const DietTypeScreen = ({
         </Text>
 
         <View style={styles.optionsContainer}>
-          {renderOption(0, 'Classic')}
-          {renderOption(1, 'Vegetarian')}
-          {renderOption(2, 'Vegan')}
-          {renderOption(3, 'Pescatarian')}
-          {renderOption(4, 'Keto')}
-          {renderOption(5, 'Low carb')}
-          {renderOption(6, 'Paleo')}
+          {renderOption('Classic')}
+          {renderOption('Vegetarian')}
+          {renderOption('Vegan')}
+          {renderOption('Pescatarian')}
+          {renderOption('Keto')}
+          {renderOption('Low carb')}
+          {renderOption('Paleo')}
         </View>
       </View>
 

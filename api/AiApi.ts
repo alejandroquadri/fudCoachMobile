@@ -1,4 +1,4 @@
-import { ChatMsg } from '../types';
+import { AiState, ChatMsg, UserProfile } from '../types';
 import { api } from './ApiInstance';
 
 export const aiApi = {
@@ -6,13 +6,14 @@ export const aiApi = {
     api
       .post('/coach/get-answer', { message, userId })
       .then(response => response.data),
-  parseImage: async (imageUri: string, userId: string): Promise<ChatMsg> => {
+  parseImage: async (uri: string, userId: string): Promise<ChatMsg> => {
     const formData = new FormData();
 
     formData.append('image', {
-      uri: imageUri,
-      name: 'photo.jpg',
-      type: imageUri.endsWith('.png') ? 'image/png' : 'image/jpeg',
+      uri,
+      name: `photo_${Date.now()}.jpg`,
+      type: 'image/jpeg',
+      // type: imageUri.endsWith('.png') ? 'image/png' : 'image/jpeg',
       // type: mime.getType(imageUri) || 'image/jpeg',
     } as any); // cast as any to bypass typing issues in React Native
 
@@ -24,6 +25,11 @@ export const aiApi = {
           'Content-Type': 'multipart/form-data',
         },
       })
+      .then(response => response.data);
+  },
+  initPrefernces: async (userProfile: UserProfile): Promise<AiState> => {
+    return api
+      .post('/coach/init-user-preferences', { userProfile })
       .then(response => response.data);
   },
 };

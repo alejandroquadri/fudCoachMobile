@@ -1,0 +1,7 @@
+## Para cuando se desconfigura el build de Xcode
+```
+cd ios
+rm -rf Pods Podfile.lock
+pod repo update
+pod install
+```

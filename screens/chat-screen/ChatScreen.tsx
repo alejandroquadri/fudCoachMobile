@@ -1,11 +1,11 @@
+import { Icon } from '@rneui/themed';
+import { format } from 'date-fns';
+import * as SecureStore from 'expo-secure-store';
 import { useContext, useEffect, useState } from 'react';
 import { Alert, Modal, TouchableOpacity, View } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
 import 'react-native-get-random-values';
-import { format } from 'date-fns';
 import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Icon } from '@rneui/themed';
 
 import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
@@ -14,12 +14,13 @@ import { CameraScreen } from '@components';
 import { useKeyboard } from '@hooks';
 import { AuthContext, AuthContextType } from '@navigation';
 import {
-  fetchPreviousMessages,
-  saveNotificationToken,
-  sendChatImage,
-  registerForPushNotificationsAsync,
-  sendChatMessage,
   ensurePushTokenSynced,
+  fetchPreviousMessages,
+  sendChatImage,
+  sendChatMessage,
+  initUserPreferences,
+  prepareForUpload,
+  createInitialNotificatinJobs,
 } from '@services';
 
 const storeLastOpenedDate = async () => {
@@ -73,13 +74,21 @@ export const Chat = () => {
         const prevMessages = await fetchPreviousMessages(user._id);
         setMessages(prevMessages);
         const newUser = prevMessages.length < 1;
-        console.log(newUser);
+        console.log('es new user', newUser);
+
+        await initUserPreferences(user);
+        console.log('ai state actualizado');
+
+        // // esto lo dejo comentado porque el init tiene que darse cuando
+        // // se crea la cuenta solamente.
+        // await createInitialNotificatinJobs(user._id);
+        // console.log('terminado init not jobs');
 
         // chequeo si el token para notificaciones esta guardado, si no lo guardo
         // si no, pido permiso para notificaciones y luego guardo el token
-        await ensurePushTokenSynced(user._id);
+        await ensurePushTokenSynced(user._id, { requestIfDenied: true });
 
-        // FIX: Lo saque temporariamente para que no haga constantes llamados al AI
+        // NOTE: Lo saque temporariamente para que no haga constantes llamados al AI
         // await checkAndShowGreeting(user._id, newUser);
       }
     };
@@ -113,37 +122,39 @@ export const Chat = () => {
   };
 
   const handlePictureTaken = async (imageUri: string) => {
-    if (user && user._id) {
-      const userId = user._id;
-      console.log(user);
-      const imageMessage: IMessage = {
-        _id: new Date().getTime(),
-        createdAt: new Date(),
-        text: '',
-        user: {
-          _id: 1,
-          name: user?.name || 'User',
-        },
-        image: imageUri,
-      };
+    if (!user?._id) {
+      return;
+    }
+    const userId = user._id;
+    console.log(user);
+    const processedUri = await prepareForUpload(imageUri); // <-- new
+    const imageMessage: IMessage = {
+      _id: new Date().getTime(),
+      createdAt: new Date(),
+      text: '',
+      user: {
+        _id: 1,
+        name: user?.name || 'User',
+      },
+      image: processedUri,
+    };
 
+    setMessages(prevMessages =>
+      GiftedChat.append(prevMessages, [imageMessage])
+    );
+    console.log('got image!', imageUri);
+    setCameraVisible(false);
+    try {
+      setIsTyping(true);
+      const aiResponseMessage = await sendChatImage(processedUri, userId);
+      setIsTyping(false);
       setMessages(prevMessages =>
-        GiftedChat.append(prevMessages, [imageMessage])
+        GiftedChat.append(prevMessages, [aiResponseMessage])
       );
-      console.log('got image!', imageUri);
-      setCameraVisible(false);
-      try {
-        setIsTyping(true);
-        const aiResponseMessage = await sendChatImage(imageUri, userId);
-        setIsTyping(false);
-        setMessages(prevMessages =>
-          GiftedChat.append(prevMessages, [aiResponseMessage])
-        );
-      } catch (error) {
-        console.log(error);
-        Alert.alert('Error', 'Coach could not process the image');
-        setIsTyping(false);
-      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Coach could not process the image');
+      setIsTyping(false);
     }
   };
 

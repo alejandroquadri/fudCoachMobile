@@ -5,8 +5,8 @@ import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
 
 interface OutcomeProps {
-  initialValue?: number;
-  onSave: (trainingFrequency: number) => void;
+  initialValue?: string;
+  onSave: (outcome: string) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
@@ -14,7 +14,7 @@ interface OutcomeProps {
 }
 
 export const OutcomeScreen = ({
-  initialValue = 0,
+  initialValue = '',
   onSave,
   onBack,
   showProgressBar = false,
@@ -31,7 +31,7 @@ export const OutcomeScreen = ({
     }
   };
 
-  const renderOption = (value: number, label: string, option?: string) => {
+  const renderOption = (value: string) => {
     const selected = selectedOutcome === value;
     return (
       <TouchableOpacity
@@ -40,7 +40,7 @@ export const OutcomeScreen = ({
         onPress={() => setSelectedOutcome(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {label}
+          {value}
         </Text>
       </TouchableOpacity>
     );
@@ -70,10 +70,10 @@ export const OutcomeScreen = ({
       <View style={styles.content}>
         <Text style={styles.titleNoSub}>Which is your desired outcome?</Text>
         <View style={styles.optionsContainer}>
-          {renderOption(0, 'Eat and live healthier')}
-          {renderOption(1, 'Have more energy')}
-          {renderOption(2, 'Feel motivated')}
-          {renderOption(3, 'Feel better with myself')}
+          {renderOption('Eat and live healthier')}
+          {renderOption('Have more energy')}
+          {renderOption('Feel motivated')}
+          {renderOption('Feel better with myself')}
         </View>
       </View>
 

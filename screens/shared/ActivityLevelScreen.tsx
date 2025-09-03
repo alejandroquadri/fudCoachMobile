@@ -5,8 +5,8 @@ import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
 
 interface ActivityLevelScreenProps {
-  initialValue?: number;
-  onSave: (trainingFrequency: number) => void;
+  initialValue?: string;
+  onSave: (activityLevel: string) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
@@ -14,7 +14,7 @@ interface ActivityLevelScreenProps {
 }
 
 export const ActivityLevelScreen = ({
-  initialValue = 0,
+  initialValue = '',
   onSave,
   onBack,
   showProgressBar = false,
@@ -31,7 +31,7 @@ export const ActivityLevelScreen = ({
     }
   };
 
-  const renderOption = (value: number, label: string) => {
+  const renderOption = (value: string) => {
     const selected = selectedActivity === value;
     return (
       <TouchableOpacity
@@ -40,7 +40,7 @@ export const ActivityLevelScreen = ({
         onPress={() => setSelectedActivity(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {label}
+          {value}
         </Text>
       </TouchableOpacity>
     );
@@ -76,9 +76,9 @@ export const ActivityLevelScreen = ({
         </Text>
 
         <View style={styles.optionsContainer}>
-          {renderOption(0, '0–2 times: Rarely')}
-          {renderOption(1, '3–5 times: A few times a week')}
-          {renderOption(2, '6+ times: Like an athlete')}
+          {renderOption('0–2 times: Rarely')}
+          {renderOption('3–5 times: A few times a week')}
+          {renderOption('6+ times: Like an athlete')}
         </View>
       </View>
 
