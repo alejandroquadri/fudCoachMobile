@@ -1,4 +1,4 @@
-import { useCurrentUser } from '@navigation';
+import { useCurrentUser } from '@hooks';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GenderScreen } from '@screens/shared';
 import { ProfileStackParamList } from './ProfileStack';

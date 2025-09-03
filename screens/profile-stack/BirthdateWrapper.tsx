@@ -1,4 +1,4 @@
-import { useCurrentUser } from '@navigation';
+import { useCurrentUser } from '@hooks';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BirthdateScreen } from '@screens/shared';
 import { updateProfile } from '@services';

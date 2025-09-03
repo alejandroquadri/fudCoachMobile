@@ -11,8 +11,7 @@ import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
 
 import { CameraScreen } from '@components';
-import { useKeyboard } from '@hooks';
-import { AuthContext, AuthContextType } from '@navigation';
+import { AuthContext, AuthContextType, useKeyboard } from '@hooks';
 import {
   ensurePushTokenSynced,
   fetchPreviousMessages,

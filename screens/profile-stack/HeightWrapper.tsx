@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ProfileStackParamList } from './ProfileStack';
-import { useCurrentUser } from '@navigation';
+import { useCurrentUser } from '@hooks';
 import { HeightScreen } from '../shared';
 import { updateProfile } from '@services';
 

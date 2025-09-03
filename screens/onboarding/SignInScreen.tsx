@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
 import { userAPI } from '@api/AuthApi';
-import { useAuth } from '@navigation';
+import { useAuth } from '@hooks';
 import { SharedStyles } from '@theme';
 import { OnboardingStackParamList } from './OnboardingNavigator';
 

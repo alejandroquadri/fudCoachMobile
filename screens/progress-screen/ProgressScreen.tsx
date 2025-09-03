@@ -1,12 +1,12 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { Text, Icon } from '@rneui/themed';
-import { LineChart } from 'react-native-gifted-charts';
+import { useCurrentUser } from '@hooks';
+import { Icon, Text } from '@rneui/themed';
+import { convertKilogramsToPounds, round } from '@services';
 import { GoalStyles } from '@theme';
 import { WeightLogInterface } from '@types';
 import { format, parseISO } from 'date-fns';
-import { AuthContext, AuthContextType, useCurrentUser } from '@navigation';
-import { convertKilogramsToPounds, round } from '@services';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
+import { LineChart } from 'react-native-gifted-charts';
 import { weightLogsApi } from '../../api';
 
 interface ChartDataInterface {

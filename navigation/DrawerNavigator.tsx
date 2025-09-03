@@ -1,6 +1,7 @@
 import { CustomDrawer } from '@components';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Chat, LogScreen, ProgressScreen, ProfileStack } from '@screens';
+import { ConfigStack } from '@screens/config-stack/ConfigStack';
 import { DrawerParamList } from '@types';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -14,8 +15,8 @@ export const DrawerNavigator = () => {
       <Drawer.Screen name="MealLogs" component={LogScreen} />
       <Drawer.Screen name="Progress" component={ProgressScreen} />
       <Drawer.Screen
-        name="Profile"
-        component={ProfileStack}
+        name="ConfigStack"
+        component={ConfigStack}
         options={{ headerShown: false }}
       />
     </Drawer.Navigator>

@@ -11,7 +11,7 @@ import {
   FoodLogCard,
   WaterIntakeCard,
 } from '@components';
-import { useCurrentUser } from '@navigation';
+import { useCurrentUser } from '@hooks';
 import { LogStyles } from '@theme';
 import { ExerciseLog, FoodLog, WaterLog } from '@types';
 

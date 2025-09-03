@@ -1,4 +1,4 @@
-import { useCurrentUser } from '@navigation';
+import { useCurrentUser } from '@hooks';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { updateProfile } from '@services';
 import { ProfileStackParamList } from './ProfileStack';

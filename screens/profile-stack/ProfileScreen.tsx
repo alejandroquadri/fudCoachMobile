@@ -1,4 +1,4 @@
-import { useAuth, useCurrentUser } from '@navigation';
+import { useAuth, useCurrentUser } from '@hooks';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button, Text } from '@rneui/themed';

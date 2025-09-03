@@ -7,7 +7,7 @@ import {
   Alert,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useCurrentUser } from '@navigation';
+import { useCurrentUser } from '@hooks';
 import { ProfileStackParamList } from './ProfileStack';
 import { updateProfile } from '@services';
 import { Button, Icon, Input } from '@rneui/themed';

@@ -6,7 +6,7 @@ import {
 import React, { FC, useEffect } from 'react';
 import { useOnboarding } from './context/OnboardingContext';
 
-import { useAuth } from '@navigation';
+import { useAuth } from '@hooks';
 import {
   ActivityLevelScreen,
   BirthdateScreen,

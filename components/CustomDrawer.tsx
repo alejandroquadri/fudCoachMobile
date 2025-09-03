@@ -10,7 +10,7 @@ import {
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Icon } from '@rneui/themed';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@navigation';
+import { useAuth } from '@hooks';
 
 export const CustomDrawer = (props: DrawerContentComponentProps) => {
   const { navigation, state } = props;
@@ -83,7 +83,7 @@ export const CustomDrawer = (props: DrawerContentComponentProps) => {
       <DrawerItem label="Coach" iconName="message-circle" route="Chat" />
       <DrawerItem label="Logs" iconName="clipboard" route="MealLogs" />
       <DrawerItem label="Progress" iconName="bar-chart" route="Progress" />
-      <DrawerItem label="Profile" iconName="user" route="Profile" />
+      <DrawerItem label="Settings" iconName="settings" route="ConfigStack" />
       {/* Bottom Divider */}
       <View style={styles.bottomDivider} />
 
