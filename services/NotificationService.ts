@@ -1,5 +1,10 @@
 import { notificationsApi } from '@api';
-import { CreateJobPayload, NotificationTokenPayload } from '@types';
+import {
+  CreateJobPayload,
+  NotificationKey,
+  NotificationTokenPayload,
+  UpdateJobPayload,
+} from '@types';
 import { getIana } from '@utils';
 import * as Application from 'expo-application';
 import * as Device from 'expo-device';
@@ -52,8 +57,6 @@ export const ensurePushTokenSynced = async (
   if (changed) {
     await notificationsApi.saveExpoPushToken(payload);
     await SecureStore.setItemAsync(LAST_SENT_KEY, JSON.stringify(payload));
-  } else {
-    console.log('no cambio');
   }
 };
 
@@ -204,6 +207,28 @@ export const createInitialNotificatinJobs = (userId: string) => {
   console.log('armo todas las promesas y las mando');
   return Promise.all([dailyPlanner, lunchLogReminder, dinnerLogReminder]);
 };
+
+export const updateNotSetting = (
+  userId: string,
+  key: NotificationKey,
+  patch: { enabled?: boolean; hourLocal?: string; timezone?: string }
+) => {
+  const payload: UpdateJobPayload = {
+    userId,
+    key,
+    ...patch,
+  };
+  console.log(payload);
+  return notificationsApi.updateNotificationJob(payload);
+};
+
+// export interface UpdateJobPayload {
+//   userId: string;
+//   key: NotificationKey;
+//   enabled?: boolean; // optional
+//   hourLocal?: string; // optional "HH:mm"
+//   timezone?: string; // optional (change zone)
+// }
 
 // | 'dailyPlanner'
 // | 'lunchLogReminder'

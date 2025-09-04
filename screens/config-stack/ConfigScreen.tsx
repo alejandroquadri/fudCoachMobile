@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Icon, ListItem, Text } from '@rneui/themed';
+import { Icon, ListItem } from '@rneui/themed';
 import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { ConfigStackParamList } from './ConfigStack';
@@ -8,11 +8,7 @@ type Props = NativeStackScreenProps<ConfigStackParamList, 'ConfigScreen'>;
 
 export const ConfigScreen = ({ navigation }: Props) => {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text h4 style={styles.title}>
-        Settings
-      </Text>
-
+    <ScrollView contentContainerStyle={configStyles.container}>
       <ListItem
         bottomDivider
         onPress={() => navigation.navigate('ProfileStack')}>
@@ -40,7 +36,11 @@ export const ConfigScreen = ({ navigation }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { padding: 16 },
-  title: { marginBottom: 16 },
+const configStyles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+    flexGrow: 1,
+  },
 });

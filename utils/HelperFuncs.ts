@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, setHours, setMinutes } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 
 export const kgToLbs = (kg: number) => Math.round(kg * 2.20462);
@@ -28,6 +28,10 @@ export const getIana = () => {
 
   // Format nicely
   const formatted = format(local, 'HH:mm');
-  console.log({ tz, formatted }); // { tz: "America/Toronto", formatted: "13:45" }
   return { tz, formatted };
+};
+
+export const hhmmToDate = (hhmm: string) => {
+  const [h, m] = hhmm.split(':').map(Number);
+  return setMinutes(setHours(new Date(), h), m);
 };

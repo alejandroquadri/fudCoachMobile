@@ -1,12 +1,10 @@
-import { DrawerToggleButton } from '@react-navigation/drawer';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View } from 'react-native';
+import { BirthdateWrapper } from './BirthdateWrapper';
+import { EditNameScreen } from './EditNameScreen';
+import { GenderWrapper } from './GenderWrapper';
 import { HeightWrapper } from './HeightWrapper';
 import { ProfileScreen } from './ProfileScreen';
 import { WeightGoalWrapper } from './WeighGoalWrapper';
-import { BirthdateWrapper } from './BirthdateWrapper';
-import { GenderWrapper } from './GenderWrapper';
-import { EditNameScreen } from './EditNameScreen';
 
 export type ProfileStackParamList = {
   ProfileHome: undefined;
@@ -21,20 +19,7 @@ const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 export const ProfileStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen
-      name="ProfileHome"
-      component={ProfileScreen}
-      options={{
-        headerShown: true,
-        title: 'Profile',
-        headerLeft: () => (
-          <View style={{ marginLeft: -18 }}>
-            {/* tweak -8 / -12 until it lines up */}
-            <DrawerToggleButton />
-          </View>
-        ),
-      }}
-    />
+    <Stack.Screen name="ProfileHome" component={ProfileScreen} />
     <Stack.Screen name="WeightGoalWrapper" component={WeightGoalWrapper} />
     <Stack.Screen name="HeightWrapper" component={HeightWrapper} />
     <Stack.Screen name="BirthDateWrapper" component={BirthdateWrapper} />

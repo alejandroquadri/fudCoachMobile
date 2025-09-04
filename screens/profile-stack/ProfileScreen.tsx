@@ -1,17 +1,26 @@
 import { useAuth, useCurrentUser } from '@hooks';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Button, Text } from '@rneui/themed';
+import { Button, Icon, Text } from '@rneui/themed';
 import { getProfile } from '@services';
 import { format } from 'date-fns';
 import React, { useCallback, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import type { ProfileStackParamList } from './ProfileStack';
 import { capitalizeFirst } from '@utils';
+import { SharedStyles, COLORS } from '@theme';
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileHome'>;
 
 export const ProfileScreen = ({ navigation }: Props) => {
+  const styles = SharedStyles();
   const user = useCurrentUser();
   const { refreshUser } = useAuth();
   const [profile, setProfile] = useState(user);
@@ -32,57 +41,74 @@ export const ProfileScreen = ({ navigation }: Props) => {
   );
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
-      <View style={styles.card}>
-        <View style={styles.goalRow}>
+    <ScrollView contentContainerStyle={profileStyles.container}>
+      <View style={styles.header}>
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon
+              name="chevron-left"
+              type="feather"
+              size={28}
+              color={COLORS.primaryColor}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={profileStyles.card}>
+        <View style={profileStyles.goalRow}>
           <View>
-            <Text style={styles.label}>Goal Weight</Text>
-            <Text style={styles.value}>{profile.weightGoal ?? '--'} kg</Text>
+            <Text style={profileStyles.label}>Goal Weight</Text>
+            <Text style={profileStyles.value}>
+              {profile.weightGoal ?? '--'} kg
+            </Text>
           </View>
           <Button
             title="Change Goal"
             onPress={() => navigation.navigate('WeightGoalWrapper')}
-            buttonStyle={styles.changeGoalButton}
-            titleStyle={styles.changeGoalButtonText}
+            buttonStyle={profileStyles.changeGoalButton}
+            titleStyle={profileStyles.changeGoalButtonText}
           />
         </View>
       </View>
 
-      <View style={styles.card}>
+      <View style={profileStyles.card}>
         <Pressable onPress={() => navigation.navigate('EditNameScreen')}>
-          <View style={styles.itemRow}>
-            <Text style={styles.label}>Name</Text>
-            <Text style={styles.value}>
+          <View style={profileStyles.itemRow}>
+            <Text style={profileStyles.label}>Name</Text>
+            <Text style={profileStyles.value}>
               {profile.name?.trim() ? profile.name : '--'}
             </Text>
           </View>
         </Pressable>
 
-        <View style={styles.separator} />
+        <View style={profileStyles.separator} />
         <Pressable onPress={() => navigation.navigate('HeightWrapper')}>
-          <View style={styles.itemRow}>
-            <Text style={styles.label}>Height</Text>
-            <Text style={styles.value}>{profile.height} cm</Text>
+          <View style={profileStyles.itemRow}>
+            <Text style={profileStyles.label}>Height</Text>
+            <Text style={profileStyles.value}>{profile.height} cm</Text>
           </View>
         </Pressable>
-        <View style={styles.separator} />
+        <View style={profileStyles.separator} />
 
         <Pressable onPress={() => navigation.navigate('BirthDateWrapper')}>
-          <View style={styles.itemRow}>
-            <Text style={styles.label}>Date of birth</Text>
-            <Text style={styles.value}>
+          <View style={profileStyles.itemRow}>
+            <Text style={profileStyles.label}>Date of birth</Text>
+            <Text style={profileStyles.value}>
               {profile.birthdate
                 ? format(new Date(profile.birthdate), 'dd/MM/yyyy')
                 : '--'}
             </Text>
           </View>
         </Pressable>
-        <View style={styles.separator} />
+        <View style={profileStyles.separator} />
 
         <Pressable onPress={() => navigation.navigate('GenderWrapper')}>
-          <View style={styles.itemRow}>
-            <Text style={styles.label}>Gender</Text>
-            <Text style={styles.value}>{capitalizeFirst(profile.gender)}</Text>
+          <View style={profileStyles.itemRow}>
+            <Text style={profileStyles.label}>Gender</Text>
+            <Text style={profileStyles.value}>
+              {capitalizeFirst(profile.gender)}
+            </Text>
           </View>
         </Pressable>
       </View>
@@ -90,15 +116,12 @@ export const ProfileScreen = ({ navigation }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F2F2F2', // gray background
-  },
+const profileStyles = StyleSheet.create({
   container: {
-    paddingTop: 20,
     paddingHorizontal: 20,
+    paddingTop: 60,
     paddingBottom: 40,
+    flexGrow: 1,
   },
   card: {
     backgroundColor: '#FFFFFF',
