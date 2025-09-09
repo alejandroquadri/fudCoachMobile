@@ -2,6 +2,7 @@ import { notificationsApi } from '@api';
 import {
   CreateJobPayload,
   NotificationKey,
+  NotificationSettingDoc,
   NotificationTokenPayload,
   UpdateJobPayload,
 } from '@types';
@@ -220,6 +221,12 @@ export const updateNotSetting = (
   };
   console.log(payload);
   return notificationsApi.updateNotificationJob(payload);
+};
+
+export const getNotificationSettings = (
+  userId: string
+): Promise<Record<NotificationKey, NotificationSettingDoc>> => {
+  return notificationsApi.getNotificationSettings(userId);
 };
 
 // export interface UpdateJobPayload {

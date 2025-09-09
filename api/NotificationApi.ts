@@ -1,6 +1,7 @@
 import {
   CreateJobPayload,
   NotificationKey,
+  NotificationSettingDoc,
   NotificationTokenPayload,
   UpdateJobPayload,
 } from '@types';
@@ -40,6 +41,13 @@ export const notificationsApi = {
   }> => {
     return api
       .post('/notifications/update-not-job', payload)
+      .then(res => res.data);
+  },
+  getNotificationSettings: async (
+    userId: string
+  ): Promise<Record<NotificationKey, NotificationSettingDoc>> => {
+    return api
+      .post('/notifications/get-not-settings', { userId })
       .then(res => res.data);
   },
 };

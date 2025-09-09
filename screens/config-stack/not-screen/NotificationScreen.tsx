@@ -1,40 +1,27 @@
-// @screens/config/NotificationsScreen.tsx
-import React, { useCallback, useMemo, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
-import { Text, Switch, Icon, Card, BottomSheet, Button } from '@rneui/themed';
-import { COLORS, SharedStyles } from '@theme';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ConfigStackParamList } from '../ConfigStack';
+import { useCurrentUser } from '@hooks';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
-import { format, setHours, setMinutes } from 'date-fns';
-import { NotificationKey } from '@types';
-import { useCurrentUser } from '@hooks';
-import { updateNotSetting } from '@services';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BottomSheet, Button, Card, Icon, Switch, Text } from '@rneui/themed';
+import { getNotificationSettings, updateNotSetting } from '@services';
+import { COLORS, SharedStyles } from '@theme';
+import {
+  NotificationKey,
+  NotificationSetting,
+  NotificationSettingDoc,
+} from '@types';
 import { getIana, hhmmToDate } from '@utils';
-
-// Fake API client — swap with your real one
-const updateNotificationSetting = async (
-  userId: string,
-  key: NotificationKey,
-  patch: Partial<NotificationSetting>
-) => {
-  // Example: PUT /config/notifications/:key
-  await updateNotSetting(userId, key, patch);
-  return;
-};
+import { format, setHours, setMinutes } from 'date-fns';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform, TouchableOpacity, View } from 'react-native';
+import { ConfigStackParamList } from '../ConfigStack';
+import { notStyles } from './NotScreenStyles';
 
 type Props = NativeStackScreenProps<
   ConfigStackParamList,
   'NotificationsScreen'
 >;
-
-type NotificationSetting = {
-  enabled: boolean;
-  hourLocal: string;
-  timezone: string;
-};
 
 export const NotificationsScreen = ({ navigation }: Props) => {
   const styles = SharedStyles();
@@ -59,6 +46,42 @@ export const NotificationsScreen = ({ navigation }: Props) => {
     timezone: tz,
   });
 
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      try {
+        const byKey = await getNotificationSettings(user._id);
+        console.log(byKey);
+        if (!alive || !byKey) return;
+
+        // Helper to map a doc to your local shape
+        const pick = (
+          doc?: NotificationSettingDoc,
+          fallback?: NotificationSetting
+        ): NotificationSetting =>
+          doc
+            ? {
+                enabled: doc.enabled,
+                hourLocal: doc.hourLocal,
+                timezone: doc.timezone,
+              }
+            : (fallback as NotificationSetting);
+
+        setDailyPlanner(prev => pick(byKey.dailyPlanner, prev));
+        setLunchReminder(prev => pick(byKey.lunchLogReminder, prev));
+        setDinnerReminder(prev => pick(byKey.dinnerLogReminder, prev));
+      } catch (err) {
+        console.warn('Failed to load notification settings', err);
+        // keep defaults
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [user._id]);
+
   // Map helpers so generic handlers can touch the right slice
   const setters: Record<
     NotificationKey,
@@ -82,7 +105,7 @@ export const NotificationsScreen = ({ navigation }: Props) => {
       setters[key](s => ({ ...s, enabled }));
 
       try {
-        await updateNotificationSetting(user._id, key, {
+        await updateNotSetting(user._id, key, {
           enabled,
           timezone: tz,
         });
@@ -126,7 +149,7 @@ export const NotificationsScreen = ({ navigation }: Props) => {
 
     try {
       // Persist as ISO; backend should store UTC
-      await updateNotificationSetting(user._id, key, {
+      await updateNotSetting(user._id, key, {
         hourLocal: hourLocal,
         timezone: tz,
       });
@@ -244,68 +267,3 @@ export const NotificationsScreen = ({ navigation }: Props) => {
     </View>
   );
 };
-
-const notStyles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 40,
-    flexGrow: 1,
-  },
-  title: { marginBottom: 16 },
-  card: {
-    borderRadius: 16,
-    padding: 16,
-    marginHorizontal: 0,
-    marginBottom: 14,
-  },
-  rowTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  cardTitle: { fontSize: 16, fontWeight: '600' },
-  rowBottom: {
-    marginTop: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 4,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  rowDisabled: { opacity: 0.4 },
-  timeLabel: { fontSize: 14 },
-  timeRight: { flexDirection: 'row', alignItems: 'center' },
-  timeValue: { fontSize: 16, fontWeight: '600' },
-  textDisabled: { color: '#999' },
-  sheetContainer: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 16,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-  },
-  sheetHandle: {
-    alignSelf: 'center',
-    width: 40,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: '#ddd',
-    marginBottom: 8,
-  },
-  sheetTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  pickerWrapper: { alignItems: 'center', paddingVertical: 6 },
-  sheetButtons: {
-    marginTop: 6,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  btnCancel: { paddingHorizontal: 18 },
-  btnSave: { paddingHorizontal: 18 },
-});
