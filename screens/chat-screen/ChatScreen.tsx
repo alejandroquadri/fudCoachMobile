@@ -70,18 +70,15 @@ export const Chat = () => {
 
     const initializeChat = async () => {
       if (user && user._id) {
+        console.log(user._id);
         const prevMessages = await fetchPreviousMessages(user._id);
+        console.log(prevMessages);
         setMessages(prevMessages);
         const newUser = prevMessages.length < 1;
         console.log('es new user', newUser);
 
         await initUserPreferences(user);
         console.log('ai state actualizado');
-
-        // // esto lo dejo comentado porque el init tiene que darse cuando
-        // // se crea la cuenta solamente.
-        // await createInitialNotificatinJobs(user._id);
-        // console.log('terminado init not jobs');
 
         // chequeo si el token para notificaciones esta guardado, si no lo guardo
         // si no, pido permiso para notificaciones y luego guardo el token

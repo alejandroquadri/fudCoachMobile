@@ -4,6 +4,7 @@ export const COLORS = {
   primaryContrast: '#fff',
   backgroundColor: '#F2F2F2',
   subText: '#555',
+  backDrop: 'rgba(0,0,0,0.4)',
 
   white: 'white',
   green: '#57CC99',

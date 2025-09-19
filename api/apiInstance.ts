@@ -74,7 +74,6 @@ async function refreshToken(): Promise<{
   refreshToken: string;
 }> {
   const refreshToken = await SecureStore.getItemAsync('refreshUserToken');
-  console.log(refreshToken);
 
   // Make a request to the refresh token endpoint
   const response = await api.post('/users/refreshToken', { refreshToken });

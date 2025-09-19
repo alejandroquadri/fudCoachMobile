@@ -10,7 +10,9 @@ const PREUPLOAD_QUALITY = 0.7; // 0..1
 export const fetchPreviousMessages = async (
   userId: string
 ): Promise<IMessage[]> => {
+  console.log('pido mensajes en service');
   const dbMes: ChatMsg[] = await chatApi.getMesgs(userId);
+  console.log('obtengo mensajes');
   return buildIMessageArray(dbMes);
 };
 

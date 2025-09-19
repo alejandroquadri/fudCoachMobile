@@ -1,5 +1,13 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import {
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { StepProgressBar } from '@components';
 import { Button, Icon, Input } from '@rneui/themed';
@@ -8,6 +16,11 @@ import { COLORS, SharedStyles } from '@theme';
 interface SignUpProps {
   onSave: (name: string, email: string, password: string) => void;
   onBack: () => void;
+  onApple?: (
+    idToken: string,
+    name: string,
+    email: string
+  ) => Promise<void> | void;
   showProgressBar?: boolean;
   step?: number;
   totalSteps?: number;
@@ -15,6 +28,7 @@ interface SignUpProps {
 export const SignUpScreen = ({
   onSave,
   onBack,
+  onApple,
   showProgressBar = false,
   step = 0,
   totalSteps = 0,
@@ -32,6 +46,21 @@ export const SignUpScreen = ({
   const [emailBlurred, setEmailBlurred] = useState(false);
   const [nameBlurred, setNameBlurred] = useState(false);
   const [passwordBlurred, setPasswordBlurred] = useState(false);
+  const [appleAvailable, setAppleAvailable] = useState(false);
+
+  useEffect(() => {
+    // Apple Sign In is iOS only and must be checked at runtime
+    (async () => {
+      try {
+        setAppleAvailable(
+          Platform.OS === 'ios' &&
+            (await AppleAuthentication.isAvailableAsync())
+        );
+      } catch {
+        setAppleAvailable(false);
+      }
+    })();
+  }, []);
 
   const validateName = (name: string) => {
     if (name.trim() === '') {
@@ -68,6 +97,51 @@ export const SignUpScreen = ({
     }
 
     onSave(name, email, password);
+  };
+
+  const fullNameToString = (
+    fullName?: AppleAuthentication.AppleAuthenticationFullName | null
+  ) => {
+    if (!fullName) return '';
+    const parts = [
+      fullName.givenName?.trim(),
+      fullName.middleName?.trim(),
+      fullName.familyName?.trim(),
+    ].filter(Boolean);
+    return parts.join(' ').trim();
+  };
+
+  const handleApple = async () => {
+    try {
+      if (!appleAvailable) return;
+
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (!credential.identityToken) {
+        Alert.alert(
+          'Apple Sign In',
+          'No identity token returned. Try again on a real device.'
+        );
+        return;
+      }
+
+      // Prefer Apple-provided values when available (only on first grant)
+      const appleName = fullNameToString(credential.fullName);
+      const resolvedName = (appleName || name).trim();
+      const resolvedEmail = (credential.email ?? email ?? '').toLowerCase();
+
+      if (onApple) {
+        await onApple(credential.identityToken, resolvedName, resolvedEmail);
+      }
+    } catch (e: any) {
+      if (e?.code === 'ERR_REQUEST_CANCELED') return;
+      Alert.alert('Apple Sign In failed', 'Please try again.');
+    }
   };
 
   return (
@@ -133,6 +207,22 @@ export const SignUpScreen = ({
           buttonStyle={styles.nextButton}
           disabled={!!emailError || !!nameError || !!passwordError}
         />
+
+        {appleAvailable && (
+          <View style={{ marginTop: 16 }}>
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
+              }
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              cornerRadius={6}
+              style={{ width: '100%', height: 44 }}
+              onPress={handleApple}
+            />
+          </View>
+        )}
       </View>
     </ScrollView>
   );
