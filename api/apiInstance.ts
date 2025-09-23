@@ -7,7 +7,6 @@ const url = 'http://Mac-Ale.local:3000';
 
 export const api = axios.create({
   baseURL: url, // your API server
-  // timeout: 20000, // 10 seconds
   headers: {
     'Content-Type': 'application/json',
   },

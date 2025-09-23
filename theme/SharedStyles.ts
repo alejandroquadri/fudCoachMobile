@@ -71,6 +71,9 @@ export const SharedStyles = () => {
       color: COLORS.primaryContrast,
       fontWeight: 'bold',
     },
+    optionTextMuted: {
+      opacity: 0.7,
+    },
     nextButton: {
       borderRadius: 16,
       paddingVertical: 14,

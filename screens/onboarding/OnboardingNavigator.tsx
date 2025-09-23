@@ -34,7 +34,7 @@ import { OutcomeScreen } from './OutcomeScreen';
 import { PrepPlanScreen } from './PrepPlanScreen';
 import { SignUpScreen } from './SignUpScreen';
 import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
-// import { PaywallScreen } from './PayWallScreen';
+import { PaywallScreen } from './PayWallScreen';
 import { WelcomeScreen } from './WelcomeScreen';
 import { UserProfile } from '@types';
 import { createInitialNotificatinJobs } from '@services';
@@ -546,21 +546,21 @@ export const OnboardingNavigator: FC = () => {
             />
           )}
         </OnboardingStack.Screen>
-        {/* <OnboardingStack.Screen name="PayWall"> */}
-        {/*   {() => ( */}
-        {/*     <PaywallScreen */}
-        {/*       onNext={() => { */}
-        {/*         // If you also want to keep a flag in state, you could: */}
-        {/*         // dispatch({ type: 'UPDATE_FIELD', field: 'hasPaid', value: true }); */}
-        {/*         dispatch({ type: 'NEXT_STEP' }); */}
-        {/*       }} */}
-        {/*       onBack={() => dispatch({ type: 'PREV_STEP' })} */}
-        {/*       showProgressBar */}
-        {/*       step={20} */}
-        {/*       totalSteps={steps.length} */}
-        {/*     /> */}
-        {/*   )} */}
-        {/* </OnboardingStack.Screen> */}
+        <OnboardingStack.Screen name="PayWall">
+          {() => (
+            <PaywallScreen
+              onSuccess={() => {
+                // If you also want to keep a flag in state, you could:
+                // dispatch({ type: 'UPDATE_FIELD', field: 'hasPaid', value: true });
+                dispatch({ type: 'NEXT_STEP' });
+              }}
+              onBack={() => dispatch({ type: 'PREV_STEP' })}
+              showProgressBar
+              step={20}
+              totalSteps={steps.length}
+            />
+          )}
+        </OnboardingStack.Screen>
         <OnboardingStack.Screen name="SignUp">
           {() => (
             <SignUpScreen
