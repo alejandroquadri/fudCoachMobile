@@ -20,6 +20,7 @@ import {
   HeightScreen,
   LifeStyleScreen,
   WeightScreen,
+  PaywallScreen,
 } from '../shared';
 import { SignIn } from './SignInScreen';
 import { ChartToGoalScreen } from './ChartToGoalScreen';
@@ -34,7 +35,6 @@ import { OutcomeScreen } from './OutcomeScreen';
 import { PrepPlanScreen } from './PrepPlanScreen';
 import { SignUpScreen } from './SignUpScreen';
 import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
-import { PaywallScreen } from './PayWallScreen';
 import { WelcomeScreen } from './WelcomeScreen';
 import { UserProfile } from '@types';
 import { createInitialNotificatinJobs } from '@services';

@@ -1,24 +1,24 @@
-// PaywallScreen.tsx
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
   Alert,
   Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
-import { Button, Icon } from '@rneui/themed';
 import { StepProgressBar } from '@components';
+import { Button, Icon } from '@rneui/themed';
 import { COLORS, SharedStyles } from '@theme';
 import {
-  useIAP,
   fetchProducts,
-  requestPurchase,
   finishTransaction,
   getAvailablePurchases,
+  requestPurchase,
+  useIAP,
 } from 'expo-iap';
+import { validateIOS } from '@services';
 
 type PaywallProps = {
   onSuccess: () => void;
@@ -31,6 +31,7 @@ type PaywallProps = {
 // 1) Put your real subscription product IDs here
 const IAP_PRODUCT_IDS = {
   subs: ['weekly', 'anual'] as const,
+  // subs: ['fudCoach_yearly', 'fudCoach_weekly'] as const,
 };
 
 export const PaywallScreen = ({
@@ -56,19 +57,50 @@ export const PaywallScreen = ({
       try {
         setPurchasing(false);
 
-        // ——————————————————————————————————————————————
-        // DEV-ONLY: lightweight validation on device.
-        // In production: send purchase metadata to your Node API
-        // and validate server-side with Apple.
-        // ——————————————————————————————————————————————
-        // Example client-side check stub:
-        // const receiptResult = await validateReceipt(purchase.productId);
-        // if (!receiptResult?.isValid) { Alert.alert('Validation failed'); return; }
+        const productId = purchase?.id ?? purchase?.productId ?? 'unknown.sku';
+        const transactionId =
+          purchase?.transactionId ??
+          purchase?.purchaseToken ??
+          String(Date.now());
 
-        // Finish the transaction so iOS does not replay it on every launch
+        // --- NEW: ask expo-iap to validate on-device and give us the iOS receipt object
+        // validateReceipt requires 1 arg (sku) and returns an object, not a string
+        let receiptData = '';
+        if (Platform.OS === 'ios') {
+          const vr = await validateReceipt(productId); // <-- pass SKU
+
+          // Shapes vary by version/env; pick anything that looks like base64
+          // Common keys seen in v3: receiptData, receipt, rawReceipt
+          const anyVr = vr as any;
+          receiptData =
+            anyVr?.receiptData || anyVr?.receipt || anyVr?.rawReceipt || '';
+
+          // When using a local .storekit file, there usually isn't a real Apple receipt
+          // In that case, skip server validation and let your mock handle it
+          if (!receiptData) {
+            console.log(
+              '[IAP] No iOS receipt data (likely local StoreKit). Using mock validation.'
+            );
+          }
+        }
+
+        // --- call your service (it now expects receiptData)
+        const result = await validateIOS({
+          productId,
+          transactionId,
+          receiptData,
+        });
+
+        if (!result.ok) {
+          Alert.alert(
+            'Validation error',
+            result.error ?? 'Could not validate purchase'
+          );
+          return;
+        }
+
+        // IMPORTANT: only finish after your server says "ok"
         await finishTransaction({ purchase, isConsumable: false });
-
-        // Unlock your premium features (server should persist entitlement)
         onSuccess();
       } catch (err: any) {
         Alert.alert(
@@ -86,29 +118,29 @@ export const PaywallScreen = ({
     Alert.alert('Purchase error', error?.message ?? 'Unknown purchase error');
   }, []);
 
-  // 3) useIAP in v3: pass callbacks; do NOT read currentPurchase/currentPurchaseError
-  const { connected, subscriptions, validateReceipt } = useIAP({
+  const { connected, validateReceipt } = useIAP({
     onPurchaseSuccess,
     onPurchaseError,
   });
 
   // 4) Load subscription products when the store is connected
   useEffect(() => {
+    console.log('use effect n4');
     if (!connected) return;
     (async () => {
       try {
         setLoading(true);
-        console.log('[IAP] fetching subs for', productIds);
         const products = await fetchProducts({
           skus: productIds,
           type: 'subs',
         });
-        console.log('estos son los productos', products);
+        console.log('tengo products', products);
         if (products) {
           setPlans(products);
         }
-      } catch (e: any) {
-        Alert.alert('Store error', e?.message ?? 'Unable to load products.');
+      } catch (error) {
+        console.log(error);
+        Alert.alert('Store error', 'Unable to load products.');
       } finally {
         setLoading(false);
       }
@@ -117,24 +149,14 @@ export const PaywallScreen = ({
 
   // 5) Pick a default option once products arrive
   useEffect(() => {
-    console.log('[IAP] subscriptions length =', subscriptions?.length);
-
-    // if (!selectedSku && subscriptions?.length) {
-    //   // In v3, product id is usually `id`. Some builds expose `productId` as well.
-    //   const firstId =
-    //     subscriptions[0]?.id ??
-    //     (subscriptions[0] as any)?.productId ??
-    //     productIds[0];
-    console.log('[IAP] plans length =', plans?.length);
     if (!selectedSku && plans?.length) {
       const firstId =
         plans[0]?.id ?? (plans[0] as any)?.productId ?? productIds[0];
       if (firstId) setSelectedSku(firstId);
     }
-    // }, [subscriptions, selectedSku, productIds]);
   }, [plans, selectedSku, productIds]);
 
-  const displayPrice = (p: any) =>
+  const displayPrice = p =>
     p?.displayPrice ?? p?.localizedPrice ?? p?.priceString ?? p?.price ?? '';
 
   // 6) Buy using the new platform-specific API
@@ -197,21 +219,14 @@ export const PaywallScreen = ({
       <TouchableOpacity
         key={id ?? Math.random().toString(36)}
         style={[styles.optionButton, selected && styles.optionSelectedButton]}
-        // style={
-        //   selected
-        //     ? [styles.optionButton, styles.optionSelectedButton]
-        //     : styles.optionButton
-        // }
         onPress={() => setSelectedSku(id)}
         disabled={purchasing}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {/* style={styles.optionText}> */}
           {product?.title ?? id ?? 'Subscription'}
         </Text>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {/* style={styles.optionText}> */}
           {displayPrice(product)}
         </Text>
       </TouchableOpacity>
@@ -247,8 +262,6 @@ export const PaywallScreen = ({
         </Text>
 
         <View style={styles.optionsContainer}>
-          {/* {subscriptions?.length ? ( */}
-          {/*   subscriptions.map(renderOption) */}
           {plans?.length ? (
             plans.map(renderOption)
           ) : (
