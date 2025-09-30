@@ -83,7 +83,7 @@ export const GoalObstacleScreen = ({
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={selectedObstacle === null}
+        disabled={!selectedObstacle}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />

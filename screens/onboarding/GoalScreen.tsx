@@ -83,7 +83,7 @@ export const GoalScreen = ({
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={selectedGoal === null}
+        disabled={!selectedGoal}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />

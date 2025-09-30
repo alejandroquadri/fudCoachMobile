@@ -14,7 +14,7 @@ interface ActivityScreenProps {
 }
 
 export const LifeStyleScreen = ({
-  initialValue = 1.2,
+  initialValue,
   onSave,
   onBack,
   showProgressBar = false,

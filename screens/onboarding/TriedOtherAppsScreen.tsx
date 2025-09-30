@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 interface TriedOtherAppsScreenProps {
-  initialValue?: boolean;
+  initialValue?: boolean | null;
   onSave: (tried: boolean) => void;
   onBack: () => void;
   showProgressBar?: boolean;
@@ -14,7 +14,7 @@ interface TriedOtherAppsScreenProps {
 }
 
 export const TriedOtherAppsScreen = ({
-  initialValue = true,
+  initialValue = null,
   onSave,
   onBack,
   showProgressBar = false,
@@ -23,7 +23,9 @@ export const TriedOtherAppsScreen = ({
 }: TriedOtherAppsScreenProps) => {
   const styles = SharedStyles();
 
-  const [selectedOption, setSelectedOption] = useState<boolean>(initialValue);
+  const [selectedOption, setSelectedOption] = useState<boolean | null>(
+    initialValue
+  );
 
   const handleSave = () => {
     if (selectedOption !== null) {

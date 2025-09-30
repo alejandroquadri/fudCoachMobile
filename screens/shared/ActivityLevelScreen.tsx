@@ -23,6 +23,7 @@ export const ActivityLevelScreen = ({
 }: ActivityLevelScreenProps) => {
   const styles = SharedStyles();
 
+  console.log(initialValue);
   const [selectedActivity, setSelectedActivity] = useState(initialValue);
 
   const handleSave = () => {
@@ -85,7 +86,7 @@ export const ActivityLevelScreen = ({
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={selectedActivity === null}
+        disabled={!selectedActivity}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />

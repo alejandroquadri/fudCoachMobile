@@ -86,7 +86,7 @@ export const DietTypeScreen = ({
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={selectedDietType === null}
+        disabled={!selectedDietType}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />

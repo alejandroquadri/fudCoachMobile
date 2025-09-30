@@ -7,10 +7,12 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import { Button, Icon, Slider } from '@rneui/themed';
+import { Button, Icon } from '@rneui/themed';
+import Slider from '@react-native-community/slider';
+
 import { StepProgressBar } from '@components';
 import { COLORS, SharedStyles } from '@theme';
-import { convertPoundsToKilograms } from '@services';
+import { convertKilogramsToPounds, convertPoundsToKilograms } from '@services';
 
 interface GoalVelocityProps {
   initialValue?: number;
@@ -32,7 +34,11 @@ export const GoalVelocityScreen = ({
   totalSteps = 0,
 }: GoalVelocityProps) => {
   const styles = SharedStyles();
-  const [selectedVel, setSelectedVel] = useState<number>(initialValue);
+  const [selectedVel, setSelectedVel] = useState<number>(
+    unitType === 'imperial'
+      ? convertKilogramsToPounds(initialValue)
+      : initialValue
+  );
 
   const unit = unitType === 'metric' ? 'kg' : 'lbs';
   const weightStep = unitType === 'metric' ? 0.1 : 0.2;
@@ -42,7 +48,7 @@ export const GoalVelocityScreen = ({
   const maxRecommendeVelocity = unitType === 'metric' ? 1 : 2.0;
 
   const handleSave = () => {
-    if (onSave) {
+    if (onSave && selectedVel) {
       const vel =
         unitType === 'imperial'
           ? convertPoundsToKilograms(selectedVel)
@@ -88,16 +94,30 @@ export const GoalVelocityScreen = ({
           </Text>
 
           <View style={goalVelocityStyles.slider}>
+            {/* <Slider */}
+            {/*   value={selectedVel} */}
+            {/*   onValueChange={setSelectedVel} */}
+            {/*   minimumValue={min} */}
+            {/*   maximumValue={max} */}
+            {/*   step={weightStep} */}
+            {/*   thumbStyle={goalVelocityStyles.sliderThumb} */}
+            {/*   minimumTrackTintColor={COLORS.primaryColor} */}
+            {/*   maximumTrackTintColor="#ddd" */}
+            {/*   allowTouchTrack={true} */}
+            {/* /> */}
             <Slider
               value={selectedVel}
               onValueChange={setSelectedVel}
               minimumValue={min}
               maximumValue={max}
               step={weightStep}
-              thumbStyle={goalVelocityStyles.sliderThumb}
               minimumTrackTintColor={COLORS.primaryColor}
               maximumTrackTintColor="#ddd"
-              allowTouchTrack={true}
+              // RNE's `allowTouchTrack` ≈ iOS-only `tapToSeek`
+              tapToSeek
+              // There is no `thumbStyle` here.
+              // You can tint the thumb on Android:
+              thumbTintColor={COLORS.black}
             />
           </View>
 

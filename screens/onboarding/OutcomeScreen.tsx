@@ -80,7 +80,7 @@ export const OutcomeScreen = ({
       <Button
         title="Next"
         onPress={handleSave}
-        disabled={selectedOutcome === null}
+        disabled={!selectedOutcome}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />
