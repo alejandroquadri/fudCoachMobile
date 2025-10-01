@@ -1,7 +1,14 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button, Input } from '@rneui/themed';
 import React, { useEffect, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Text,
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 
 import { userAPI } from '@api/AuthApi';
@@ -51,8 +58,6 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
     setLoading(true);
     try {
       const response = await userAPI.loginEmailPass(email, password);
-      // If your userAPI.loginEmailPass returns AxiosResponse, use response.data:
-      // const { token, refreshToken, user: profile } = response.data;
       const { token, refreshToken, user: profile } = response; // adjust if needed
       signIn(token, refreshToken, profile);
     } catch (error) {
@@ -133,6 +138,13 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
           buttonStyle={styles.nextButton}
         />
 
+        {/* Separator */}
+        <View style={styles.separatorContainer}>
+          <View style={styles.line} />
+          <Text style={styles.orText}>or</Text>
+          <View style={styles.line} />
+        </View>
+
         {/* Apple Sign In button */}
         {appleAvailable && (
           <View style={{ marginTop: 16 }}>
@@ -143,12 +155,14 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
               buttonStyle={
                 AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
               }
-              cornerRadius={6}
+              cornerRadius={14}
               style={{ width: '100%', height: 44 }}
               onPress={handleAppleSignIn}
             />
           </View>
         )}
+
+        <View style={signInStyles.separator}></View>
 
         <Button
           title="Create account"
@@ -170,6 +184,9 @@ const signInStyles = StyleSheet.create({
     padding: 20,
   },
   inputContainer: {
-    marginBottom: 50,
+    marginBottom: 10,
+  },
+  separator: {
+    flex: 1,
   },
 });

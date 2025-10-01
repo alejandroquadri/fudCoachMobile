@@ -57,47 +57,51 @@ export const PaywallScreen = ({
       try {
         setPurchasing(false);
 
-        const productId = purchase?.id ?? purchase?.productId ?? 'unknown.sku';
-        const transactionId =
-          purchase?.transactionId ??
-          purchase?.purchaseToken ??
-          String(Date.now());
-
-        // --- NEW: ask expo-iap to validate on-device and give us the iOS receipt object
-        // validateReceipt requires 1 arg (sku) and returns an object, not a string
-        let receiptData = '';
-        if (Platform.OS === 'ios') {
-          const vr = await validateReceipt(productId); // <-- pass SKU
-
-          // Shapes vary by version/env; pick anything that looks like base64
-          // Common keys seen in v3: receiptData, receipt, rawReceipt
-          const anyVr = vr as any;
-          receiptData =
-            anyVr?.receiptData || anyVr?.receipt || anyVr?.rawReceipt || '';
-
-          // When using a local .storekit file, there usually isn't a real Apple receipt
-          // In that case, skip server validation and let your mock handle it
-          if (!receiptData) {
-            console.log(
-              '[IAP] No iOS receipt data (likely local StoreKit). Using mock validation.'
-            );
-          }
-        }
-
-        // --- call your service (it now expects receiptData)
-        const result = await validateIOS({
-          productId,
-          transactionId,
-          receiptData,
-        });
-
-        if (!result.ok) {
-          Alert.alert(
-            'Validation error',
-            result.error ?? 'Could not validate purchase'
-          );
-          return;
-        }
+        // TODO: lo de abajo lo comento porque seria para validar desde backend
+        //
+        // const productId = purchase?.id ?? purchase?.productId ?? 'unknown.sku';
+        // const transactionId =
+        //   purchase?.transactionId ??
+        //   purchase?.purchaseToken ??
+        //   String(Date.now());
+        //
+        // // --- NEW: ask expo-iap to validate on-device and give us the iOS receipt object
+        // // validateReceipt requires 1 arg (sku) and returns an object, not a string
+        // let receiptData = '';
+        // if (Platform.OS === 'ios') {
+        //   const vr = await validateReceipt(productId).catch(error =>
+        //     console.log('el error viene aca ', error)
+        //   ); // <-- pass SKU
+        //
+        //   // Shapes vary by version/env; pick anything that looks like base64
+        //   // Common keys seen in v3: receiptData, receipt, rawReceipt
+        //   const anyVr = vr as any;
+        //   receiptData =
+        //     anyVr?.receiptData || anyVr?.receipt || anyVr?.rawReceipt || '';
+        //
+        //   // When using a local .storekit file, there usually isn't a real Apple receipt
+        //   // In that case, skip server validation and let your mock handle it
+        //   if (!receiptData) {
+        //     console.log(
+        //       '[IAP] No iOS receipt data (likely local StoreKit). Using mock validation.'
+        //     );
+        //   }
+        // }
+        //
+        // // --- call your service (it now expects receiptData)
+        // const result = await validateIOS({
+        //   productId,
+        //   transactionId,
+        //   receiptData,
+        // });
+        //
+        // if (!result.ok) {
+        //   Alert.alert(
+        //     'Validation error',
+        //     result.error ?? 'Could not validate purchase'
+        //   );
+        //   return;
+        // }
 
         // IMPORTANT: only finish after your server says "ok"
         await finishTransaction({ purchase, isConsumable: false });

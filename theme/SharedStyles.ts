@@ -10,6 +10,10 @@ export const SharedStyles = () => {
       justifyContent: 'space-between',
       flexGrow: 1,
     },
+    containerCenter: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     header: {
       marginTop: 10,
       flexDirection: 'row',
@@ -27,6 +31,24 @@ export const SharedStyles = () => {
     },
     content: {
       alignItems: 'center',
+    },
+    separatorContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      alignSelf: 'center',
+      marginVertical: 20,
+      width: '90%',
+      justifyContent: 'center',
+    },
+    orText: {
+      marginHorizontal: 10,
+      fontSize: 14,
+      color: COLORS.divider,
+    },
+    line: {
+      flex: 1,
+      height: 1,
+      backgroundColor: COLORS.divider,
     },
     titleNoSub: {
       fontSize: 22,

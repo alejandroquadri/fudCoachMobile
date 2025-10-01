@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Text,
   View,
 } from 'react-native';
 
@@ -208,6 +209,13 @@ export const SignUpScreen = ({
           disabled={!!emailError || !!nameError || !!passwordError}
         />
 
+        {/* Separator */}
+        <View style={styles.separatorContainer}>
+          <View style={styles.line} />
+          <Text style={styles.orText}>or</Text>
+          <View style={styles.line} />
+        </View>
+
         {appleAvailable && (
           <View style={{ marginTop: 16 }}>
             <AppleAuthentication.AppleAuthenticationButton
@@ -236,6 +244,6 @@ const signUpStyles = StyleSheet.create({
     padding: 20,
   },
   inputContainer: {
-    marginBottom: 50,
+    marginBottom: 10,
   },
 });

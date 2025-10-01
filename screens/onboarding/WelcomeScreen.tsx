@@ -22,7 +22,8 @@ export const WelcomeScreen: FC = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={welcomeStyles.container}>
+    <ScrollView
+      contentContainerStyle={[styles.container, styles.containerCenter]}>
       <View style={welcomeStyles.content}>
         <Text style={[styles.title, welcomeStyles.titleAlign]}>
           Welcome to FudCoach!
@@ -38,10 +39,10 @@ export const WelcomeScreen: FC = () => {
         />
 
         {/* Separator */}
-        <View style={welcomeStyles.separatorContainer}>
-          <Divider width={1} />
-          <Text style={welcomeStyles.orText}>or</Text>
-          <Divider width={1} />
+        <View style={styles.separatorContainer}>
+          <View style={styles.line} />
+          <Text style={styles.orText}>or</Text>
+          <View style={styles.line} />
         </View>
 
         {/* Login Button */}
@@ -57,12 +58,6 @@ export const WelcomeScreen: FC = () => {
 };
 
 const welcomeStyles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   content: {
     width: '100%',
   },
@@ -70,47 +65,4 @@ const welcomeStyles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    marginBottom: 40,
-    textAlign: 'center',
-  },
-  separatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-    justifyContent: 'center',
-  },
-  orText: {
-    marginHorizontal: 10,
-    fontSize: 14,
-    color: '#999',
-  },
 });
-
-// return (
-//   <View style={styles.container}>
-//     <Text style={styles.title}>Welcome to FudCoach!</Text>
-//     <Text style={styles.subtitle}>Let's get started on your goals!</Text>
-//     <Button title="Start" onPress={handleStart} />
-//
-//     {/* Separator */}
-//     <View style={welcomeStyles.separatorContainer}>
-//       <Divider width={1} />
-//       <Text style={welcomeStyles.orText}>or</Text>
-//       <Divider width={1} />
-//     </View>
-//
-//     {/* Login Button */}
-//     <Button
-//       title="I already have an account"
-//       type="clear"
-//       onPress={handleLogin}
-//     />
-//   </View>
-// );

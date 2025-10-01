@@ -25,7 +25,7 @@ interface GoalVelocityProps {
 }
 
 export const GoalVelocityScreen = ({
-  initialValue = 1.0,
+  initialValue = 0.6,
   unitType,
   onSave,
   onBack,

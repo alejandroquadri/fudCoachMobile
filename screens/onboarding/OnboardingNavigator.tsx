@@ -383,23 +383,17 @@ export const OnboardingNavigator: FC = () => {
               title="What is your desired weight?"
               onSave={ret => {
                 const { unitType, weight } = ret;
-                if (state.initWeight === weight) {
-                  Alert.alert(
-                    'Please select a weight different from your current weight.'
-                  );
-                } else {
-                  dispatch({
-                    type: 'UPDATE_FIELD',
-                    field: 'weightGoal',
-                    value: weight,
-                  });
-                  dispatch({
-                    type: 'UPDATE_FIELD',
-                    field: 'unitType',
-                    value: unitType,
-                  });
-                  dispatch({ type: 'NEXT_STEP' });
-                }
+                dispatch({
+                  type: 'UPDATE_FIELD',
+                  field: 'weightGoal',
+                  value: weight,
+                });
+                dispatch({
+                  type: 'UPDATE_FIELD',
+                  field: 'unitType',
+                  value: unitType,
+                });
+                dispatch({ type: 'NEXT_STEP' });
               }}
               onBack={() => dispatch({ type: 'PREV_STEP' })}
               showProgressBar
