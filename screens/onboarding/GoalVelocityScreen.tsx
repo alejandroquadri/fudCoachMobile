@@ -82,9 +82,6 @@ export const GoalVelocityScreen = ({
         <Text style={styles.title}>
           How fast do you want to reach your goal?
         </Text>
-        <Text style={styles.subtitle}>
-          We will use it to calibrate your personalized plan
-        </Text>
 
         <View style={goalVelocityStyles.sliderContainer}>
           <Text style={goalVelocityStyles.label}>Weekly weight loss rate</Text>
@@ -117,7 +114,7 @@ export const GoalVelocityScreen = ({
               tapToSeek
               // There is no `thumbStyle` here.
               // You can tint the thumb on Android:
-              thumbTintColor={COLORS.black}
+              thumbTintColor={COLORS.primaryColor}
             />
           </View>
 
@@ -165,13 +162,13 @@ const goalVelocityStyles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: '#444',
+    color: COLORS.subText,
     marginBottom: 10,
   },
   selectedValue: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#000',
+    color: COLORS.primaryColor,
     marginVertical: 15,
   },
   slider: {
@@ -183,11 +180,11 @@ const goalVelocityStyles = StyleSheet.create({
     width: '90%',
     marginTop: 15,
   },
-  sliderThumb: {
-    height: 20,
-    width: 20,
-    backgroundColor: COLORS.black,
-  },
+  // sliderThumb: {
+  //   height: 20,
+  //   width: 20,
+  //   backgroundColor: COLORS.primaryColor,
+  // },
   recommended: {
     marginTop: 30,
     minHeight: 45,

@@ -1,5 +1,5 @@
+import { COLORS } from '@theme';
 import { StyleSheet } from 'react-native';
-import { COLORS } from './ColorsStyles';
 
 export const LogStyles = () => {
   return StyleSheet.create({
@@ -27,7 +27,7 @@ export const LogStyles = () => {
 export const EmtpyCardStyles = () => {
   return StyleSheet.create({
     emptyCard: {
-      backgroundColor: '#FFF',
+      backgroundColor: COLORS.cardBackground,
       borderRadius: 10,
       marginHorizontal: 20,
       marginTop: 10,
@@ -35,7 +35,7 @@ export const EmtpyCardStyles = () => {
     },
     emptyHeader: {
       alignItems: 'center',
-      borderBottomColor: '#E0E0E0',
+      borderBottomColor: COLORS.cardBorder,
       borderBottomWidth: 1,
       flexDirection: 'row',
       // justifyContent: 'space-between',
@@ -137,33 +137,32 @@ export const FoodLogStyles = () => {
       alignItems: 'center',
       gap: 6,
     },
-
     foodNameText: {
       fontSize: 16,
       fontWeight: 'bold',
     },
-
     timeChip: {
-      backgroundColor: '#E0E0E0',
+      backgroundColor: COLORS.secondaryColor,
       borderRadius: 12,
       paddingHorizontal: 8,
       paddingVertical: 2,
     },
-
     timeChipText: {
       fontSize: 12,
-      color: '#333',
+      color: COLORS.primaryColor,
     },
     foodIcon: {
       alignItems: 'center',
-      backgroundColor: '#E0F7FA',
+      backgroundColor: COLORS.secondaryColor,
+      // backgroundColor: '#E0F7FA',
       borderRadius: 20,
       height: 40,
       justifyContent: 'center',
       width: 40,
     },
     foodIconText: {
-      color: '#00796B',
+      // color: '#00796B',
+      color: COLORS.primaryColor,
       fontSize: 16,
       fontWeight: 'bold',
     },
@@ -188,7 +187,7 @@ export const FoodLogStyles = () => {
       marginLeft: 5,
     },
     mealCard: {
-      backgroundColor: '#FFF',
+      backgroundColor: COLORS.cardBackground,
       borderRadius: 10,
       marginHorizontal: 20,
       marginTop: 10,
@@ -196,7 +195,7 @@ export const FoodLogStyles = () => {
     },
     mealHeader: {
       alignItems: 'center',
-      borderBottomColor: '#E0E0E0',
+      borderBottomColor: COLORS.cardBorder,
       borderBottomWidth: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -208,7 +207,7 @@ export const FoodLogStyles = () => {
       fontWeight: 'bold',
     },
     progressCard: {
-      backgroundColor: '#FFF',
+      backgroundColor: COLORS.cardBackground,
       marginHorizontal: 20,
       marginTop: 10,
       padding: 15,
@@ -233,7 +232,7 @@ export const ExerciseLogStyles = () => {
       fontSize: 14,
     },
     exerciseCard: {
-      backgroundColor: '#FFF',
+      backgroundColor: COLORS.cardBackground,
       borderRadius: 10,
       marginHorizontal: 20,
       marginTop: 10,
@@ -244,7 +243,7 @@ export const ExerciseLogStyles = () => {
     },
     exerciseHeader: {
       alignItems: 'center',
-      borderBottomColor: '#E0E0E0',
+      borderBottomColor: COLORS.cardBorder,
       borderBottomWidth: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -275,7 +274,7 @@ export const WaterLogStyles = () => {
       fontWeight: 'bold',
     },
     waterCard: {
-      backgroundColor: '#FFF',
+      backgroundColor: COLORS.cardBackground,
       borderRadius: 10,
       marginHorizontal: 20,
       marginTop: 10,
@@ -287,7 +286,7 @@ export const WaterLogStyles = () => {
     },
     waterHeader: {
       alignItems: 'center',
-      borderBottomColor: '#E0E0E0',
+      borderBottomColor: COLORS.cardBorder,
       borderBottomWidth: 1,
       flexDirection: 'row',
       justifyContent: 'space-between',

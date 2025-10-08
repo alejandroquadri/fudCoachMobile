@@ -1,26 +1,24 @@
 import { StyleSheet } from 'react-native';
+import { COLORS } from '@theme';
 
-export const GoalStyles = () =>
+export const ProgressStyles = () =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5F5F5',
+      backgroundColor: COLORS.backgroundColor,
     },
     card: {
-      backgroundColor: '#FFFFFF',
+      backgroundColor: COLORS.cardBackground,
       borderRadius: 10,
       marginHorizontal: 20,
       padding: 20,
       marginTop: 10,
       marginBottom: 10,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
       overflow: 'hidden',
       elevation: 5,
     },
     cardHeader: {
+      borderBottomColor: COLORS.cardBorder,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -29,23 +27,22 @@ export const GoalStyles = () =>
     cardTitle: {
       fontSize: 18,
       fontWeight: 'bold',
-      color: '#333',
+      color: COLORS.text,
     },
     unitToggleContainer: {
       flexDirection: 'row',
-      backgroundColor: '#F0F0F0',
+      backgroundColor: COLORS.secondaryColor,
       borderRadius: 20,
     },
     unitToggleText: {
       padding: 8,
-      color: 'gray',
+      color: COLORS.primaryColor,
     },
     unitToggleTextActive: {
-      color: '#333',
       fontWeight: 'bold',
     },
     axisLabel: {
-      color: '#666',
+      color: COLORS.text,
       fontSize: 12,
     },
     recordSection: {
@@ -57,50 +54,45 @@ export const GoalStyles = () =>
     lastWeightText: {
       fontSize: 18,
       fontWeight: 'bold',
-      color: '#333',
+      color: COLORS.text,
     },
     lastWeightValue: {
       fontSize: 18,
-      color: '#333',
+      color: COLORS.text,
     },
     recordButton: {
-      backgroundColor: '#2196F3',
+      // backgroundColor: 'red',
       borderRadius: 20,
       paddingHorizontal: 20,
       paddingVertical: 10,
     },
     historyCard: {
-      backgroundColor: '#FFFFFF',
+      backgroundColor: COLORS.cardBackground,
       borderRadius: 10,
       marginHorizontal: 20,
       padding: 20,
       marginTop: 10,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 5,
     },
     historyTitle: {
       fontSize: 18,
       fontWeight: 'bold',
       marginBottom: 10,
-      color: '#333',
+      color: COLORS.text,
     },
     historyItem: {
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
       borderBottomWidth: 1,
-      borderBottomColor: '#E0E0E0',
+      borderBottomColor: COLORS.cardBorder,
       paddingVertical: 10,
     },
     historyDate: {
-      color: '#666',
+      color: COLORS.subText,
     },
     historyWeight: {
       fontWeight: 'bold',
-      color: '#333',
+      color: COLORS.text,
       marginEnd: 30,
     },
     historySpacer: {

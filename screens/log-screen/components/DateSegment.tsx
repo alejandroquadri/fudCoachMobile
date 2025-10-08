@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Button, Card, Icon, Text } from '@rneui/themed';
 import { format } from 'date-fns';
-import { DateSegmentStyles } from '../theme';
+import { DateSegmentStyles } from '../LogStyles';
 
 interface DateSegmentProps {
   currentDate: Date;

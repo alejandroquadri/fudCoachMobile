@@ -11,6 +11,7 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { Icon } from '@rneui/themed';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@hooks';
+import { COLORS } from '@theme';
 
 export const CustomDrawer = (props: DrawerContentComponentProps) => {
   const { navigation, state } = props;
@@ -116,20 +117,20 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#ccc',
+    backgroundColor: COLORS.secondaryColor,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
 
   initials: {
-    color: '#fff',
+    color: COLORS.primaryContrast,
     fontSize: 18,
     fontWeight: '600',
   },
   bottomDivider: {
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: COLORS.lightDivider,
     marginVertical: 16,
   },
   name: {
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: COLORS.lightDivider,
     marginBottom: 16,
   },
   itemContainer: {
@@ -150,17 +151,18 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   activeItem: {
-    backgroundColor: '#f1f1f1',
+    backgroundColor: COLORS.secondaryColor,
   },
   icon: {
     marginRight: 16,
   },
   label: {
     fontSize: 15,
-    color: '#444',
+    color: COLORS.subText,
+    // color: '#444',
   },
   activeLabel: {
     fontWeight: 'bold',
-    color: '#000',
+    color: COLORS.primaryColor,
   },
 });

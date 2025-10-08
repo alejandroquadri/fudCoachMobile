@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { addDays, format, parse, parseISO, subDays } from 'date-fns';
+import { addDays, format, parseISO, subDays } from 'date-fns';
 
 import { foodLogsApi } from '@api';
+import { useCurrentUser } from '@hooks';
+import { ExerciseLog, FoodLog, WaterLog } from '@types';
 import {
   CalorieProgressCard,
-  DateSegment,
   EmptyCard,
   ExerciseCard,
   FoodLogCard,
   WaterIntakeCard,
-} from '@components';
-import { useCurrentUser } from '@hooks';
-import { LogStyles } from '@theme';
-import { ExerciseLog, FoodLog, WaterLog } from '@types';
+  DateSegment,
+} from './components';
+import { LogStyles } from './LogStyles';
 
 // Grouping function for food logs
 

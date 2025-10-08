@@ -124,11 +124,11 @@ const profileStyles = StyleSheet.create({
     flexGrow: 1,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.cardBackground,
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOpacity: 0.05,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -140,7 +140,7 @@ const profileStyles = StyleSheet.create({
     alignItems: 'center',
   },
   changeGoalButton: {
-    backgroundColor: '#000',
+    backgroundColor: COLORS.primaryColor,
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 16,
@@ -156,16 +156,16 @@ const profileStyles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: '#666666',
+    color: COLORS.subText,
   },
   value: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000',
+    color: COLORS.text,
   },
   separator: {
     height: 1,
-    backgroundColor: '#E6E6E6',
+    backgroundColor: COLORS.lightDivider,
     marginVertical: 4,
   },
 });

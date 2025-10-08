@@ -1,3 +1,4 @@
+import { COLORS } from '@theme';
 import { StyleSheet } from 'react-native';
 
 export const notStyles = StyleSheet.create({
@@ -32,9 +33,9 @@ export const notStyles = StyleSheet.create({
   timeLabel: { fontSize: 14 },
   timeRight: { flexDirection: 'row', alignItems: 'center' },
   timeValue: { fontSize: 16, fontWeight: '600' },
-  textDisabled: { color: '#999' },
+  textDisabled: { color: COLORS.subText },
   sheetContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.cardBackground,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 16,
@@ -46,7 +47,7 @@ export const notStyles = StyleSheet.create({
     width: 40,
     height: 5,
     borderRadius: 3,
-    backgroundColor: '#ddd',
+    backgroundColor: COLORS.cardBackground,
     marginBottom: 8,
   },
   sheetTitle: {

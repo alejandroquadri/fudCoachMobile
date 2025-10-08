@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Card, Button, Text } from '@rneui/themed';
-import { ExerciseLogStyles } from '../theme';
-import { ExerciseLog } from '../types';
+import { ExerciseLogStyles } from '../LogStyles';
+import { ExerciseLog } from '@types';
 
 interface ExerciseCardProps {
   logs: ExerciseLog[];
@@ -17,7 +17,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ logs }) => {
       <View style={styles.exerciseHeader}>
         <Text style={styles.exerciseTitle}>Exercise</Text>
         <Text style={styles.exerciseBurned}>({totalCalories} burned)</Text>
-        <Button title="+ Add Exercise" type="clear" onPress={() => {}} />
+        {/* <Button title="+ Add Exercise" type="clear" onPress={() => {}} /> */}
       </View>
 
       {/* Display each exercise log */}

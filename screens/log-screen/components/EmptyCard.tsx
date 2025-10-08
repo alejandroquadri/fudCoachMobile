@@ -1,8 +1,8 @@
 import { Card, Text } from '@rneui/themed';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { EmtpyCardStyles } from '../theme';
-import { EmptyCardInterface } from '../types';
+import { EmtpyCardStyles } from '../LogStyles';
+import { EmptyCardInterface } from '@types';
 
 interface EmptyCardProps {
   cardType: EmptyCardInterface;

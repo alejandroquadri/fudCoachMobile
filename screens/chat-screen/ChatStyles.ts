@@ -8,7 +8,7 @@ export const ChatStyles = (
 ) => {
   return StyleSheet.create({
     container: {
-      backgroundColor: COLORS.white,
+      backgroundColor: COLORS.cardBackground,
       flex: 1,
       paddingBottom: isKeyboardVisible ? 0 : insetsBottom,
     },
@@ -31,6 +31,5 @@ export const ChatStyles = (
     iconsSend: {
       justifyContent: 'center',
     },
-    // ... any other styles you want to define
   });
 };

@@ -23,7 +23,7 @@ export const StepProgressBar: FC<StepProgressBarProps> = ({
         <LinearProgress
           value={progress}
           variant="determinate"
-          color="black"
+          color={COLORS.primaryColor}
           trackColor={COLORS.secondaryColor}
           style={styles.progressBar}
         />

@@ -2,8 +2,8 @@ import { Card, Text } from '@rneui/themed';
 import React from 'react';
 import { Image, View } from 'react-native';
 import { PieChart } from 'react-native-gifted-charts';
-import { FoodLogStyles } from '../theme';
-import { FoodLog } from '../types';
+import { FoodLogStyles } from '../LogStyles';
+import { FoodLog } from '@types';
 import { format, parseISO } from 'date-fns';
 
 interface FoodLogCardProps {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Card, Text } from '@rneui/themed';
-import { FoodLogStyles } from '../theme';
+import { FoodLogStyles } from '../LogStyles';
 
 interface CalorieProgressCardProps {
   goal: number;

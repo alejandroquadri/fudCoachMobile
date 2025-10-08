@@ -1,13 +1,15 @@
-import { useCurrentUser } from '@hooks';
-import { Icon, Text } from '@rneui/themed';
-import { convertKilogramsToPounds, round } from '@services';
-import { GoalStyles } from '@theme';
-import { WeightLogInterface } from '@types';
-import { format, parseISO } from 'date-fns';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
+
+import { Icon, Text } from '@rneui/themed';
 import { LineChart } from 'react-native-gifted-charts';
-import { weightLogsApi } from '../../api';
+import { format, parseISO } from 'date-fns';
+
+import { convertKilogramsToPounds, round } from '@services';
+import { WeightLogInterface } from '@types';
+import { useCurrentUser } from '@hooks';
+import { weightLogsApi } from '@api';
+import { ProgressStyles } from './ProgressStyles';
 
 interface ChartDataInterface {
   label: string;
@@ -31,7 +33,7 @@ const calcMinValue = (logs: { label: string; value: number }[]) => {
 };
 
 export const ProgressScreen = () => {
-  const styles = GoalStyles();
+  const styles = ProgressStyles();
   const [unit, setUnit] = useState<string>('kg');
   const [weightData, setWeightData] = useState<WeightLogInterface[]>([]);
   const [chartData, setChartData] = useState<ChartDataInterface[]>([]);

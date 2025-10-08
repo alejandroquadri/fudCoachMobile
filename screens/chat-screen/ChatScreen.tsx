@@ -165,7 +165,7 @@ export const Chat = () => {
           <Icon
             name="camera"
             type="feather"
-            color={COLORS.fontGrey}
+            color={COLORS.text}
             containerStyle={styles.iconsCamera}
           />
         </TouchableOpacity>
@@ -179,7 +179,7 @@ export const Chat = () => {
         <Icon
           name="send"
           type="feather"
-          color={COLORS.fontGrey}
+          color={COLORS.text}
           size={22}
           containerStyle={styles.iconsSend}
         />
