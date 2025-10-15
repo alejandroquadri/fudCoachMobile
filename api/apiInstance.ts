@@ -17,6 +17,7 @@ api.interceptors.request.use(
     // Fetch the token from SecureStorer
     const token = await SecureStore.getItemAsync('userToken');
 
+    console.log('token de acceso:', token);
     // If the token exists, set it in the headers
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -54,6 +55,7 @@ api.interceptors.response.use(
         refreshedToken.refreshToken
       );
 
+      console.log(refreshedToken.accessToken);
       // Set the Authorization header to the new token
       api.defaults.headers.common['Authorization'] =
         `Bearer ${refreshedToken.accessToken}`;

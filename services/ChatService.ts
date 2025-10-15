@@ -1,4 +1,4 @@
-import { aiApi, chatApi } from '../api';
+import { aiApi } from '../api';
 import { v4 as uuidv4 } from 'uuid';
 import { IMessage } from 'react-native-gifted-chat';
 import { AiState, ChatMsg, UserProfile } from '../types';
@@ -9,11 +9,31 @@ const PREUPLOAD_QUALITY = 0.7; // 0..1
 
 export const fetchPreviousMessages = async (
   userId: string
+): Promise<IMessage[] | null> => {
+  try {
+    console.log('pido mensajes en service');
+    const dbMes: ChatMsg[] = await aiApi.getMesgs(userId);
+    console.log('obtengo mensajes');
+    return buildIMessageArray(dbMes);
+  } catch (error) {
+    console.log('error fetching messages', error);
+    return null;
+  }
+};
+
+export const getInitialWelcomeMessage = async (
+  userId: string
 ): Promise<IMessage[]> => {
-  console.log('pido mensajes en service');
-  const dbMes: ChatMsg[] = await chatApi.getMesgs(userId);
-  console.log('obtengo mensajes');
-  return buildIMessageArray(dbMes);
+  const welcomeMes = await aiApi.getWelcomeMes(userId);
+  return buildIMessageArray([welcomeMes]);
+};
+
+export const markWelcomeDeliveredOnServer = async (
+  userId: string
+): Promise<void> => {
+  return aiApi.markWelcomeDelivered(userId);
+  // // Replace with real API call when ready
+  // await new Promise(r => setTimeout(r, 200));
 };
 
 export const initUserPreferences = async (

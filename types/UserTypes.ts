@@ -1,5 +1,7 @@
 export interface UserProfile {
   _id: string;
+  createdAt: Date;
+  updatedAt: Date;
   name: string;
   avatar?: string;
   email: string;
@@ -24,6 +26,13 @@ export interface UserProfile {
   dietType: string; // tipo de dieta: clasico | vegano | vegetariano | paleo | etc
   outcome: string; // ser mas saludabe | tener mas energia | etc
   nutritionGoals: NutritionGoals;
+  dietaryRestrictions?: Array<string>;
+  allergies?: Array<string>;
+  dislikes?: Array<string>;
+  likes?: Array<string>;
+  meal_times?: Array<string>;
+
+  deliveredWelcome?: boolean; // optional flag to track if welcome message was sent
 }
 
 export interface NutritionGoals {
