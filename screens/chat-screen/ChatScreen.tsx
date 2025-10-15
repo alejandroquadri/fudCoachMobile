@@ -68,14 +68,10 @@ export const Chat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [cameraVisible, setCameraVisible] = useState(false);
   const isKeyboardVisible = useKeyboard();
-  const auth = useContext<AuthContextType | undefined>(AuthContext);
 
   const insets = useSafeAreaInsets();
   const styles = ChatStyles(isKeyboardVisible, insets.bottom);
 
-  if (!auth) {
-    throw new Error('SignIn must be used within an AuthProvider');
-  }
   const user = useCurrentUser();
   const { refreshUser } = useAuth();
 
@@ -90,8 +86,10 @@ export const Chat = () => {
           if (!user?._id) return;
           const fresh = await getProfile(user._id);
           if (canceled) return;
-          console.log('nuevo user', fresh);
           if (fresh?.updatedAt !== user?.updatedAt) {
+            console.log('cambio user', fresh);
+            await initUserPreferences(fresh);
+            console.log('ai state actualizado');
             refreshUser(fresh);
           }
         } catch (e) {
@@ -117,9 +115,6 @@ export const Chat = () => {
           Alert.alert('Error', 'Could not load previous messages');
         }
         setMessages(prevMessages!);
-
-        await initUserPreferences(user);
-        console.log('ai state actualizado');
 
         // chequeo si el token para notificaciones esta guardado, si no lo guardo
         // si no, pido permiso para notificaciones y luego guardo el token
@@ -179,12 +174,12 @@ export const Chat = () => {
         const apiResponseMessage = await sendChatMessage(userMes, userId).catch(
           error => console.log('error enviando mensage a ai', error)
         );
+        if (!apiResponseMessage) throw new Error();
         setIsTyping(false);
         // Append the API's response message
         setMessages(prevMessages => {
           return GiftedChat.append(prevMessages, [apiResponseMessage]);
         });
-        // auth.updateUser(user);
       } catch (error) {
         console.log(error);
         Alert.alert('Error', 'Coach seems to have problems responding');
