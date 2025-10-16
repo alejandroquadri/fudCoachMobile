@@ -1,8 +1,8 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { Alert, Modal, TouchableOpacity, View } from 'react-native';
 import { Icon } from '@rneui/themed';
 import { format } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
+import { useEffect, useState } from 'react';
+import { Alert, Modal, TouchableOpacity, View } from 'react-native';
 import 'react-native-get-random-values';
 import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,26 +11,16 @@ import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
 
 import { CameraScreen } from '@components';
-import {
-  AuthContext,
-  AuthContextType,
-  useAuth,
-  useCurrentUser,
-  useKeyboard,
-} from '@hooks';
+import { useAuth, useKeyboard } from '@hooks';
 import {
   ensurePushTokenSynced,
   fetchPreviousMessages,
-  sendChatImage,
-  sendChatMessage,
-  initUserPreferences,
-  prepareForUpload,
   getInitialWelcomeMessage,
   markWelcomeDeliveredOnServer,
-  getProfile,
-  // createInitialNotificatinJobs,
+  prepareForUpload,
+  sendChatImage,
+  sendChatMessage,
 } from '@services';
-import { useFocusEffect } from '@react-navigation/native';
 
 const storeLastOpenedDate = async () => {
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -39,7 +29,7 @@ const storeLastOpenedDate = async () => {
 
 const welcomeKeyFor = (userId: string) => `welcomeDelivered${userId}`;
 
-const hasDeliveredWelcome = async (userId: string) => {
+const hasDeliveredWelcomeLocal = async (userId: string) => {
   try {
     const v = await SecureStore.getItemAsync(welcomeKeyFor(userId));
     console.log(v);
@@ -51,19 +41,14 @@ const hasDeliveredWelcome = async (userId: string) => {
 
 const markWelcomeDeliveredLocal = async (userId: string) => {
   try {
-    console.log(
-      'trato de marcat delivered local',
-      userId,
-      welcomeKeyFor(userId)
-    );
     await SecureStore.setItemAsync(welcomeKeyFor(userId), '1');
-    console.log('marcado delivered local');
   } catch (error) {
     console.log('error marking welcome delivered local', error);
   }
 };
 
 export const Chat = () => {
+  console.log('llego al chatScreen');
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [cameraVisible, setCameraVisible] = useState(false);
@@ -72,96 +57,65 @@ export const Chat = () => {
   const insets = useSafeAreaInsets();
   const styles = ChatStyles(isKeyboardVisible, insets.bottom);
 
-  const user = useCurrentUser();
-  const { refreshUser } = useAuth();
-
-  // ⬇️ Refetch profile each time Chat screen gets focus
-  useFocusEffect(
-    useCallback(() => {
-      console.log('corre use Focus Effect');
-      let canceled = false;
-
-      (async () => {
-        try {
-          if (!user?._id) return;
-          const fresh = await getProfile(user._id);
-          if (canceled) return;
-          if (fresh?.updatedAt !== user?.updatedAt) {
-            console.log('cambio user', fresh);
-            await initUserPreferences(fresh);
-            console.log('ai state actualizado');
-            refreshUser(fresh);
-          }
-        } catch (e) {
-          console.log('Failed to refresh profile on Chat focus', e);
-          // you can show a toast/Alert if you want, but keeping it quiet is fine here
-        }
-      })();
-
-      return () => {
-        canceled = true;
-      };
-    }, [])
-  );
+  const { user } = useAuth();
 
   useEffect(() => {
     console.log('corre use Effect de initialize Chat');
     const initializeChat = async () => {
       if (user && user._id) {
-        console.log(user);
-        const prevMessages = await fetchPreviousMessages(user._id);
-        console.log('traigo mensages previos', prevMessages);
-        if (prevMessages === null) {
-          Alert.alert('Error', 'Could not load previous messages');
-        }
-        setMessages(prevMessages!);
-
         // chequeo si el token para notificaciones esta guardado, si no lo guardo
         // si no, pido permiso para notificaciones y luego guardo el token
         await ensurePushTokenSynced(user._id, { requestIfDenied: true });
+        console.log(user._id);
+        const prevMessages = await fetchPreviousMessages(user._id);
+        console.log(prevMessages);
+        if (prevMessages === null) {
+          Alert.alert('Error', 'Could not load previous messages');
+        } else {
+          setMessages(prevMessages!);
 
-        // Only consider sending welcome if this really looks like the first time
-        const looksLikeNewUser = prevMessages!.length < 1;
+          // Only consider sending welcome if this really looks like the first time
+          const looksLikeNewUser = prevMessages?.length < 1;
 
-        // optional: also trust server flag if present
-        const serverDelivered = !!user.deliveredWelcome;
+          // optional: also trust server flag if present
+          // const serverDelivered = !!user.deliveredWelcome;
 
-        // Also check a per-user local flag so we never double-send
-        const alreadyDelivered = await hasDeliveredWelcome(user._id);
+          // Also check a per-user local flag so we never double-send
+          const alreadyDeliveredLocal = await hasDeliveredWelcomeLocal(
+            user._id
+          );
 
-        if (
-          looksLikeNewUser &&
-          !(alreadyDelivered === true) &&
-          !(serverDelivered === true)
-        ) {
-          // if (!alreadyDelivered) {
-          // if (true) {
-          try {
-            setIsTyping(true);
+          if (
+            looksLikeNewUser &&
+            !(alreadyDeliveredLocal === true)
+            // !(serverDelivered === true)
+          ) {
+            // if (true) {
+            try {
+              setIsTyping(true);
 
-            const welcomeMessage = await getInitialWelcomeMessage(user._id);
+              const welcomeMessage = await getInitialWelcomeMessage(user._id);
 
-            // Append it to the chat
-            setMessages(prev => GiftedChat.append(prev, welcomeMessage));
+              // Append it to the chat
+              setMessages(prev => GiftedChat.append(prev, welcomeMessage));
 
-            // Persist welcome delivery both locally and on server
-            await Promise.all([
-              markWelcomeDeliveredLocal(user._id),
-              markWelcomeDeliveredOnServer(user._id),
-            ]);
-
-            console.log('vuelven las promises');
-          } catch (e) {
-            console.log('Failed to deliver welcome message', e);
-          } finally {
-            setIsTyping(false);
+              // Persist welcome delivery both locally and on server
+              await Promise.all([
+                markWelcomeDeliveredLocal(user._id),
+                markWelcomeDeliveredOnServer(user._id),
+              ]);
+            } catch (e) {
+              console.log('Failed to deliver welcome message', e);
+            } finally {
+              setIsTyping(false);
+            }
           }
         }
       }
     };
 
     initializeChat();
-  }, [user?._id]);
+  }, [user]);
 
   const sendMes = async (message: IMessage[]) => {
     if (user && user._id) {
