@@ -1,9 +1,9 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const url = 'http://Mac-Ale.local:3000';
-// const url = '192.168.0.148:3000';
-// const url = 'http://localhost:3000';
+// const url = 'http://Mac-Ale.local:3000';
+// const url = 'http://api.local.fud.coach';
+const url = 'https://api.fud.coach';
 
 export const api = axios.create({
   baseURL: url, // your API server
@@ -11,6 +11,7 @@ export const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
 // Add a request interceptor. I am using it to add token to headers
 api.interceptors.request.use(
   async config => {
