@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "fudCoachMobile",
+    "name": "Food Coach",
     "slug": "fudCoachMobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,11 +9,9 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#4fc6c4"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mauroq.fudCoach",
@@ -21,9 +19,7 @@
         "NSCameraUsageDescription": "We need access to your camera to take food photos.",
         "NSMicrophoneUsageDescription": "We need access to your microphone for voice input.",
         "NSUserTrackingUsageDescription": "We use this data to improve your experience.",
-        "UIBackgroundModes": [
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["remote-notification"]
       }
     },
     "android": {

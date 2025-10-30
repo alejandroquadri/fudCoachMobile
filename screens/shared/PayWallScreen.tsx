@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
@@ -18,7 +11,6 @@ import {
   requestPurchase,
   useIAP,
 } from 'expo-iap';
-import { validateIOS } from '@services';
 
 type PaywallProps = {
   onSuccess: () => void;
@@ -30,7 +22,7 @@ type PaywallProps = {
 
 // 1) Put your real subscription product IDs here
 const IAP_PRODUCT_IDS = {
-  subs: ['weekly', 'anual'] as const,
+  subs: ['weekly_plan', 'anual_plan'] as const,
   // subs: ['fudCoach_yearly', 'fudCoach_weekly'] as const,
 };
 

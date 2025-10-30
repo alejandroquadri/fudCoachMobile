@@ -80,6 +80,7 @@ export const registerForPushNotificationsAsync = async (): Promise<
   if (existingStatus !== 'granted') {
     console.log('Requesting permission for push notifications');
     const { status } = await Notifications.requestPermissionsAsync();
+    console.log(status);
     finalStatus = status;
   }
 
@@ -228,15 +229,3 @@ export const getNotificationSettings = (
 ): Promise<Record<NotificationKey, NotificationSettingDoc>> => {
   return notificationsApi.getNotificationSettings(userId);
 };
-
-// export interface UpdateJobPayload {
-//   userId: string;
-//   key: NotificationKey;
-//   enabled?: boolean; // optional
-//   hourLocal?: string; // optional "HH:mm"
-//   timezone?: string; // optional (change zone)
-// }
-
-// | 'dailyPlanner'
-// | 'lunchLogReminder'
-// | 'dinnerLogReminder';
