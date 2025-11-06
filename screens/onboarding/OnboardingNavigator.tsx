@@ -105,10 +105,8 @@ export const OnboardingNavigator: FC = () => {
     setSubmitting(true);
     try {
       if (appleIdToken !== null) {
-        console.log('voy con apple');
         await appleSignUp();
       } else {
-        console.log('voy con password');
         await registerEmailPass();
       }
     } finally {
@@ -118,7 +116,6 @@ export const OnboardingNavigator: FC = () => {
 
   const registerEmailPass = async () => {
     try {
-      console.log('arranco register data', state);
       const { onboardingStep, ...userData } = state as {
         onboardingStep: number;
       } & UserProfile;
@@ -181,7 +178,6 @@ export const OnboardingNavigator: FC = () => {
   useEffect(() => {
     if (state.onboardingStep >= steps.length) {
       registerData();
-      console.log('Onboarding complete');
       return;
     }
 
@@ -308,7 +304,6 @@ export const OnboardingNavigator: FC = () => {
               initialValue={state.height}
               unitType={state.unitType}
               onSave={ret => {
-                console.log('recibo este height', ret);
                 const { unitType, height } = ret;
                 dispatch({
                   type: 'UPDATE_FIELD',
@@ -531,7 +526,6 @@ export const OnboardingNavigator: FC = () => {
             <PrepPlanScreen
               currentState={state}
               onNext={nutritionGoals => {
-                console.log(nutritionGoals);
                 dispatch({
                   type: 'UPDATE_FIELD',
                   field: 'nutritionGoals',
@@ -549,9 +543,12 @@ export const OnboardingNavigator: FC = () => {
         <OnboardingStack.Screen name="PayWall">
           {() => (
             <PaywallScreen
-              onSuccess={() => {
-                // If you also want to keep a flag in state, you could:
-                // dispatch({ type: 'UPDATE_FIELD', field: 'hasPaid', value: true });
+              onSuccess={entitlement => {
+                dispatch({
+                  type: 'UPDATE_FIELD',
+                  field: 'entitlement',
+                  value: entitlement,
+                });
                 dispatch({ type: 'NEXT_STEP' });
               }}
               onBack={() => dispatch({ type: 'PREV_STEP' })}

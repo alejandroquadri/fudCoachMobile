@@ -127,7 +127,6 @@ export const ChartToGoalScreen = ({
 
   useEffect(() => {
     const data = generateChartData(currentWeight, goalWeight, pace, unit);
-    console.log(data);
     const minValue = data[data.length - 1].value;
     const goalDate = format(data[data.length - 1].date!, 'dd MMMM');
     const calcGoalWeight = unit === 'metric' ? goalWeight : kgToLbs(goalWeight);

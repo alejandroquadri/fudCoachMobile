@@ -1,19 +1,30 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
-import { COLORS, SharedStyles } from '@theme';
 import {
+  getOrCreateAppAccountToken,
+  validateIOSPurchaseClient,
+} from '@services';
+import { COLORS, SharedStyles } from '@theme';
+import { Entitlement } from '@types';
+import {
+  Purchase,
   fetchProducts,
   finishTransaction,
-  getAvailablePurchases,
   requestPurchase,
   useIAP,
 } from 'expo-iap';
 
 type PaywallProps = {
-  onSuccess: () => void;
+  onSuccess: (entitlement: Entitlement) => void;
   onBack: () => void;
   showProgressBar?: boolean;
   step?: number;
@@ -23,7 +34,6 @@ type PaywallProps = {
 // 1) Put your real subscription product IDs here
 const IAP_PRODUCT_IDS = {
   subs: ['weekly_plan', 'anual_plan'] as const,
-  // subs: ['fudCoach_yearly', 'fudCoach_weekly'] as const,
 };
 
 export const PaywallScreen = ({
@@ -36,92 +46,83 @@ export const PaywallScreen = ({
   const styles = SharedStyles();
 
   const [loading, setLoading] = useState(true);
+  const [canRetryValidation, setCanRetryValidation] = useState(false); // NEW
+  const lastPurchaseRef = useRef<Purchase | null>(null); // new
   const [purchasing, setPurchasing] = useState(false);
   const [selectedSku, setSelectedSku] = useState<string | null>(null);
   const [plans, setPlans] = useState<any[]>([]);
+  const [appAccountToken, setAppAccountToken] = useState<string | null>(null); // NEW
 
   // Make a mutable copy so TS is happy where a `string[]` is required
   const productIds = useMemo(() => [...IAP_PRODUCT_IDS.subs], []);
 
-  // 2) Handle purchase success with the hook's callbacks (v3 way)
+  // 2) Handle purchase success with the hook's callbacks
   const onPurchaseSuccess = useCallback(
-    async (purchase: any) => {
+    async (purchase: Purchase) => {
+      setPurchasing(true);
+      lastPurchaseRef.current = purchase;
       try {
-        setPurchasing(false);
+        // server validation
+        const res = await validateIOSPurchaseClient({
+          purchase,
+          appAccountToken: appAccountToken || undefined,
+        });
+        console.log('validation response: ', res);
 
-        // TODO: lo de abajo lo comento porque seria para validar desde backend
-        //
-        // const productId = purchase?.id ?? purchase?.productId ?? 'unknown.sku';
-        // const transactionId =
-        //   purchase?.transactionId ??
-        //   purchase?.purchaseToken ??
-        //   String(Date.now());
-        //
-        // // --- NEW: ask expo-iap to validate on-device and give us the iOS receipt object
-        // // validateReceipt requires 1 arg (sku) and returns an object, not a string
-        // let receiptData = '';
-        // if (Platform.OS === 'ios') {
-        //   const vr = await validateReceipt(productId).catch(error =>
-        //     console.log('el error viene aca ', error)
-        //   ); // <-- pass SKU
-        //
-        //   // Shapes vary by version/env; pick anything that looks like base64
-        //   // Common keys seen in v3: receiptData, receipt, rawReceipt
-        //   const anyVr = vr as any;
-        //   receiptData =
-        //     anyVr?.receiptData || anyVr?.receipt || anyVr?.rawReceipt || '';
-        //
-        //   // When using a local .storekit file, there usually isn't a real Apple receipt
-        //   // In that case, skip server validation and let your mock handle it
-        //   if (!receiptData) {
-        //     console.log(
-        //       '[IAP] No iOS receipt data (likely local StoreKit). Using mock validation.'
-        //     );
-        //   }
-        // }
-        //
-        // // --- call your service (it now expects receiptData)
-        // const result = await validateIOS({
-        //   productId,
-        //   transactionId,
-        //   receiptData,
-        // });
-        //
-        // if (!result.ok) {
-        //   Alert.alert(
-        //     'Validation error',
-        //     result.error ?? 'Could not validate purchase'
-        //   );
-        //   return;
-        // }
+        if (!res.ok) {
+          setCanRetryValidation(true);
+          Alert.alert(
+            'Validation failed',
+            res.error ?? 'Could not validate purchase.'
+          );
+          return; // IMPORTANT: do NOT finish the transaction if validation fails
+        }
 
         // IMPORTANT: only finish after your server says "ok"
         await finishTransaction({ purchase, isConsumable: false });
-        onSuccess();
+        setCanRetryValidation(false);
+        lastPurchaseRef.current = null;
+
+        onSuccess(res.entitlement!);
       } catch (err: any) {
         Alert.alert(
           'Finalize error',
           err?.message ?? 'Could not finalize purchase.'
         );
+      } finally {
+        setPurchasing(false);
       }
     },
-    [onSuccess]
+    [onSuccess, appAccountToken]
   );
 
   const onPurchaseError = useCallback((error: any) => {
     setPurchasing(false);
-    if (error?.code === 'E_USER_CANCELLED') return; // silent cancel
+    if (typeof error?.message === 'string' && /already/i.test(error.message)) {
+      setCanRetryValidation(true); // NEW: offer retry
+    }
+    if (error?.code === 'E_USER_CANCELLED') return;
     Alert.alert('Purchase error', error?.message ?? 'Unknown purchase error');
   }, []);
 
-  const { connected, validateReceipt } = useIAP({
+  const { connected } = useIAP({
     onPurchaseSuccess,
     onPurchaseError,
   });
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = await getOrCreateAppAccountToken(); // per-install UUID
+        setAppAccountToken(token);
+      } catch {
+        setAppAccountToken(null);
+      }
+    })();
+  }, []);
+
   // 4) Load subscription products when the store is connected
   useEffect(() => {
-    console.log('use effect n4');
     if (!connected) return;
     (async () => {
       try {
@@ -130,12 +131,10 @@ export const PaywallScreen = ({
           skus: productIds,
           type: 'subs',
         });
-        console.log('tengo products', products);
         if (products) {
           setPlans(products);
         }
       } catch (error) {
-        console.log(error);
         Alert.alert('Store error', 'Unable to load products.');
       } finally {
         setLoading(false);
@@ -152,11 +151,14 @@ export const PaywallScreen = ({
     }
   }, [plans, selectedSku, productIds]);
 
-  const displayPrice = p =>
-    p?.displayPrice ?? p?.localizedPrice ?? p?.priceString ?? p?.price ?? '';
+  const displayPrice = (p: any) => p?.price ?? '';
 
   // 6) Buy using the new platform-specific API
   const buy = async () => {
+    if (canRetryValidation) {
+      // NEW: do not re-purchase while waiting to retry
+      return;
+    }
     if (!selectedSku) return;
     if (!connected) {
       Alert.alert('Store unavailable', 'Please try again in a moment.');
@@ -168,8 +170,7 @@ export const PaywallScreen = ({
         request: {
           ios: {
             sku: selectedSku,
-            // Leave finishing to our success handler after validation
-            andDangerouslyFinishTransactionAutomatically: false,
+            appAccountToken: appAccountToken || undefined,
           },
           android: {
             // When you ship Android: provide offerTokens for subs
@@ -187,27 +188,43 @@ export const PaywallScreen = ({
     }
   };
 
-  // 7) Restore for non-consumables & subscriptions
-  const restore = async () => {
+  const retryValidation = async () => {
+    // NEW
+    const p = lastPurchaseRef.current;
+    if (!p) {
+      setCanRetryValidation(false);
+      return;
+    }
+
+    setPurchasing(true);
     try {
-      setLoading(true);
-      await getAvailablePurchases(); // updates internal state
-      Alert.alert(
-        'Restore',
-        'If you had an active purchase, it will be restored after validation.'
-      );
+      const res = await validateIOSPurchaseClient({
+        purchase: p,
+        appAccountToken: appAccountToken || undefined,
+      });
+
+      if (!res.ok) {
+        Alert.alert(
+          'Still not validated',
+          res.error ?? 'Please try again in a moment or use Restore.'
+        );
+        setCanRetryValidation(true); // stay in retry mode
+        return;
+      }
+
+      await finishTransaction({ purchase: p, isConsumable: false });
+      setCanRetryValidation(false);
+      lastPurchaseRef.current = null;
+      onSuccess(res.entitlement!);
     } catch (e: any) {
-      Alert.alert(
-        'Restore error',
-        e?.message ?? 'Could not restore purchases.'
-      );
+      Alert.alert('Retry error', e?.message ?? 'Could not retry validation.');
+      setCanRetryValidation(true);
     } finally {
-      setLoading(false);
+      setPurchasing(false);
     }
   };
 
   const renderOption = (product: any) => {
-    console.log(product);
     const id = product?.id ?? product?.productId;
     const selected = id && selectedSku === id;
 
@@ -269,20 +286,20 @@ export const PaywallScreen = ({
       </View>
 
       <Button
-        title={purchasing ? 'Processing…' : 'Continue'}
+        title={
+          canRetryValidation
+            ? purchasing
+              ? 'Validating…'
+              : 'Retry validation' // NEW
+            : purchasing
+              ? 'Processing…'
+              : 'Continue'
+        }
         loading={loading || purchasing}
-        onPress={buy}
+        onPress={canRetryValidation ? retryValidation : buy} // NEW
         disabled={!selectedSku || loading || purchasing}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
-      />
-
-      <Button
-        type="clear"
-        title="Restore purchases"
-        onPress={restore}
-        disabled={loading || purchasing}
-        containerStyle={{ marginTop: 8 }}
       />
     </ScrollView>
   );

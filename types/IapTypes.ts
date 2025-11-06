@@ -1,14 +1,17 @@
 export type Entitlement = {
-  active: boolean;
-  sku: string;
-  expiresAtISO?: string;
-  environment: 'StoreKit' | 'Sandbox' | 'Production';
+  active: boolean; // same
+  appAccountToken: string;
+  productId: string; // CHANGED: was 'sku'
+  expiresAtISO?: string; // same
+  platform: 'ios'; // NEW: match server
+  environment?: 'Production' | 'Sandbox'; // NEW: optional
 };
 
 export type ValidateIOSPayload = {
-  productId: string;
-  transactionId: string;
-  receiptData: string; // NEW: base64 app receipt
+  transactionId: string; // REQUIRED
+  originalTransactionId?: string; // optional, good for subs
+  productId?: string; // optional (for logs/UI)
+  appAccountToken?: string; // optional but recommended
 };
 
 export type ValidateResponse = {

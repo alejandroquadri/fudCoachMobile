@@ -1,3 +1,5 @@
+import { Entitlement } from './IapTypes';
+
 export interface UserProfile {
   _id: string;
   createdAt: Date;
@@ -10,6 +12,7 @@ export interface UserProfile {
   providers?: Array<'email' | 'apple'>;
   appleSub?: string; // Apple's stable "sub" claim
   appleEmailPrivateRelay?: boolean; // optional flag
+  entitlement: Entitlement;
 
   gender: string;
   lifeStyle: number;

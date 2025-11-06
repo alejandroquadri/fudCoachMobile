@@ -1,13 +1,12 @@
-import * as SecureStore from 'expo-secure-store';
-import { addWeeks, addYears, isAfter } from 'date-fns';
-import { Entitlement, ValidateIOSPayload, ValidateResponse } from '@types';
 import { iapApi } from '@api';
-import { Alert } from 'react-native';
+import { Entitlement, ValidateIOSPayload } from '@types';
+import { Purchase } from 'expo-iap';
+import * as SecureStore from 'expo-secure-store';
 
-const USE_MOCK = true;
 const ENTITLEMENT_KEY = 'fc_entitlement_v1';
+const ACCOUNT_TOKEN_KEY = 'fc_app_account_token_v1';
 
-/** Helpers backed by expo-secure-store */
+// /** Helpers backed by expo-secure-store */
 const secureGet = async (key: string): Promise<string | null> => {
   try {
     return await SecureStore.getItemAsync(key, {
@@ -38,69 +37,95 @@ const secureDelete = async (key: string): Promise<void> => {
   }
 };
 
-/** Public cache API */
-export const getEntitlementFromCache =
-  async (): Promise<Entitlement | null> => {
-    const raw = await secureGet(ENTITLEMENT_KEY);
-    if (!raw) return null;
-    try {
-      const ent = JSON.parse(raw) as Entitlement;
-      // Optional: auto-expire locally if past `expiresAtISO`
-      if (
-        ent.expiresAtISO &&
-        !isAfter(new Date(ent.expiresAtISO), new Date())
-      ) {
-        return { ...ent, active: false };
-      }
-      return ent;
-    } catch {
-      return null;
-    }
-  };
+// /** Public cache API */
+// export const getEntitlementFromCache =
+//   async (): Promise<Entitlement | null> => {
+//     const raw = await secureGet(ENTITLEMENT_KEY);
+//     if (!raw) return null;
+//     try {
+//       const ent = JSON.parse(raw) as Entitlement;
+//       // Optional: auto-expire locally if past `expiresAtISO`
+//       if (
+//         ent.expiresAtISO &&
+//         !isAfter(new Date(ent.expiresAtISO), new Date())
+//       ) {
+//         return { ...ent, active: false };
+//       }
+//       return ent;
+//     } catch {
+//       return null;
+//     }
+//   };
+//
+// export const clearEntitlementCache = async () => {
+//   await secureDelete(ENTITLEMENT_KEY);
+// };
+//
+// const saveEntitlement = async (ent: Entitlement) => {
+//   await secureSet(ENTITLEMENT_KEY, JSON.stringify(ent));
+// };
 
-export const clearEntitlementCache = async () => {
-  await secureDelete(ENTITLEMENT_KEY);
+/** ---------- Account token utilities ---------- */
+
+// Simple UUID v4 generator without extra deps (sufficient for token use)
+const uuidv4 = () =>
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+
+// Persist a stable appAccountToken (StoreKit 2 association) // NEW
+export const getOrCreateAppAccountToken = async (): Promise<string> => {
+  const existing = await secureGet(ACCOUNT_TOKEN_KEY);
+  if (existing) return existing;
+  const token = uuidv4();
+  await secureSet(ACCOUNT_TOKEN_KEY, token);
+  return token;
 };
 
-const saveEntitlement = async (ent: Entitlement) => {
-  await secureSet(ENTITLEMENT_KEY, JSON.stringify(ent));
-};
+type ClientValidateArgs =
+  | { purchase: Purchase; appAccountToken?: string }
+  | { kind: 'restore'; appAccountToken?: string }; // NE
 
-/** Mock “server” validation */
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
-export const validateIOS = async (
-  req: ValidateIOSPayload
-): Promise<ValidateResponse> => {
-  if (USE_MOCK) {
-    await delay(200);
-    const now = new Date();
-    const expiresAt =
-      req.productId === 'weekly'
-        ? addWeeks(now, 1)
-        : req.productId === 'anual'
-          ? addYears(now, 1)
-          : undefined;
-
-    const entitlement: Entitlement = {
-      active: true,
-      sku: req.productId,
-      expiresAtISO: expiresAt?.toISOString(),
-      environment: 'StoreKit',
-    };
-    await saveEntitlement(entitlement);
-    return { ok: true, entitlement };
+export const validateIOSPurchaseClient = async (
+  args: ClientValidateArgs
+): Promise<
+  { ok: true; entitlement?: Entitlement } | { ok: false; error?: string }
+> => {
+  console.log('hago llamada');
+  // Handle restore path first
+  if ('kind' in args && args.kind === 'restore') {
+    return { ok: true }; // NEW: no-op until you add a backend restore route
   }
 
+  // From here on, TS knows args has a 'purchase' field
+  const { purchase, appAccountToken } = args as {
+    purchase: Purchase;
+    appAccountToken: string;
+  }; // NEW
+
   try {
-    const res = await iapApi.validateIOS(req);
-    if (res.ok && res.entitlement) {
-      await saveEntitlement(res.entitlement);
+    const transactionId: string | undefined = purchase.id; // NEW
+    if (!transactionId) {
+      return { ok: false, error: 'Missing transactionId from purchase' }; // NEW
     }
-    return res;
-  } catch (e) {
-    console.log('validateIOS error', e);
-    Alert.alert('Error', 'Could not validate purchase. Please try again.');
-    return { ok: false, error: 'network' };
+
+    const payload: ValidateIOSPayload = {
+      transactionId,
+      // originalTransactionId: purchase?.originalTransactionId, // NEW
+      productId: purchase?.productId,
+      appAccountToken,
+    };
+
+    const resp = await iapApi.validateIOS(payload); // NEW
+    if (!resp?.ok || !resp?.entitlement) {
+      return { ok: false, error: resp?.error || 'Server validation failed' }; // NEW
+    }
+
+    // await saveEntitlement(resp.entitlement); // NEW
+    return { ok: true, entitlement: resp.entitlement }; // NEW
+  } catch (e: any) {
+    return { ok: false, error: e?.message ?? 'Network error' }; // NEW
   }
 };

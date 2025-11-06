@@ -23,7 +23,6 @@ export const ActivityLevelScreen = ({
 }: ActivityLevelScreenProps) => {
   const styles = SharedStyles();
 
-  console.log(initialValue);
   const [selectedActivity, setSelectedActivity] = useState(initialValue);
 
   const handleSave = () => {

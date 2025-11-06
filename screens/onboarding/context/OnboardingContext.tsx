@@ -1,4 +1,4 @@
-import { NutritionGoals, UserProfile } from '@types';
+import { Entitlement, NutritionGoals, UserProfile } from '@types';
 import React, { createContext, useReducer, useContext, ReactNode } from 'react';
 
 export interface OnboardingState extends Partial<UserProfile> {
@@ -9,7 +9,7 @@ type Action =
   | {
       type: 'UPDATE_FIELD';
       field: keyof OnboardingState;
-      value: string | number | boolean | NutritionGoals;
+      value: string | number | boolean | NutritionGoals | Entitlement;
     }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
@@ -46,7 +46,7 @@ const OnboardingContext = createContext<{
 export const OnboardingProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(onboardingReducer, initialState);
 
-  console.log('Onboarding context initialized', state);
+  // console.log('Onboarding context initialized', state);
 
   return (
     <OnboardingContext.Provider value={{ state, dispatch }}>

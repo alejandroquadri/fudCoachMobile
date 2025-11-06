@@ -41,7 +41,6 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
     const fetchPlan = async () => {
       try {
         const nutritionGoals = await userAPI.calculatePlan(currentState);
-        console.log(nutritionGoals);
         setNutGoals(nutritionGoals);
       } catch (e) {
         setError('Failed to load plan. Please try again.');
@@ -60,7 +59,6 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
 
   const renderMacrosChart = () => {
     if (!nutGoals) return null;
-    console.log(nutGoals);
 
     const { dailyCarbsTarget, dailyProteinTarget, dailyFatTarget } = nutGoals;
     const total = dailyCarbsTarget + dailyProteinTarget + dailyFatTarget;
