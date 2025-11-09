@@ -26,7 +26,7 @@ export const WelcomeScreen: FC = () => {
       contentContainerStyle={[styles.container, styles.containerCenter]}>
       <View style={welcomeStyles.content}>
         <Text style={[styles.title, welcomeStyles.titleAlign]}>
-          Welcome to FudCoach!
+          Welcome to Food Coach!
         </Text>
         <Text style={[styles.subtitle, welcomeStyles.titleAlign]}>
           Let's get started on your goals!

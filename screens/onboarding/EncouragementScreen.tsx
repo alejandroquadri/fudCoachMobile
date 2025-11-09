@@ -67,7 +67,7 @@ export const EcouragementScreen = ({
         </Text>
         <Text style={encouragementStyles.text2}>
           90% of users say that once they reach their goal, they are able to
-          sustain it with Fud Coach
+          sustain it with Food Coach
         </Text>
       </View>
 

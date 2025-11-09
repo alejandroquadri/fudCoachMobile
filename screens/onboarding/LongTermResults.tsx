@@ -50,7 +50,7 @@ export const LongTermResults = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>With Fud Coach, get long term results</Text>
+        <Text style={styles.title}>With Food Coach, get long term results</Text>
 
         <Image
           source={require('../../assets/long_term.png')} // Update the path to your actual chart asset

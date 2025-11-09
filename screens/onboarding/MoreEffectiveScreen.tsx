@@ -51,7 +51,7 @@ export const MoreEffective = ({
 
       <View style={styles.content}>
         <Text style={styles.title}>
-          Loosing weight with Fud Coach is much more effective than on your own
+          Loosing weight with Food Coach is much more effective than on your own
         </Text>
 
         <Image

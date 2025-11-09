@@ -1,9 +1,9 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const url = 'http://Mac-Ale.local:3000';
+// const url = 'http://Mac-Ale.local:3000';
 // const url = 'http://api.local.fud.coach';
-// const url = 'https://api.fud.coach';
+const url = 'https://api.fud.coach';
 
 export const api = axios.create({
   baseURL: url, // your API server

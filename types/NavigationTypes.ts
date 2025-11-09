@@ -9,4 +9,5 @@ export type DrawerParamList = {
   ConfigStack: undefined;
   Progress: undefined;
   MealLogs: undefined;
+  Paywall: undefined;
 };

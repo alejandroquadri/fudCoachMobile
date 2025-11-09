@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 export const SplashScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>FUD COACH</Text>
+      <Text style={styles.text}>Food Coach</Text>
     </View>
   );
 };

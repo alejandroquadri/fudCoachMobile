@@ -1,10 +1,11 @@
 export type Entitlement = {
-  active: boolean; // same
-  appAccountToken: string;
-  productId: string; // CHANGED: was 'sku'
-  expiresAtISO?: string; // same
-  platform: 'ios'; // NEW: match server
-  environment?: 'Production' | 'Sandbox'; // NEW: optional
+  active: boolean;
+  productId: string;
+  originalTransactionId: string;
+  expiresAtISO?: string;
+  platform: 'ios';
+  appAccountToken?: string;
+  environment?: 'Production' | 'Sandbox'; // NEW
 };
 
 export type ValidateIOSPayload = {
@@ -18,4 +19,9 @@ export type ValidateResponse = {
   ok: boolean;
   entitlement?: Entitlement;
   error?: string;
+};
+
+export type SubscriptionStatus = {
+  active: boolean;
+  environment: 'PRODUCTION' | 'SANDBOX';
 };

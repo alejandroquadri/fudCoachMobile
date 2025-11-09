@@ -1,4 +1,3 @@
-// navigation/AuthProvider.tsx
 import React, {
   createContext,
   useContext,

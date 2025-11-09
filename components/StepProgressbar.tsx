@@ -21,6 +21,7 @@ export const StepProgressBar: FC<StepProgressBarProps> = ({
         {/* <Text */}
         {/*   style={styles.progressText}>{`Step ${step} of ${totalSteps}`}</Text> */}
         <LinearProgress
+          animation={{ duration: 300 }}
           value={progress}
           variant="determinate"
           color={COLORS.primaryColor}
@@ -40,11 +41,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // progressText: {
-  //   textAlign: 'center',
-  //   marginBottom: 5,
-  //   fontSize: 14,
-  // },
   progressBar: {
     width: '100%',
     height: 6,
