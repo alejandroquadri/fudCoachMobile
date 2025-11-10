@@ -155,6 +155,7 @@ export const OnboardingNavigator: FC = () => {
 
       const response = await userAPI.loginApple(
         appleIdToken as string,
+        true,
         userData
       );
 

@@ -18,10 +18,11 @@ export const userAPI = {
 
   loginApple: (
     idToken: string,
+    register: boolean,
     userData?: Partial<UserProfile>
   ): Promise<{ user: UserProfile; token: string; refreshToken: string }> =>
     api
-      .post('/users/login-apple', { idToken, userData })
+      .post('/users/login-apple', { idToken, userData, register })
       .then(response => response.data),
 
   getProfile: (id: string): Promise<UserProfile> =>

@@ -101,6 +101,7 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
 
       const { token, refreshToken, user } = await userAPI.loginApple(
         credential.identityToken,
+        false,
         userData
       );
 
