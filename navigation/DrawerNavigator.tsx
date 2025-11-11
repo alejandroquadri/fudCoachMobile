@@ -10,25 +10,45 @@ const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export const DrawerNavigator = () => {
   return (
-    <>
-      <SubscriptionWatcher />
-      <Drawer.Navigator
-        initialRouteName="Chat"
-        drawerContent={props => <CustomDrawer {...props} />}>
-        <Drawer.Screen name="Chat" component={Chat} />
-        <Drawer.Screen name="MealLogs" component={LogScreen} />
-        <Drawer.Screen name="Progress" component={ProgressScreen} />
-        <Drawer.Screen
-          name="ConfigStack"
-          component={ConfigStack}
-          options={{ headerShown: false }}
-        />
-        <Drawer.Screen
-          name="Paywall"
-          component={PayWallWrapper}
-          options={{ headerShown: false }}
-        />
-      </Drawer.Navigator>
-    </>
+    <Drawer.Navigator
+      initialRouteName="Chat"
+      drawerContent={props => <CustomDrawer {...props} />}>
+      <Drawer.Screen name="Chat" component={Chat} />
+      <Drawer.Screen name="MealLogs" component={LogScreen} />
+      <Drawer.Screen name="Progress" component={ProgressScreen} />
+      <Drawer.Screen
+        name="ConfigStack"
+        component={ConfigStack}
+        options={{ headerShown: false }}
+      />
+      {/* <Drawer.Screen */}
+      {/*   name="Paywall" */}
+      {/*   component={PayWallWrapper} */}
+      {/*   options={{ headerShown: false }} */}
+      {/* /> */}
+    </Drawer.Navigator>
   );
 };
+
+// return (
+//   <>
+//     <SubscriptionWatcher />
+//     <Drawer.Navigator
+//       initialRouteName="Chat"
+//       drawerContent={props => <CustomDrawer {...props} />}>
+//       <Drawer.Screen name="Chat" component={Chat} />
+//       <Drawer.Screen name="MealLogs" component={LogScreen} />
+//       <Drawer.Screen name="Progress" component={ProgressScreen} />
+//       <Drawer.Screen
+//         name="ConfigStack"
+//         component={ConfigStack}
+//         options={{ headerShown: false }}
+//       />
+//       <Drawer.Screen
+//         name="Paywall"
+//         component={PayWallWrapper}
+//         options={{ headerShown: false }}
+//       />
+//     </Drawer.Navigator>
+//   </>
+// );

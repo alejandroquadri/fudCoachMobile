@@ -4,6 +4,7 @@ import { DrawerNavigator } from './DrawerNavigator';
 import { OnboardingNavigator } from '@screens/onboarding';
 import { RootStackParamList } from '@types';
 import { useAuth } from '@hooks';
+import { AppStackNavigator } from './AppStackNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -17,8 +18,11 @@ export const RootStackNavigator = () => {
       {userToken == null ? (
         <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
       ) : (
-        <Stack.Screen name="Home" component={DrawerNavigator} />
+        <Stack.Screen name="App" component={AppStackNavigator} />
       )}
     </Stack.Navigator>
   );
 };
+{
+  /* <Stack.Screen name="Home" component={DrawerNavigator} /> */
+}

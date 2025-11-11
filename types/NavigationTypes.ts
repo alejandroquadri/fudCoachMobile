@@ -1,6 +1,11 @@
 export type RootStackParamList = {
-  Home: undefined;
+  App: undefined;
   Onboarding: undefined;
+};
+
+export type AppParamList = {
+  Home: undefined;
+  Paywall: undefined;
 };
 
 export type DrawerParamList = {

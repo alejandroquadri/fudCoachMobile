@@ -1,24 +1,33 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
 } from 'react-native';
 
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
+import { validateIOSPurchaseClient } from '@services';
 import {
-  getOrCreateAppAccountToken,
-  validateIOSPurchaseClient,
-} from '@services';
-import { ErrorCode, Purchase, useIAP } from 'expo-iap'; // 3.1: only import Purchase + useIAP
+  ErrorCode,
+  Purchase,
+  PurchaseIOS,
+  getAvailablePurchases,
+  useIAP,
+} from 'expo-iap';
 
 import { COLORS, SharedStyles } from '@theme';
 import { Entitlement } from '@types';
+import {
+  isNewTransaction,
+  loadProcessedLineages,
+  logPurchaseSummary,
+  markTransactionProcessed,
+} from '@utils';
 
 type PaywallProps = {
   onSuccess: (entitlement: Entitlement) => void;
@@ -41,13 +50,9 @@ export const PaywallScreen = ({
 }: PaywallProps) => {
   const styles = SharedStyles();
 
-  const [loading, setLoading] = useState(true);
-  const [canRetryValidation, setCanRetryValidation] = useState(false);
-  const lastPurchaseRef = useRef<Purchase | null>(null);
-  const hasUnlockedRef = useRef(false);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
   const [selectedSku, setSelectedSku] = useState<string | null>(null);
-  const [appAccountToken, setAppAccountToken] = useState<string | null>(null);
 
   const FEATURES: { text: string; icon: { name: string; type: string } }[] = [
     {
@@ -68,8 +73,58 @@ export const PaywallScreen = ({
     },
   ];
 
+  // Defino SKUs de productos. Hay que usar los IDs
   const productsIds = ['weekly_plan', 'anual_plan'];
-  // 3.1: these now come from the hook
+
+  const handlePurchaseUpdate = async (purchase: Purchase) => {
+    // Log compact info
+    logPurchaseSummary(purchase as PurchaseIOS);
+
+    // 1️⃣ Ignore any transaction we've already handled
+    if (!isNewTransaction(purchase as PurchaseIOS)) {
+      console.log('[IAP] duplicate / historical transaction, finishing only');
+      try {
+        await finishTransaction({ purchase });
+      } catch (err) {
+        console.warn('finishTransaction failed for historical txn', err);
+      }
+      return;
+    }
+
+    // 2️⃣ This is the latest transaction for this subscription
+    console.log('[IAP] new transaction detected, validating…');
+
+    try {
+      const res = await validateIOSPurchaseClient({ purchase });
+
+      if (res.ok === true) {
+        // Mark lineage processed so renewals are ignored later
+        await markTransactionProcessed(purchase as PurchaseIOS);
+
+        // Finish transaction so StoreKit stops replaying it
+        await finishTransaction({ purchase });
+
+        // Notify app logic (unlock access)
+        onSuccess(res.entitlement!);
+        console.log('[IAP] purchase validated & finished successfully');
+      } else {
+        try {
+          await finishTransaction({ purchase });
+          console.log('[IAP] finished tx ', purchase.id);
+        } catch (err) {
+          console.warn('[IAP] failed to finish invalid purchase', err);
+        }
+        Alert.alert('Validation failed', 'Purchase could not be validated.');
+        console.warn('[IAP] validation error', res.error);
+      }
+    } catch (error) {
+      console.error('Error handling purchase:', error);
+      Alert.alert('Error', 'Failed to process purchase.');
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
   const {
     connected,
     subscriptions,
@@ -78,49 +133,8 @@ export const PaywallScreen = ({
     finishTransaction,
   } = useIAP({
     onPurchaseSuccess: async (purchase: Purchase) => {
-      // esto es para que no haga el call constantemente, especialmente en sandbox
-      if (hasUnlockedRef.current) {
-        try {
-          await finishTransaction({ purchase, isConsumable: false });
-        } catch (e) {
-          console.warn('finishTransaction on repeat/renewal failed', e);
-        }
-        return;
-      }
-      console.log('purchase succesful', purchase);
-      setPurchasing(true);
-      lastPurchaseRef.current = purchase;
-      try {
-        // server-side validation (unchanged)
-        const res = await validateIOSPurchaseClient({
-          purchase,
-          appAccountToken: appAccountToken || undefined,
-        });
-
-        console.log('este es el obj del verified', res);
-        if (res.ok === true) {
-          // 3.1: finishTransaction from hook
-          await finishTransaction({ purchase, isConsumable: false });
-          setCanRetryValidation(false);
-          lastPurchaseRef.current = null;
-
-          // mark as unlocked so further renewals on this mount are ignored
-          hasUnlockedRef.current = true;
-          onSuccess(res.entitlement!);
-        } else {
-          setCanRetryValidation(true);
-          Alert.alert(
-            'Validation failed',
-            'Purchase could not be validated. Please contact support.'
-          );
-          console.log('error de validacion', res.error);
-        }
-      } catch (error) {
-        console.error('Error handling purchase:', error);
-        Alert.alert('Error', 'Failed to process purchase.');
-      } finally {
-        setPurchasing(false);
-      }
+      if (!connected) return;
+      await handlePurchaseUpdate(purchase);
     },
     onPurchaseError: error => {
       setPurchasing(false);
@@ -128,7 +142,7 @@ export const PaywallScreen = ({
       if (error.code === ErrorCode.UserCancelled) {
         return;
       }
-      setCanRetryValidation(true);
+      // setCanRetryValidation(true);
       Alert.alert(
         'Purchase Error',
         'Failed to complete purchase. Please try again.'
@@ -137,39 +151,47 @@ export const PaywallScreen = ({
     },
   });
 
+  // Inicio productos cuando estoy seguro que la conexion esta establecida
   useEffect(() => {
-    console.log('effect de create token');
-    (async () => {
-      try {
-        const token = await getOrCreateAppAccountToken(); // per-install UUID
-        setAppAccountToken(token);
-      } catch {
-        setAppAccountToken(null);
-      }
-    })();
-  }, []);
-
-  // 3.1: fetch via hook function when connected
-  useEffect(() => {
-    console.log('chequeo si esta conectado');
     if (!connected) return;
     console.log('esta conectado');
-    const initIAP = async () => {
+
+    const cleanTx = async () => {
+      // 1️⃣ Load checkpoints first
+      await loadProcessedLineages();
+
+      // 2️⃣ Then clean & fetch products
       try {
-        setLoading(true);
+        const pending = await getAvailablePurchases();
+        for (const p of pending) {
+          if (!isNewTransaction(p as PurchaseIOS)) {
+            console.log('[IAP] cleaning old txn on startup:', p.id);
+            await finishTransaction({ purchase: p });
+          }
+        }
+      } catch (err) {
+        console.warn('Error cleaning old transactions', err);
+      }
+    };
+
+    const fetchProds = async () => {
+      console.log('init IAP');
+      try {
+        setLoadingProducts(true);
         console.log('busco productos');
         await fetchProducts({
           skus: productsIds,
-          type: 'subs', // still supported to filter to subscriptions
+          type: 'subs',
         });
-        console.log('tengo productos sin error aparentemente');
+        console.log('tengo productos');
       } catch {
         Alert.alert('Store error', 'Unable to load products.');
       } finally {
-        setLoading(false);
+        setLoadingProducts(false);
       }
     };
-    initIAP();
+    cleanTx();
+    fetchProds();
   }, [connected, fetchProducts]);
 
   // Pick default option when products arrive
@@ -184,7 +206,7 @@ export const PaywallScreen = ({
   const displayPrice = (p: any) => p?.displayPrice ?? '';
 
   const buy = async () => {
-    if (canRetryValidation) return;
+    // if (canRetryValidation) return;
     if (!selectedSku) return;
     if (!connected) {
       Alert.alert('Store unavailable', 'Please try again in a moment.');
@@ -192,53 +214,14 @@ export const PaywallScreen = ({
     }
     try {
       setPurchasing(true);
-      // 3.1: requestPurchase signature does NOT take "type"
       await requestPurchase({
         request: { ios: { sku: selectedSku } },
         type: 'subs',
       });
       // Result comes via onPurchaseSuccess/onPurchaseError
-    } catch (e: any) {
-      setPurchasing(false);
-      const msg = e?.message ?? 'Purchase failed.';
-      if (!/cancel/i.test(msg)) Alert.alert('Purchase error', msg);
-    }
-  };
-
-  const retryValidation = async () => {
-    const p = lastPurchaseRef.current;
-    if (!p) {
-      setCanRetryValidation(false);
-      return;
-    }
-
-    setPurchasing(true);
-    try {
-      const res = await validateIOSPurchaseClient({
-        purchase: p,
-        appAccountToken: appAccountToken || undefined,
-      });
-
-      if (res.ok === true) {
-        // 3.1: finishTransaction from hook
-        await finishTransaction({ purchase: p, isConsumable: false });
-        setCanRetryValidation(false);
-        lastPurchaseRef.current = null;
-
-        onSuccess(res.entitlement!);
-      } else {
-        setCanRetryValidation(true);
-        Alert.alert(
-          'Validation failed',
-          'Purchase could not be validated. Please contact support.'
-        );
-        console.log('error de validacion', res.error);
-      }
     } catch (error) {
-      console.error('Error handling purchase:', error);
-      Alert.alert('Error', 'Failed to process purchase.');
-    } finally {
       setPurchasing(false);
+      console.error('Subscription request failed:', error);
     }
   };
 
@@ -320,18 +303,10 @@ export const PaywallScreen = ({
       </View>
 
       <Button
-        title={
-          canRetryValidation
-            ? purchasing
-              ? 'Validating…'
-              : 'Retry validation'
-            : purchasing
-              ? 'Processing…'
-              : 'Continue'
-        }
-        loading={loading || purchasing}
-        onPress={canRetryValidation ? retryValidation : buy}
-        disabled={!selectedSku || loading || purchasing}
+        title={purchasing ? 'Processing…' : 'Continue'}
+        loading={loadingProducts || purchasing}
+        onPress={buy}
+        disabled={!selectedSku || loadingProducts || purchasing}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}
       />

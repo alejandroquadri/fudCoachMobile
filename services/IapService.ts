@@ -84,9 +84,7 @@ export const getOrCreateAppAccountToken = async (): Promise<string> => {
   return token;
 };
 
-type ClientValidateArgs =
-  | { purchase: Purchase; appAccountToken?: string }
-  | { kind: 'restore'; appAccountToken?: string }; // NE
+type ClientValidateArgs = { purchase: Purchase } | { kind: 'restore' }; // NE
 
 export const validateIOSPurchaseClient = async (
   args: ClientValidateArgs
@@ -100,9 +98,8 @@ export const validateIOSPurchaseClient = async (
   }
 
   // From here on, TS knows args has a 'purchase' field
-  const { purchase, appAccountToken } = args as {
+  const { purchase } = args as {
     purchase: Purchase;
-    appAccountToken: string;
   }; // NEW
 
   try {
@@ -115,7 +112,6 @@ export const validateIOSPurchaseClient = async (
       transactionId,
       // originalTransactionId: purchase?.originalTransactionId, // NEW
       productId: purchase?.productId,
-      appAccountToken,
     };
 
     const resp = await iapApi.validateIOS(payload); // NEW

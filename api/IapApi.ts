@@ -12,6 +12,6 @@ export const iapApi = {
     originalTransactionId: string
   ): Promise<SubscriptionStatus> =>
     api
-      .post('/validate-subs-status', { originalTransactionId })
+      .post('/iap/validate-subs-status', { originalTransactionId })
       .then(res => res.data),
 };

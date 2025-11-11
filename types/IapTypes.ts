@@ -4,7 +4,6 @@ export type Entitlement = {
   originalTransactionId: string;
   expiresAtISO?: string;
   platform: 'ios';
-  appAccountToken?: string;
   environment?: 'Production' | 'Sandbox'; // NEW
 };
 
@@ -12,7 +11,6 @@ export type ValidateIOSPayload = {
   transactionId: string; // REQUIRED
   originalTransactionId?: string; // optional, good for subs
   productId?: string; // optional (for logs/UI)
-  appAccountToken?: string; // optional but recommended
 };
 
 export type ValidateResponse = {

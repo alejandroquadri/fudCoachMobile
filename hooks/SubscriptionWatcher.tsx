@@ -1,22 +1,48 @@
 import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import * as SecureStore from 'expo-secure-store';
+
 import { differenceInHours } from 'date-fns';
 import { useAuth } from './Authcontext';
 import { iapApi } from '@api';
-import { useNavigation } from '@react-navigation/native';
+
+// ✅ static imports (no dynamic import)
+import { useIAP, getActiveSubscriptions } from 'expo-iap';
 
 const LAST_CHECK_KEY = 'fc_last_sub_check_iso';
 const MIN_HOURS_BETWEEN_CHECKS = 12;
 
 export const SubscriptionWatcher = () => {
   const { user } = useAuth();
+  const { connected } = useIAP(); // ✅ let the hook init/own the connection
   const appState = useRef<AppStateStatus>('active');
-  const checkingRef = useRef(false); // prevent overlapping calls
+  const checkingRef = useRef(false);
   const navigation = useNavigation<any>();
   const navigatingRef = useRef(false);
 
-  // returns true if we never checked or if 12 hours have passed
+  const isOnPaywall = () => {
+    const state = navigation.getState?.();
+    const route = state?.routes?.[state.index]?.name;
+    return route === 'Paywall';
+  };
+
+  const showPayWall = () => {
+    if (navigatingRef.current) return;
+    if (isOnPaywall()) return;
+    navigatingRef.current = true;
+    // navigation.navigate('Home', { screen: 'Paywall' });
+    navigation.navigate('Paywall');
+  };
+
+  const markChecked = async () => {
+    try {
+      await SecureStore.setItemAsync(LAST_CHECK_KEY, new Date().toISOString());
+    } catch {
+      console.log('failed markChecked SubscriptionWatcher');
+    }
+  };
+
   async function shouldCheckNow() {
     try {
       const lastISO = await SecureStore.getItemAsync(LAST_CHECK_KEY);
@@ -28,64 +54,99 @@ export const SubscriptionWatcher = () => {
     }
   }
 
-  const showPayWall = () => {
-    // TODO: Show paywall
-    console.log('showPayWall');
-    if (navigatingRef.current) return;
-    navigatingRef.current = true;
-    navigation.navigate('Home', { screen: 'Paywall' });
-  };
-
-  // records checked
-  const markChecked = async () => {
-    try {
-      await SecureStore.setItemAsync(LAST_CHECK_KEY, new Date().toISOString());
-    } catch {
-      console.log('failed markChecked SubscriptionWatcher');
-    }
-  };
-
   const runCheck = async (reason: 'startup' | 'foreground') => {
-    console.log('running check because of: ', reason);
+    console.log('running check because of:', reason);
 
-    // If we have no entitlement info at all, send to paywall right away
-    if (!user?.entitlement || !user.entitlement.originalTransactionId) {
-      showPayWall();
+    if (checkingRef.current) {
+      console.log('is current check');
       return;
     }
-
-    if (checkingRef.current) return; // to make sure i am not checking just now
-    if (!(await shouldCheckNow())) return;
+    if (!(await shouldCheckNow())) {
+      console.log('should not check yet');
+      return;
+    } else {
+      console.log('checking');
+    }
 
     checkingRef.current = true;
     try {
-      const ok = await iapApi.validateSubsStatus(
-        user.entitlement.originalTransactionId
-      );
-      await markChecked();
-      if (ok.active === false) {
-        Alert.alert(
-          'Subscription expired',
-          'Your subscription is not active. Please subscribe again.',
-          [{ text: 'OK', onPress: () => {} }]
+      // 1) Local check only if the IAP connection is ready
+
+      try {
+        const activeSubs = await getActiveSubscriptions();
+        console.log('[IAP] tiene estas subs: ', activeSubs);
+        if (activeSubs) {
+          const hasActive = activeSubs.some(s => s.isActive);
+          console.log('[IAP] local active subs:', hasActive);
+          if (hasActive) {
+            await markChecked();
+            return; // ✅ good locally; done
+          }
+        }
+      } catch (err) {
+        console.warn('[IAP] local check failed, will try server', err);
+      }
+
+      // 2) Fallback to your backend
+      console.log('user', user);
+      if (user?.entitlement?.originalTransactionId) {
+        console.log(
+          'chequeo que tenga enttitlements',
+          user.entitlement.originalTransactionId
         );
+        const respServerValidate = await iapApi.validateSubsStatus(
+          user.entitlement.originalTransactionId
+        );
+        console.log('respuesta de entitlements', respServerValidate);
+        await markChecked();
+        if (respServerValidate.active === false) {
+          console.log('entitlement no valido');
+          Alert.alert(
+            'Subscription expired',
+            'Your subscription is not active',
+            [{ text: 'OK', onPress: () => {} }]
+          );
+          showPayWall();
+        } else {
+          console.log('entitlement valido', respServerValidate.active);
+        }
+      } else {
+        // No entitlement known → show paywall
         showPayWall();
       }
     } catch (e) {
-      // silent fail; we’ll try again next foreground
-      // console.log('sub check failed', e);
+      console.warn('SubscriptionWatcher check failed', e);
+      // silent fail; next foreground will retry
     } finally {
       checkingRef.current = false;
     }
   };
 
-  // 1) Run once after mount
+  // When we return to Home (Drawer), allow future navigations again
   useEffect(() => {
-    runCheck('startup');
-  }, [user?.entitlement?.originalTransactionId]);
+    const unsub = navigation.addListener('state', () => {
+      const state = navigation.getState?.();
+      const route = state?.routes?.[state.index]?.name;
+      if (route === 'Home') {
+        navigatingRef.current = false; // ⬅️ reset guard
+      }
+    });
+    return unsub;
+  }, [navigation]);
 
-  // 2) Run whenever app comes to foreground
+  // Run once after mount (or when entitlement changes)
   useEffect(() => {
+    console.log('mounting subs watcher. Connection to IAP is: ', connected);
+    if (!connected) {
+      console.log('[IAP] no conectado a IAP no puedo seguir');
+      return;
+    }
+    runCheck('startup');
+  }, [user?.entitlement?.originalTransactionId, connected]);
+
+  // Run whenever app comes to foreground
+  useEffect(() => {
+    console.log('setting listener on sub watcher');
     const sub = AppState.addEventListener('change', next => {
       if (appState.current.match(/inactive|background/) && next === 'active') {
         runCheck('foreground');
