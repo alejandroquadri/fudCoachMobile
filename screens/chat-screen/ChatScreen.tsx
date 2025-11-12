@@ -22,10 +22,10 @@ import {
   sendChatMessage,
 } from '@services';
 
-const storeLastOpenedDate = async () => {
-  const today = format(new Date(), 'yyyy-MM-dd');
-  await SecureStore.setItemAsync('lastChatOpenedDate', today);
-};
+// const storeLastOpenedDate = async () => {
+//   const today = format(new Date(), 'yyyy-MM-dd');
+//   await SecureStore.setItemAsync('lastChatOpenedDate', today);
+// };
 
 const welcomeKeyFor = (userId: string) => `welcomeDelivered${userId}`;
 

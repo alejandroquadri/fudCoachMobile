@@ -50,7 +50,9 @@ export const FoodLogCard: React.FC<FoodLogCardProps> = ({ mealType, logs }) => {
           {/* Food Details */}
           <View style={styles.foodDetails}>
             <View style={styles.foodNameRow}>
-              <Text style={styles.foodNameText}>{log.foodObj.foodName}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.foodNameText}>{log.foodObj.foodName}</Text>
+              </View>
               <View style={styles.timeChip}>
                 <Text style={styles.timeChipText}>
                   {format(parseISO(log.createdAt), 'HH:mm')}

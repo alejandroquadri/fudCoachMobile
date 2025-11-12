@@ -112,20 +112,25 @@ export const FoodLogStyles = () => {
       fontSize: 10,
       fontWeight: 'bold',
     },
-    chartContainer: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginLeft: 10,
-    },
     content: {
       alignItems: 'stretch',
       flexDirection: 'column',
       flex: 1,
       justifyContent: 'flex-start',
     },
-    foodCalories: {
-      color: 'gray',
-      fontSize: 14,
+    foodItemContainer: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginVertical: 10,
+    },
+    foodIcon: {
+      alignItems: 'center',
+      backgroundColor: COLORS.secondaryColor,
+      borderRadius: 20,
+      height: 40,
+      justifyContent: 'center',
+      width: 40,
     },
     foodDetails: {
       flex: 1,
@@ -135,47 +140,47 @@ export const FoodLogStyles = () => {
     foodNameRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
+      // gap: 6,
+      // flex: 1,
+      // agregados
+      justifyContent: 'space-between',
+      flexWrap: 'nowrap',
     },
     foodNameText: {
       fontSize: 16,
       fontWeight: 'bold',
+      // agregados
+      flexShrink: 1, // allow text to shrink to make room for time chip
+      flexWrap: 'wrap', // allow wrapping to next line
+      marginRight: 8, // add small spacing before the chip
     },
     timeChip: {
       backgroundColor: COLORS.secondaryColor,
       borderRadius: 12,
       paddingHorizontal: 8,
       paddingVertical: 2,
+      // agregados
+      flexShrink: 0, // prevent the chip from shrinking
+      alignSelf: 'center', // keep it aligned at the top if text wraps
     },
     timeChipText: {
       fontSize: 12,
       color: COLORS.primaryColor,
     },
-    foodIcon: {
-      alignItems: 'center',
-      backgroundColor: COLORS.secondaryColor,
-      // backgroundColor: '#E0F7FA',
-      borderRadius: 20,
-      height: 40,
-      justifyContent: 'center',
-      width: 40,
+    foodCalories: {
+      color: 'gray',
+      fontSize: 14,
     },
     foodIconText: {
-      // color: '#00796B',
       color: COLORS.primaryColor,
       fontSize: 16,
       fontWeight: 'bold',
+      flexWrap: 'wrap',
     },
     foodImage: {
       borderRadius: 20,
       height: 40,
       width: 40,
-    },
-    foodItemContainer: {
-      alignItems: 'center',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginVertical: 10,
     },
     foodName: {
       fontSize: 16,
@@ -185,6 +190,11 @@ export const FoodLogStyles = () => {
       color: 'gray',
       fontSize: 14,
       marginLeft: 5,
+    },
+    chartContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 10,
     },
     mealCard: {
       backgroundColor: COLORS.cardBackground,

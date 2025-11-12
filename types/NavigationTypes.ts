@@ -9,10 +9,10 @@ export type AppParamList = {
 };
 
 export type DrawerParamList = {
-  Chat: undefined;
+  Coach: undefined;
   Profile: undefined;
   ConfigStack: undefined;
   Progress: undefined;
-  MealLogs: undefined;
+  Logs: undefined;
   Paywall: undefined;
 };

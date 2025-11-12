@@ -68,6 +68,18 @@ export const SubscriptionWatcher = () => {
       console.log('checking');
     }
 
+    // por si la cuenta tiene entitlement
+    const grant = user?.entitlement?.grant;
+    if (grant) {
+      const stillValid =
+        !grant.untilISO || new Date(grant.untilISO).getTime() > Date.now();
+      if (stillValid) {
+        await markChecked();
+        console.log('[IAP] bypass via entitlement.grant:', grant.type);
+        return;
+      }
+    }
+
     checkingRef.current = true;
     try {
       // 1) Local check only if the IAP connection is ready

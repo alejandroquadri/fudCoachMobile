@@ -81,8 +81,8 @@ export const CustomDrawer = (props: DrawerContentComponentProps) => {
       <View style={styles.divider} />
 
       {/* Navigation Items */}
-      <DrawerItem label="Coach" iconName="message-circle" route="Chat" />
-      <DrawerItem label="Logs" iconName="clipboard" route="MealLogs" />
+      <DrawerItem label="Coach" iconName="message-circle" route="Coach" />
+      <DrawerItem label="Logs" iconName="clipboard" route="Logs" />
       <DrawerItem label="Progress" iconName="bar-chart" route="Progress" />
       <DrawerItem label="Settings" iconName="settings" route="ConfigStack" />
       {/* Bottom Divider */}

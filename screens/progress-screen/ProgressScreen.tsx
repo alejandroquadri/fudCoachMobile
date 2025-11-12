@@ -10,6 +10,7 @@ import { WeightLogInterface } from '@types';
 import { useCurrentUser } from '@hooks';
 import { weightLogsApi } from '@api';
 import { ProgressStyles } from './ProgressStyles';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface ChartDataInterface {
   label: string;
@@ -38,13 +39,6 @@ export const ProgressScreen = () => {
   const [weightData, setWeightData] = useState<WeightLogInterface[]>([]);
   const [chartData, setChartData] = useState<ChartDataInterface[]>([]);
   const [minValueWeight, setMinValueWeight] = useState<number>(0);
-  const [focusedData, setFocusedData] = useState(null);
-
-  // const auth = useContext<AuthContextType | undefined>(AuthContext);
-  //
-  // if (!auth) throw new Error('AuthContext is undefined');
-  //
-  // const { user } = auth;
 
   const user = useCurrentUser();
 
@@ -74,9 +68,26 @@ export const ProgressScreen = () => {
     });
   };
 
-  useEffect(() => {
-    fetchWeightLogs();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (!user?._id) return; // guard if user not ready
+      let canceled = false;
+
+      const run = async () => {
+        try {
+          await fetchWeightLogs();
+        } catch (e) {
+          // already handled inside fetchWeightLogs, but keep if you move logic here
+        }
+      };
+      run();
+
+      // cleanup runs when the screen blurs
+      return () => {
+        canceled = true;
+      };
+    }, [user?._id, fetchWeightLogs])
+  );
 
   useEffect(() => {
     const buildChartData = (weightLogs: WeightLogInterface[]) => {

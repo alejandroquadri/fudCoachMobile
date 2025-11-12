@@ -14,6 +14,7 @@ import {
   DateSegment,
 } from './components';
 import { LogStyles } from './LogStyles';
+import { useFocusEffect } from '@react-navigation/native';
 
 // Grouping function for food logs
 
@@ -144,11 +145,26 @@ export const LogScreen = () => {
     [user]
   );
 
-  useEffect(() => {
-    fetchFoodLog(currentDate);
-    fetchExerciseLog(currentDate);
-    fetchWaterLog(currentDate);
+  const refetchAll = useCallback(() => {
+    return Promise.all([
+      fetchFoodLog(currentDate),
+      fetchExerciseLog(currentDate),
+      fetchWaterLog(currentDate),
+    ]);
   }, [currentDate, fetchFoodLog, fetchExerciseLog, fetchWaterLog]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchAll();
+      return () => {};
+    }, [refetchAll])
+  );
+
+  // useEffect(() => {
+  //   fetchFoodLog(currentDate);
+  //   fetchExerciseLog(currentDate);
+  //   fetchWaterLog(currentDate);
+  // }, [currentDate, fetchFoodLog, fetchExerciseLog, fetchWaterLog]);
 
   const handleSubtractDay = () =>
     setCurrentDate(prevDate => subDays(prevDate, 1));
@@ -216,10 +232,12 @@ export const LogScreen = () => {
       <ScrollView style={styles.scrollView}>
         <CalorieProgressCard
           goal={user.nutritionGoals.tdee}
-          burned={burnedCalories!}
-          consumed={consumedCalories!}
+          burned={burnedCalories ?? 0}
+          consumed={consumedCalories ?? 0}
           remaining={
-            user.nutritionGoals.tdee + burnedCalories! - consumedCalories!
+            (user.nutritionGoals.tdee ?? 0) +
+            (burnedCalories ?? 0) -
+            (consumedCalories ?? 0)
           }
         />
 
@@ -232,29 +250,6 @@ export const LogScreen = () => {
               <FoodLogCard mealType="Lunch" logs={foodLogs} />
             )}
 
-            {/* Render Breakfast Logs */}
-            {/* {groupedFoodLogs.breakfast.length > 0 && ( */}
-            {/*   <FoodLogCard */}
-            {/*     mealType="Breakfast" */}
-            {/*     logs={groupedFoodLogs.breakfast} */}
-            {/*   /> */}
-            {/* )} */}
-
-            {/* Render Lunch Logs */}
-            {/* {groupedFoodLogs.lunch.length > 0 && ( */}
-            {/*   <FoodLogCard mealType="Lunch" logs={groupedFoodLogs.lunch} /> */}
-            {/* )} */}
-
-            {/* Render Dinner Logs */}
-            {/* {groupedFoodLogs.dinner.length > 0 && ( */}
-            {/*   <FoodLogCard mealType="Dinner" logs={groupedFoodLogs.dinner} /> */}
-            {/* )} */}
-
-            {/* Render Snack Logs */}
-            {/* {groupedFoodLogs.snack.length > 0 && ( */}
-            {/*   <FoodLogCard mealType="Snack" logs={groupedFoodLogs.snack} /> */}
-            {/* )} */}
-
             {/* If no food logs */}
             {foodLogs.length === 0 && (
               <EmptyCard
@@ -262,15 +257,6 @@ export const LogScreen = () => {
                 isLoading={isLoadingFoodLog}
               />
             )}
-            {/* {groupedFoodLogs.breakfast.length === 0 && */}
-            {/*   groupedFoodLogs.lunch.length === 0 && */}
-            {/*   groupedFoodLogs.dinner.length === 0 && */}
-            {/*   groupedFoodLogs.snack.length === 0 && ( */}
-            {/*     <EmptyCard */}
-            {/*       cardType={{ type: 'Food' }} */}
-            {/*       isLoading={isLoadingFoodLog} */}
-            {/*     /> */}
-            {/*   )} */}
           </>
         )}
 

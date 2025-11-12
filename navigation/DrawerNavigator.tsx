@@ -11,21 +11,16 @@ const Drawer = createDrawerNavigator<DrawerParamList>();
 export const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      initialRouteName="Chat"
+      initialRouteName="Coach"
       drawerContent={props => <CustomDrawer {...props} />}>
-      <Drawer.Screen name="Chat" component={Chat} />
-      <Drawer.Screen name="MealLogs" component={LogScreen} />
+      <Drawer.Screen name="Coach" component={Chat} />
+      <Drawer.Screen name="Logs" component={LogScreen} />
       <Drawer.Screen name="Progress" component={ProgressScreen} />
       <Drawer.Screen
         name="ConfigStack"
         component={ConfigStack}
         options={{ headerShown: false }}
       />
-      {/* <Drawer.Screen */}
-      {/*   name="Paywall" */}
-      {/*   component={PayWallWrapper} */}
-      {/*   options={{ headerShown: false }} */}
-      {/* /> */}
     </Drawer.Navigator>
   );
 };
