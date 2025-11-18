@@ -68,6 +68,7 @@ const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
 
 const steps = [
   'Welcome',
+  // 'PayWall',
   'Gender',
   'LifeStyle',
   'ActivityLevel',
@@ -185,6 +186,23 @@ export const OnboardingNavigator: FC = () => {
     const nextScreen = steps[state.onboardingStep];
     navigation.navigate(nextScreen);
   }, [state.onboardingStep, navigation]);
+
+  // inside OnboardingNavigator component
+  const isOnPaywall = () => {
+    const getActiveRoute = (navState: any): string | null => {
+      if (!navState) return null;
+      const route = navState.routes?.[navState.index];
+      if (!route) return null;
+      // if it has nested state, recurse until we find the deepest active one
+      return route.state ? getActiveRoute(route.state) : route.name;
+    };
+
+    const rootState = navigation.getState?.();
+    const current = getActiveRoute(rootState);
+
+    console.log('[isOnPaywall] current route:', current);
+    return current === 'PayWall';
+  };
 
   return (
     <>
@@ -545,6 +563,10 @@ export const OnboardingNavigator: FC = () => {
           {() => (
             <PaywallScreen
               onSuccess={entitlement => {
+                if (!isOnPaywall()) {
+                  console.log('[IAP] success received off-screen, ignoring');
+                  return;
+                }
                 dispatch({
                   type: 'UPDATE_FIELD',
                   field: 'entitlement',
@@ -555,6 +577,7 @@ export const OnboardingNavigator: FC = () => {
               onBack={() => dispatch({ type: 'PREV_STEP' })}
               showProgressBar
               step={20}
+              modal={false}
               totalSteps={steps.length}
             />
           )}

@@ -11,3 +11,7 @@ export const updateProfile = async (user: UserProfile) => {
 export const getProfile = async (id: string): Promise<UserProfile> => {
   return profileApi.getProfile(id);
 };
+
+export const deleteUser = async (id: string): Promise<{ success: boolean }> => {
+  return profileApi.deleteUser(id);
+};

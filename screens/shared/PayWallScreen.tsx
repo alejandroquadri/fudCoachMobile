@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,10 +13,14 @@ import {
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
 import { validateIOSPurchaseClient } from '@services';
+import { URLS } from '@constants';
 import {
+  ActiveSubscription,
   ErrorCode,
+  ProductIOS,
   Purchase,
   PurchaseIOS,
+  getActiveSubscriptions,
   getAvailablePurchases,
   useIAP,
 } from 'expo-iap';
@@ -38,8 +43,6 @@ type PaywallProps = {
   modal: boolean;
 };
 
-// Keep your same product ids
-
 export const PaywallScreen = ({
   onSuccess,
   onBack,
@@ -53,6 +56,9 @@ export const PaywallScreen = ({
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
   const [selectedSku, setSelectedSku] = useState<string | null>(null);
+
+  const TERMS_URL = URLS.terms;
+  const PRIVACY_URL = URLS.privacy;
 
   const FEATURES: { text: string; icon: { name: string; type: string } }[] = [
     {
@@ -75,6 +81,19 @@ export const PaywallScreen = ({
 
   // Defino SKUs de productos. Hay que usar los IDs
   const productsIds = ['weekly_plan', 'anual_plan'];
+  const products_metadata: Record<
+    string,
+    { displayTitle: string; displaySubTitle: string }
+  > = {
+    weekly_plan: {
+      displayTitle: '3-Day Trial',
+      displaySubTitle: 'then USD 7.99 per week',
+    },
+    anual_plan: {
+      displayTitle: 'Yearly Plan',
+      displaySubTitle: 'USD 39.99 per week',
+    },
+  };
 
   const handlePurchaseUpdate = async (purchase: Purchase) => {
     // Log compact info
@@ -178,12 +197,10 @@ export const PaywallScreen = ({
       console.log('init IAP');
       try {
         setLoadingProducts(true);
-        console.log('busco productos');
         await fetchProducts({
           skus: productsIds,
           type: 'subs',
         });
-        console.log('tengo productos');
       } catch {
         Alert.alert('Store error', 'Unable to load products.');
       } finally {
@@ -197,13 +214,11 @@ export const PaywallScreen = ({
   // Pick default option when products arrive
   useEffect(() => {
     if (!selectedSku && subscriptions?.length) {
+      console.log('estas son las subscripciones', subscriptions);
       const firstId = subscriptions[0]?.id;
       if (firstId) setSelectedSku(firstId);
     }
   }, [subscriptions, selectedSku]);
-
-  // 3.1: use displayPrice from product
-  const displayPrice = (p: any) => p?.displayPrice ?? '';
 
   const buy = async () => {
     // if (canRetryValidation) return;
@@ -225,23 +240,49 @@ export const PaywallScreen = ({
     }
   };
 
-  const renderOption = (product: any) => {
-    const id = product?.id;
+  const onRestore = async () => {
+    console.log('trying to restore');
+    try {
+      const activeSubs: ActiveSubscription[] = await getActiveSubscriptions();
+      console.log('[IAP] tiene estas subs: ', activeSubs);
+      if (activeSubs) {
+        const hasActive = activeSubs.some(s => s.isActive);
+        console.log('[IAP] local active subs:', hasActive);
+        if (hasActive) {
+          //TODO: validate in bakcend
+          return; // ✅ good locally; done
+        }
+      }
+    } catch (err) {
+      console.warn('[IAP] local check failed, will try server', err);
+    }
+  };
+
+  const bySkuOrder = (a: ProductIOS, b: ProductIOS) => {
+    const ai = productsIds.indexOf(a?.id ?? '');
+    const bi = productsIds.indexOf(b?.id ?? '');
+    const ra = ai === -1 ? Number.MAX_SAFE_INTEGER : ai;
+    const rb = bi === -1 ? Number.MAX_SAFE_INTEGER : bi;
+    return ra - rb;
+  };
+
+  const renderOption = (product: ProductIOS) => {
+    const id = product.id;
+    const metadata = products_metadata[id];
     const selected = id && selectedSku === id;
 
     return (
       <TouchableOpacity
         key={id ?? Math.random().toString(36)}
-        style={[styles.optionButton, selected && styles.optionSelectedButton]}
+        style={[
+          payWallStyles.optionButton,
+          selected && payWallStyles.optionSelectedButton,
+        ]}
         onPress={() => setSelectedSku(id)}
         disabled={purchasing}>
-        <Text
-          style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {product?.title ?? id ?? 'Subscription'}
-        </Text>
-        <Text
-          style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {displayPrice(product)}
+        <Text style={payWallStyles.optionText}>{metadata.displayTitle}</Text>
+        <Text style={payWallStyles.optionDescription}>
+          {metadata.displaySubTitle}
         </Text>
       </TouchableOpacity>
     );
@@ -293,7 +334,9 @@ export const PaywallScreen = ({
 
         <View style={styles.optionsContainer}>
           {subscriptions ? (
-            subscriptions.map(renderOption)
+            subscriptions
+              .sort(bySkuOrder)
+              .map(sub => renderOption(sub as ProductIOS))
           ) : (
             <View style={styles.optionButton}>
               <Text style={styles.optionText}>Loading options…</Text>
@@ -302,14 +345,36 @@ export const PaywallScreen = ({
         </View>
       </View>
 
-      <Button
-        title={purchasing ? 'Processing…' : 'Continue'}
-        loading={loadingProducts || purchasing}
-        onPress={buy}
-        disabled={!selectedSku || loadingProducts || purchasing}
-        buttonStyle={styles.nextButton}
-        titleStyle={styles.nextButtonText}
-      />
+      <View>
+        <Button
+          title={purchasing ? 'Processing…' : 'Continue'}
+          loading={loadingProducts || purchasing}
+          onPress={buy}
+          disabled={!selectedSku || loadingProducts || purchasing}
+          buttonStyle={styles.nextButton}
+          titleStyle={styles.nextButtonText}
+        />
+
+        <View style={payWallStyles.linksRow}>
+          <Text
+            style={payWallStyles.linkText}
+            onPress={() => Linking.openURL(TERMS_URL)}>
+            Terms of Use
+          </Text>
+          <Text style={payWallStyles.dot}> · </Text>
+
+          <Text style={payWallStyles.linkText} onPress={onRestore}>
+            Restore
+          </Text>
+          <Text style={payWallStyles.dot}> · </Text>
+
+          <Text
+            style={payWallStyles.linkText}
+            onPress={() => Linking.openURL(PRIVACY_URL)}>
+            Privacy policy
+          </Text>
+        </View>
+      </View>
     </ScrollView>
   );
 };
@@ -351,5 +416,42 @@ const payWallStyles = StyleSheet.create({
     lineHeight: 22,
     color: '#111',
     flexShrink: 1,
+  },
+  optionButton: {
+    backgroundColor: COLORS.secondaryColor,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  optionSelectedButton: {
+    borderColor: COLORS.primaryColor,
+    borderWidth: 2,
+  },
+  optionText: {
+    fontSize: 16,
+    color: COLORS.primaryColor,
+    fontWeight: 'bold',
+  },
+  optionDescription: {
+    color: COLORS.subText,
+  },
+  linksRow: {
+    marginTop: 5,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+  linkText: {
+    fontSize: 12,
+    color: COLORS.subText,
+    textDecorationLine: 'underline',
+  },
+  dot: {
+    marginHorizontal: 5,
+    fontSize: 13,
+    color: COLORS.subText,
   },
 });
