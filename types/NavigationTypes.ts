@@ -1,6 +1,7 @@
 export type RootStackParamList = {
   App: undefined;
   Onboarding: undefined;
+  Paywall: undefined;
 };
 
 export type AppParamList = {

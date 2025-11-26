@@ -1,9 +1,11 @@
 import { CustomDrawer } from '@components';
-import { SubscriptionWatcher } from '@hooks';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  DrawerToggleButton,
+  createDrawerNavigator,
+} from '@react-navigation/drawer';
 import { Chat, LogScreen, ProgressScreen } from '@screens';
 import { ConfigStack } from '@screens/config-stack/ConfigStack';
-import { PayWallWrapper } from '@screens';
+import { COLORS } from '@theme';
 import { DrawerParamList } from '@types';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -12,7 +14,10 @@ export const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
       initialRouteName="Coach"
-      drawerContent={props => <CustomDrawer {...props} />}>
+      drawerContent={props => <CustomDrawer {...props} />}
+      screenOptions={{
+        headerLeft: () => <DrawerToggleButton tintColor={COLORS.accentColor} />,
+      }}>
       <Drawer.Screen name="Coach" component={Chat} />
       <Drawer.Screen name="Logs" component={LogScreen} />
       <Drawer.Screen name="Progress" component={ProgressScreen} />
@@ -24,26 +29,3 @@ export const DrawerNavigator = () => {
     </Drawer.Navigator>
   );
 };
-
-// return (
-//   <>
-//     <SubscriptionWatcher />
-//     <Drawer.Navigator
-//       initialRouteName="Chat"
-//       drawerContent={props => <CustomDrawer {...props} />}>
-//       <Drawer.Screen name="Chat" component={Chat} />
-//       <Drawer.Screen name="MealLogs" component={LogScreen} />
-//       <Drawer.Screen name="Progress" component={ProgressScreen} />
-//       <Drawer.Screen
-//         name="ConfigStack"
-//         component={ConfigStack}
-//         options={{ headerShown: false }}
-//       />
-//       <Drawer.Screen
-//         name="Paywall"
-//         component={PayWallWrapper}
-//         options={{ headerShown: false }}
-//       />
-//     </Drawer.Navigator>
-//   </>
-// );

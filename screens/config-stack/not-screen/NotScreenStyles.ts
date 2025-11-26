@@ -63,5 +63,7 @@ export const notStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   btnCancel: { paddingHorizontal: 18 },
+  btnCancelText: { color: COLORS.subText },
   btnSave: { paddingHorizontal: 18 },
+  btnSaveText: { color: COLORS.accentColor, fontWeight: 'bold' },
 });

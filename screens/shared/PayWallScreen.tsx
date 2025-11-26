@@ -11,28 +11,13 @@ import {
 } from 'react-native';
 
 import { StepProgressBar } from '@components';
-import { Button, Icon } from '@rneui/themed';
-import { validateIOSPurchaseClient } from '@services';
 import { URLS } from '@constants';
-import {
-  ActiveSubscription,
-  ErrorCode,
-  ProductIOS,
-  Purchase,
-  PurchaseIOS,
-  getActiveSubscriptions,
-  getAvailablePurchases,
-  useIAP,
-} from 'expo-iap';
+import { Button, Icon } from '@rneui/themed';
+import { ProductIOS } from 'expo-iap';
 
 import { COLORS, SharedStyles } from '@theme';
 import { Entitlement } from '@types';
-import {
-  isNewTransaction,
-  loadProcessedLineages,
-  logPurchaseSummary,
-  markTransactionProcessed,
-} from '@utils';
+import { useSubscription, PRODUCTS_IDS } from '@hooks';
 
 type PaywallProps = {
   onSuccess: (entitlement: Entitlement) => void;
@@ -42,6 +27,45 @@ type PaywallProps = {
   totalSteps?: number;
   modal: boolean;
 };
+
+type SubscirptionMetadaType = Record<
+  string,
+  { displayTitle: string; displaySubTitle: string }
+>;
+
+// Defino SKUs de productos. Hay que usar los IDs
+const PRODUCTS_METADATA: SubscirptionMetadaType = {
+  weekly_plan: {
+    displayTitle: '3-Day Trial',
+    displaySubTitle: 'then USD 7.99 per week',
+  },
+  anual_plan: {
+    displayTitle: 'Yearly Plan',
+    displaySubTitle: 'USD 39.99 per week',
+  },
+};
+
+const TERMS_URL = URLS.terms;
+const PRIVACY_URL = URLS.privacy;
+
+const FEATURES: { text: string; icon: { name: string; type: string } }[] = [
+  {
+    text: 'Your AI dietitian, available 24/7',
+    icon: { name: 'check-circle', type: 'feather' },
+  },
+  {
+    text: 'Personalized plan that adapts to you',
+    icon: { name: 'tune-variant', type: 'material-community' },
+  },
+  {
+    text: 'Quick meal logging, zero friction',
+    icon: { name: 'clipboard-text-outline', type: 'material-community' },
+  },
+  {
+    text: 'Gentle accountability nudges',
+    icon: { name: 'bell-check-outline', type: 'material-community' },
+  },
+];
 
 export const PaywallScreen = ({
   onSuccess,
@@ -53,214 +77,56 @@ export const PaywallScreen = ({
 }: PaywallProps) => {
   const styles = SharedStyles();
 
-  const [loadingProducts, setLoadingProducts] = useState(true);
-  const [purchasing, setPurchasing] = useState(false);
   const [selectedSku, setSelectedSku] = useState<string | null>(null);
 
-  const TERMS_URL = URLS.terms;
-  const PRIVACY_URL = URLS.privacy;
-
-  const FEATURES: { text: string; icon: { name: string; type: string } }[] = [
-    {
-      text: 'Your AI dietitian, available 24/7',
-      icon: { name: 'check-circle', type: 'feather' },
-    },
-    {
-      text: 'Personalized plan that adapts to you',
-      icon: { name: 'tune-variant', type: 'material-community' },
-    },
-    {
-      text: 'Quick meal logging, zero friction',
-      icon: { name: 'clipboard-text-outline', type: 'material-community' },
-    },
-    {
-      text: 'Gentle accountability nudges',
-      icon: { name: 'bell-check-outline', type: 'material-community' },
-    },
-  ];
-
-  // Defino SKUs de productos. Hay que usar los IDs
-  const productsIds = ['weekly_plan', 'anual_plan'];
-  const products_metadata: Record<
-    string,
-    { displayTitle: string; displaySubTitle: string }
-  > = {
-    weekly_plan: {
-      displayTitle: '3-Day Trial',
-      displaySubTitle: 'then USD 7.99 per week',
-    },
-    anual_plan: {
-      displayTitle: 'Yearly Plan',
-      displaySubTitle: 'USD 39.99 per week',
-    },
-  };
-
-  const handlePurchaseUpdate = async (purchase: Purchase) => {
-    // Log compact info
-    logPurchaseSummary(purchase as PurchaseIOS);
-
-    // 1️⃣ Ignore any transaction we've already handled
-    if (!isNewTransaction(purchase as PurchaseIOS)) {
-      console.log('[IAP] duplicate / historical transaction, finishing only');
-      try {
-        await finishTransaction({ purchase });
-      } catch (err) {
-        console.warn('finishTransaction failed for historical txn', err);
-      }
-      return;
-    }
-
-    // 2️⃣ This is the latest transaction for this subscription
-    console.log('[IAP] new transaction detected, validating…');
-
-    try {
-      const res = await validateIOSPurchaseClient({ purchase });
-
-      if (res.ok === true) {
-        // Mark lineage processed so renewals are ignored later
-        await markTransactionProcessed(purchase as PurchaseIOS);
-
-        // Finish transaction so StoreKit stops replaying it
-        await finishTransaction({ purchase });
-
-        // Notify app logic (unlock access)
-        onSuccess(res.entitlement!);
-        console.log('[IAP] purchase validated & finished successfully');
-      } else {
-        try {
-          await finishTransaction({ purchase });
-          console.log('[IAP] finished tx ', purchase.id);
-        } catch (err) {
-          console.warn('[IAP] failed to finish invalid purchase', err);
-        }
-        Alert.alert('Validation failed', 'Purchase could not be validated.');
-        console.warn('[IAP] validation error', res.error);
-      }
-    } catch (error) {
-      console.error('Error handling purchase:', error);
-      Alert.alert('Error', 'Failed to process purchase.');
-    } finally {
-      setPurchasing(false);
-    }
-  };
-
   const {
-    connected,
+    status,
+    purchasing,
+    loadingProducts,
     subscriptions,
-    fetchProducts,
     requestPurchase,
-    finishTransaction,
-  } = useIAP({
-    onPurchaseSuccess: async (purchase: Purchase) => {
-      if (!connected) return;
-      await handlePurchaseUpdate(purchase);
-    },
-    onPurchaseError: error => {
-      setPurchasing(false);
-      // Don't show error for user cancellation
-      if (error.code === ErrorCode.UserCancelled) {
-        return;
-      }
-      // setCanRetryValidation(true);
-      Alert.alert(
-        'Purchase Error',
-        'Failed to complete purchase. Please try again.'
-      );
-      console.error('Purchase error:', error);
-    },
-  });
+    entitlement,
+    checkSubscription,
+  } = useSubscription();
 
-  // Inicio productos cuando estoy seguro que la conexion esta establecida
+  // Esto para que elija la primera opcion por default
   useEffect(() => {
-    if (!connected) return;
-    console.log('esta conectado');
-
-    const cleanTx = async () => {
-      // 1️⃣ Load checkpoints first
-      await loadProcessedLineages();
-
-      // 2️⃣ Then clean & fetch products
-      try {
-        const pending = await getAvailablePurchases();
-        for (const p of pending) {
-          if (!isNewTransaction(p as PurchaseIOS)) {
-            console.log('[IAP] cleaning old txn on startup:', p.id);
-            await finishTransaction({ purchase: p });
-          }
-        }
-      } catch (err) {
-        console.warn('Error cleaning old transactions', err);
-      }
-    };
-
-    const fetchProds = async () => {
-      console.log('init IAP');
-      try {
-        setLoadingProducts(true);
-        await fetchProducts({
-          skus: productsIds,
-          type: 'subs',
-        });
-      } catch {
-        Alert.alert('Store error', 'Unable to load products.');
-      } finally {
-        setLoadingProducts(false);
-      }
-    };
-    cleanTx();
-    fetchProds();
-  }, [connected, fetchProducts]);
-
-  // Pick default option when products arrive
-  useEffect(() => {
+    console.log('[Paywall] tengo SKUS', subscriptions.length);
     if (!selectedSku && subscriptions?.length) {
-      console.log('estas son las subscripciones', subscriptions);
       const firstId = subscriptions[0]?.id;
       if (firstId) setSelectedSku(firstId);
     }
   }, [subscriptions, selectedSku]);
 
-  const buy = async () => {
-    // if (canRetryValidation) return;
-    if (!selectedSku) return;
-    if (!connected) {
-      Alert.alert('Store unavailable', 'Please try again in a moment.');
-      return;
+  useEffect(() => {
+    if (entitlement && status === 'active') {
+      console.log('tengo entitlement');
+      onSuccess(entitlement);
+    } else {
+      console.log('no hay success aun', entitlement, status);
     }
+  }, [entitlement, status]);
+
+  const buy = async () => {
+    if (!selectedSku) return;
+    console.log('[Paywall] Trying to buy this id:', selectedSku);
     try {
-      setPurchasing(true);
-      await requestPurchase({
-        request: { ios: { sku: selectedSku } },
-        type: 'subs',
-      });
-      // Result comes via onPurchaseSuccess/onPurchaseError
+      await requestPurchase(selectedSku);
     } catch (error) {
-      setPurchasing(false);
-      console.error('Subscription request failed:', error);
+      console.log('error trying to buy subscription');
     }
   };
 
   const onRestore = async () => {
-    console.log('trying to restore');
-    try {
-      const activeSubs: ActiveSubscription[] = await getActiveSubscriptions();
-      console.log('[IAP] tiene estas subs: ', activeSubs);
-      if (activeSubs) {
-        const hasActive = activeSubs.some(s => s.isActive);
-        console.log('[IAP] local active subs:', hasActive);
-        if (hasActive) {
-          //TODO: validate in bakcend
-          return; // ✅ good locally; done
-        }
-      }
-    } catch (err) {
-      console.warn('[IAP] local check failed, will try server', err);
-    }
+    const checkRet = async () => {
+      await checkSubscription();
+    };
+    checkRet();
   };
 
   const bySkuOrder = (a: ProductIOS, b: ProductIOS) => {
-    const ai = productsIds.indexOf(a?.id ?? '');
-    const bi = productsIds.indexOf(b?.id ?? '');
+    const ai = PRODUCTS_IDS.indexOf(a?.id ?? '');
+    const bi = PRODUCTS_IDS.indexOf(b?.id ?? '');
     const ra = ai === -1 ? Number.MAX_SAFE_INTEGER : ai;
     const rb = bi === -1 ? Number.MAX_SAFE_INTEGER : bi;
     return ra - rb;
@@ -268,7 +134,7 @@ export const PaywallScreen = ({
 
   const renderOption = (product: ProductIOS) => {
     const id = product.id;
-    const metadata = products_metadata[id];
+    const metadata = PRODUCTS_METADATA[id];
     const selected = id && selectedSku === id;
 
     return (
@@ -399,11 +265,6 @@ const payWallStyles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
   },
   item: {
     flexDirection: 'row',
@@ -455,3 +316,25 @@ const payWallStyles = StyleSheet.create({
     color: COLORS.subText,
   },
 });
+
+// Inicio, aca tengo que buscar los productos
+// useEffect(() => {
+//   const fetchProds = async () => {
+//     console.log('got subscriptions?', subscriptions);
+//     try {
+//       // setLoadingProducts(true);
+//       // aca tengo que buscar los produtos.
+//       // Ojo que antes entraban directamente en subscriptions.
+//       // Ahora los voy a tener que meter por un state
+//       // await fetchProducts({
+//       //   skus: productsIds,
+//       //   type: 'subs',
+//       // });
+//     } catch {
+//       Alert.alert('Store error', 'Unable to load products.');
+//     } finally {
+//       // setLoadingProducts(false);
+//     }
+//   };
+//   fetchProds();
+// }, []);

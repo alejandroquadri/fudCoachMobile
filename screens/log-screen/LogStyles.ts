@@ -87,13 +87,14 @@ export const FoodLogStyles = () => {
     calorieLabelText: {
       color: 'gray',
       fontSize: 14,
+      marginTop: 3,
     },
     calorieProgressContainer: {
       alignItems: 'center',
       justifyContent: 'center',
     },
     calorieRemaining: {
-      color: 'orange',
+      color: COLORS.accentColor,
       fontSize: 18,
       fontWeight: 'bold',
     },
@@ -106,7 +107,7 @@ export const FoodLogStyles = () => {
     calorieSign: {
       fontSize: 18,
       fontWeight: 'bold',
-      marginHorizontal: 5,
+      marginHorizontal: 8,
     },
     chartCenterLabel: {
       fontSize: 10,

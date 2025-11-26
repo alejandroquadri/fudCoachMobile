@@ -1,7 +1,7 @@
 import { Icon } from '@rneui/themed';
 import { format } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert, Modal, TouchableOpacity, View } from 'react-native';
 import 'react-native-get-random-values';
 import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
@@ -11,7 +11,7 @@ import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
 
 import { CameraScreen } from '@components';
-import { useAuth, useKeyboard } from '@hooks';
+import { useAuth, useKeyboard, useSubscription } from '@hooks';
 import {
   ensurePushTokenSynced,
   fetchPreviousMessages,
@@ -21,6 +21,7 @@ import {
   sendChatImage,
   sendChatMessage,
 } from '@services';
+import { useFocusEffect } from '@react-navigation/native';
 
 // const storeLastOpenedDate = async () => {
 //   const today = format(new Date(), 'yyyy-MM-dd');
@@ -48,7 +49,6 @@ const markWelcomeDeliveredLocal = async (userId: string) => {
 };
 
 export const Chat = () => {
-  console.log('llego al chatScreen');
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [cameraVisible, setCameraVisible] = useState(false);
@@ -58,6 +58,24 @@ export const Chat = () => {
   const styles = ChatStyles(isKeyboardVisible, insets.bottom);
 
   const { user } = useAuth();
+  const { connected, checkSubscription } = useSubscription();
+
+  // cuando hace foco sobre el chatscreen chequeo si esta ok la subscripcion
+  useFocusEffect(
+    useCallback(() => {
+      console.log('[ChatScreen] subs check init');
+      if (!user?._id) return; // guard if user not ready
+
+      const check = async () => {
+        try {
+          await checkSubscription(true);
+        } catch (e) {
+          console.log('Error trying to check subscription', e);
+        }
+      };
+      check();
+    }, [user?._id, connected])
+  );
 
   useEffect(() => {
     console.log('corre use Effect de initialize Chat');

@@ -1,9 +1,8 @@
 import { iapApi } from '@api';
 import { Entitlement, ValidateIOSPayload } from '@types';
-import { Purchase } from 'expo-iap';
+import { ActiveSubscription, Purchase, PurchaseIOS } from 'expo-iap';
 import * as SecureStore from 'expo-secure-store';
 
-const ENTITLEMENT_KEY = 'fc_entitlement_v1';
 const ACCOUNT_TOKEN_KEY = 'fc_app_account_token_v1';
 
 // /** Helpers backed by expo-secure-store */
@@ -37,34 +36,6 @@ const secureDelete = async (key: string): Promise<void> => {
   }
 };
 
-// /** Public cache API */
-// export const getEntitlementFromCache =
-//   async (): Promise<Entitlement | null> => {
-//     const raw = await secureGet(ENTITLEMENT_KEY);
-//     if (!raw) return null;
-//     try {
-//       const ent = JSON.parse(raw) as Entitlement;
-//       // Optional: auto-expire locally if past `expiresAtISO`
-//       if (
-//         ent.expiresAtISO &&
-//         !isAfter(new Date(ent.expiresAtISO), new Date())
-//       ) {
-//         return { ...ent, active: false };
-//       }
-//       return ent;
-//     } catch {
-//       return null;
-//     }
-//   };
-//
-// export const clearEntitlementCache = async () => {
-//   await secureDelete(ENTITLEMENT_KEY);
-// };
-//
-// const saveEntitlement = async (ent: Entitlement) => {
-//   await secureSet(ENTITLEMENT_KEY, JSON.stringify(ent));
-// };
-
 /** ---------- Account token utilities ---------- */
 
 // Simple UUID v4 generator without extra deps (sufficient for token use)
@@ -84,44 +55,57 @@ export const getOrCreateAppAccountToken = async (): Promise<string> => {
   return token;
 };
 
-type ClientValidateArgs = { purchase: Purchase } | { kind: 'restore' }; // NE
-
-export const validateIOSPurchaseClient = async (
-  args: ClientValidateArgs
+export const validateIOSPurchaseSubscription = async (
+  subscription: Purchase
 ): Promise<
-  { ok: true; entitlement?: Entitlement } | { ok: false; error?: string }
+  { ok: true; entitlement?: Entitlement } | { ok: false; error: string }
 > => {
-  console.log('hago llamada');
-  // Handle restore path first
-  if ('kind' in args && args.kind === 'restore') {
-    return { ok: true }; // NEW: no-op until you add a backend restore route
-  }
-
-  // From here on, TS knows args has a 'purchase' field
-  const { purchase } = args as {
-    purchase: Purchase;
-  }; // NEW
-
+  console.log('[IAP service] Comientzo a validar subscription');
   try {
-    const transactionId: string | undefined = purchase.id; // NEW
+    const transactionId: string | undefined = subscription.id;
     if (!transactionId) {
-      return { ok: false, error: 'Missing transactionId from purchase' }; // NEW
+      return { ok: false, error: 'Missing transactionId from purchase' };
     }
 
     const payload: ValidateIOSPayload = {
       transactionId,
-      // originalTransactionId: purchase?.originalTransactionId, // NEW
-      productId: purchase?.productId,
+      productId: subscription?.productId,
     };
 
-    const resp = await iapApi.validateIOS(payload); // NEW
+    const resp = await iapApi.validateIOS(payload);
     if (!resp?.ok || !resp?.entitlement) {
-      return { ok: false, error: resp?.error || 'Server validation failed' }; // NEW
+      return { ok: false, error: resp?.error || 'Server validation failed' };
     }
 
-    // await saveEntitlement(resp.entitlement); // NEW
-    return { ok: true, entitlement: resp.entitlement }; // NEW
-  } catch (e: any) {
-    return { ok: false, error: e?.message ?? 'Network error' }; // NEW
+    return { ok: true, entitlement: resp.entitlement };
+  } catch (error) {
+    return { ok: false, error: JSON.stringify(error) };
+  }
+};
+
+export const validateIOSActiveSubscription = async (
+  activeSubscription: ActiveSubscription
+): Promise<
+  { ok: true; entitlement?: Entitlement } | { ok: false; error: string }
+> => {
+  try {
+    const transactionId: string | undefined = activeSubscription.transactionId;
+    if (!transactionId) {
+      return { ok: false, error: 'Missing transactionId from purchase' };
+    }
+
+    const payload: ValidateIOSPayload = {
+      transactionId,
+      productId: activeSubscription?.productId,
+    };
+
+    const resp = await iapApi.validateIOS(payload);
+    if (!resp?.ok || !resp?.entitlement) {
+      return { ok: false, error: resp?.error || 'Server validation failed' };
+    }
+
+    return { ok: true, entitlement: resp.entitlement };
+  } catch (error) {
+    return { ok: false, error: JSON.stringify(error) };
   }
 };

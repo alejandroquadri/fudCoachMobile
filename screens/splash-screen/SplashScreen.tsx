@@ -1,24 +1,19 @@
-import { View, Text, StyleSheet } from 'react-native';
 import { COLORS } from '@theme';
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    backgroundColor: COLORS.green,
-    flex: 1,
-    justifyContent: 'center',
-  },
-  text: {
-    color: COLORS.white,
-    fontSize: 30,
-    fontWeight: 'bold',
-  },
-});
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 export const SplashScreen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Food Coach</Text>
+      <ActivityIndicator size="large" color={COLORS.subText} />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    backgroundColor: COLORS.backgroundColor,
+    flex: 1,
+    justifyContent: 'center',
+  },
+});

@@ -1,15 +1,17 @@
+import { useAuth, useSubscription } from '@hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SplashScreen } from '@screens';
-import { DrawerNavigator } from './DrawerNavigator';
+import { PayWallWrapper, SplashScreen } from '@screens';
 import { OnboardingNavigator } from '@screens/onboarding';
 import { RootStackParamList } from '@types';
-import { useAuth } from '@hooks';
-import { AppStackNavigator } from './AppStackNavigator';
+import { DrawerNavigator } from './DrawerNavigator';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootStackNavigator = () => {
-  const { loading, userToken } = useAuth(); // ← context is now consumed
+  const { loading: authLoading, userToken } = useAuth();
+  const { status } = useSubscription();
+
+  const loading = authLoading || status === 'checking';
 
   if (loading) return <SplashScreen />;
 
@@ -17,12 +19,16 @@ export const RootStackNavigator = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {userToken == null ? (
         <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
+      ) : // hago que cuando esta unknown tambien permita acceder a la app
+      // para mejorar la UX. Igualmente luego rapidamente va a decidir si es
+      // active, inactive o  checking
+      status === 'active' || status === 'unknown' ? (
+        // logged in and subscription ok
+        <Stack.Screen name="App" component={DrawerNavigator} />
       ) : (
-        <Stack.Screen name="App" component={AppStackNavigator} />
+        // logged in but no subscription
+        <Stack.Screen name="Paywall" component={PayWallWrapper} />
       )}
     </Stack.Navigator>
   );
 };
-{
-  /* <Stack.Screen name="Home" component={DrawerNavigator} /> */
-}

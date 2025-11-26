@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { UserProfile } from '@types';
+import { wipeSecureStore } from '@utils';
 
 export type AuthContextType = {
   loading: boolean;
@@ -54,8 +55,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   /** Load persisted session once on mount */
   useEffect(() => {
+    console.log('[Auth] init');
     (async () => {
       try {
+        // // NOTE: la funcion de abajo sirve para cuando quiero resetear las tokens
+        // await wipeSecureStore();
+
         const token = await SecureStore.getItemAsync('userToken');
         const profileString = await SecureStore.getItemAsync('userProfile');
         setUserToken(token);

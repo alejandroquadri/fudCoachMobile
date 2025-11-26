@@ -5,7 +5,8 @@ import { Button, Divider } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { OnboardingStackParamList } from './OnboardingNavigator';
-import { SharedStyles } from '@theme';
+import { COLORS, SharedStyles } from '@theme';
+import { wipeSecureStore } from '@utils';
 
 export const WelcomeScreen: FC = () => {
   const styles = SharedStyles();
@@ -19,6 +20,16 @@ export const WelcomeScreen: FC = () => {
 
   const handleLogin = () => {
     navigation.navigate('SignIn');
+  };
+
+  const wipeSecureStoreKeys = async () => {
+    try {
+      console.log('trying to wipe keys');
+      await wipeSecureStore();
+      console.log('secure store keys wiped');
+    } catch (err) {
+      console.log('Error wiping secure store', err);
+    }
   };
 
   return (
@@ -52,6 +63,14 @@ export const WelcomeScreen: FC = () => {
           titleStyle={styles.clearButtonText}
           onPress={handleLogin}
         />
+        {/* Wipe SecureStore keys */}
+        {/* <Button */}
+        {/*   title="Wipe SecureStore" */}
+        {/*   type="clear" */}
+        {/*   buttonStyle={welcomeStyles.wipeButton} */}
+        {/*   titleStyle={welcomeStyles.wipeButtonText} */}
+        {/*   onPress={wipeSecureStoreKeys} */}
+        {/* /> */}
       </View>
     </ScrollView>
   );
@@ -64,5 +83,11 @@ const welcomeStyles = StyleSheet.create({
   titleAlign: {
     textAlign: 'center',
     width: '100%',
+  },
+  wipeButtonText: {
+    color: COLORS.danger,
+  },
+  wipeButton: {
+    marginTop: 80,
   },
 });

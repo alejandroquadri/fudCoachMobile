@@ -4,6 +4,7 @@ import { ConfigScreen } from './ConfigScreen';
 import { NotificationsScreen } from './not-screen/NotificationScreen';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import { View } from 'react-native';
+import { COLORS } from '@theme';
 
 export type ConfigStackParamList = {
   ConfigScreen: undefined;
@@ -24,7 +25,7 @@ export const ConfigStack = () => (
         headerLeft: () => (
           <View style={{ marginLeft: -18 }}>
             {/* tweak -8 / -12 until it lines up */}
-            <DrawerToggleButton />
+            <DrawerToggleButton tintColor={COLORS.accentColor} />
           </View>
         ),
       }}

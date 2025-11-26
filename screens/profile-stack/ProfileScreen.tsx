@@ -128,11 +128,6 @@ const profileStyles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
-    shadowColor: COLORS.black,
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   goalRow: {
     flexDirection: 'row',
@@ -140,14 +135,14 @@ const profileStyles = StyleSheet.create({
     alignItems: 'center',
   },
   changeGoalButton: {
-    backgroundColor: COLORS.primaryColor,
+    backgroundColor: COLORS.accentColor,
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
   changeGoalButtonText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
   itemRow: {
     flexDirection: 'row',

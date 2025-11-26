@@ -11,7 +11,7 @@ export const COLORS = {
   divider: '#999',
   lightDivider: '#eee',
   backDrop: 'rgba(0,0,0,0.4)',
-  danger: 'red',
+  danger: '#db3236',
 
   white: 'white',
   green: '#57CC99',

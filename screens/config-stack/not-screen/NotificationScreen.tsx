@@ -174,6 +174,7 @@ export const NotificationsScreen = ({ navigation }: Props) => {
         <View style={notStyles.rowTop}>
           <Text style={notStyles.cardTitle}>{title}</Text>
           <Switch
+            color={COLORS.accentColor}
             value={setting.enabled}
             onValueChange={v => handleToggle(key, v)} // <-- uses outside handler
           />
@@ -254,11 +255,14 @@ export const NotificationsScreen = ({ navigation }: Props) => {
               type="clear"
               title="Cancel"
               onPress={closeSheet}
+              titleStyle={notStyles.btnCancelText}
               buttonStyle={notStyles.btnCancel}
             />
             <Button
               title="Save"
+              type="clear"
               onPress={saveTime}
+              titleStyle={notStyles.btnSaveText}
               buttonStyle={notStyles.btnSave}
             />
           </View>

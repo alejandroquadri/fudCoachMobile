@@ -11,6 +11,7 @@ import { useCurrentUser } from '@hooks';
 import { weightLogsApi } from '@api';
 import { ProgressStyles } from './ProgressStyles';
 import { useFocusEffect } from '@react-navigation/native';
+import { COLORS } from '@theme';
 
 interface ChartDataInterface {
   label: string;
@@ -45,13 +46,10 @@ export const ProgressScreen = () => {
   const fetchWeightLogs = useCallback(async () => {
     try {
       const weightLogs = await weightLogsApi.getWeightLogs(user._id!);
-      console.log('obtengo weight logs', weightLogs);
       setWeightData(weightLogs);
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Failed to fetch food log data.');
-    } finally {
-      // TODO: something else
     }
   }, [user]);
 
@@ -103,6 +101,7 @@ export const ProgressScreen = () => {
       const newChartData = buildChartData(weightData);
       setChartData(newChartData);
       const newMinValue = calcMinValue(newChartData);
+
       setMinValueWeight(newMinValue - 3);
     }
   }, [unit, weightData]);
@@ -132,7 +131,41 @@ export const ProgressScreen = () => {
   };
 
   const handleDataPointPress = (item, index) => {
-    setFocusedData(item);
+    // TODO: Cook logic
+    console.log('chart pressed', item, index, chartData[index]);
+    return 'hola';
+  };
+
+  const renderDataPoint = (item: { value: number }, index: number) => {
+    console.log('render data point', item, index);
+    const point = chartData[index];
+    if (!point) return null;
+
+    const isFirst = index === 0;
+    const isLast = index === chartData.length - 1;
+
+    // Base vertical lift so it sits above the dot
+    const translateY = -20;
+
+    // Horizontal tweak so it does not overflow on edges
+    let translateX = 0;
+    if (isFirst)
+      translateX = 20; // push right
+    else if (isLast) translateX = -20; // push left
+    return (
+      <View
+        style={[
+          styles.tooltipContainer,
+          {
+            transform: [{ translateX }, { translateY }],
+          },
+        ]}>
+        <Text style={styles.tooltipDate}>{point.label}</Text>
+        <Text style={styles.tooltipValue}>
+          {point.value} {unit}
+        </Text>
+      </View>
+    );
   };
 
   return (
@@ -168,17 +201,35 @@ export const ProgressScreen = () => {
         {/* Weight Line Chart */}
         {chartData.length > 0 && (
           <LineChart
-            data={chartData}
+            data={chartData.map(d => ({ value: d.value }))}
+            // data={chartData}
             height={220}
-            color={'#177AD5'}
+            color={COLORS.accentColor}
             yAxisColor={'white'}
-            xAxisColor={'white'}
-            thickness={2}
-            dataPointsColor={'#177AD5'}
-            dataPointsRadius={5}
+            xAxisColor="lightgray" // same as rulesColor
+            xAxisThickness={1}
+            xAxisType="dotted"
+            dashWidth={4}
+            dashGap={8}
+            rulesColor="lightgray"
+            rulesType="dotted"
+            thickness={3}
+            dataPointsColor={COLORS.accentColor}
+            dataPointsRadius={4}
             curved
             yAxisOffset={minValueWeight}
             noOfSections={4} // Number of sections on the Y-axis
+            // lo de abajo para el tap
+            // focusEnabled={true} // Enable focus functionality
+            // onFocus={handleDataPointPress} // Handle focus event
+            // dataPointLabelWidth={100}
+            // overflowTop={40} // 👈 extra room above for tooltip
+            // overflowBottom={10}
+            // dataPointLabelShiftY={-10}
+            // focusedDataPointColor={COLORS.accentColor}
+            // focusedDataPointLabelComponent={renderDataPoint} // Other chart customization props can be added here
+            // delayBeforeUnFocus={1000}
+            // autoAdjustPointerLabelPosition={true}
           />
         )}
         {/* Last Recorded Weight and Record Button */}

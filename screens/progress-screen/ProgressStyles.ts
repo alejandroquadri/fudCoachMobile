@@ -98,4 +98,19 @@ export const ProgressStyles = () =>
     historySpacer: {
       flex: 1,
     },
+    tooltipContainer: {
+      backgroundColor: 'rgba(0,0,0,0.8)',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 6,
+    },
+    tooltipDate: {
+      color: '#fff',
+      fontSize: 10,
+    },
+    tooltipValue: {
+      color: '#fff',
+      fontSize: 12,
+      fontWeight: '600',
+    },
   });

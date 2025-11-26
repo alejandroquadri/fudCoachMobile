@@ -170,7 +170,7 @@ export const ChartToGoalScreen = ({
             height={150}
             curved
             thickness={6}
-            color="#6A8DFF"
+            color={COLORS.accentColor}
             hideRules
             // hideYAxisText
             yAxisTextStyle={chartGoalStyles.yAxisText}

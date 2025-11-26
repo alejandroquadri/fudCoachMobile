@@ -4,6 +4,8 @@ import { Card, Button, Text } from '@rneui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import { WaterLogStyles } from '../LogStyles';
 import { WaterLog } from '@types';
+import { COLORS } from '@theme';
+import { color } from '@rneui/base';
 
 interface WaterIntakeCardProps {
   waterLog?: WaterLog;
@@ -27,19 +29,31 @@ export const WaterIntakeCard: React.FC<WaterIntakeCardProps> = ({
       </View>
 
       <View style={styles.waterRow}>
-        <Button title="-" type="clear" onPress={handleDecrease} />
+        <Button
+          title="-"
+          titleStyle={{ color: COLORS.secondaryColor, fontWeight: 'bold' }}
+          type="clear"
+          onPress={handleDecrease}
+        />
         <View style={styles.cupsContainer}>
           {Array.from({ length: 8 }, (_, index) => (
             <MaterialIcons
               key={index}
               name="local-drink"
               size={23}
-              color={index < waterCups ? '#2196F3' : 'lightgray'}
+              color={
+                index < waterCups ? COLORS.accentColor : COLORS.secondaryColor
+              }
               style={styles.glassIcon}
             />
           ))}
         </View>
-        <Button title="+" type="clear" onPress={handleIncrease} />
+        <Button
+          title="+"
+          type="clear"
+          onPress={handleIncrease}
+          titleStyle={{ color: COLORS.secondaryColor, fontWeight: 'bold' }}
+        />
       </View>
     </Card>
   );
