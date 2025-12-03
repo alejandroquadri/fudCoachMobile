@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   Image,
   Linking,
   ScrollView,
@@ -13,11 +12,11 @@ import {
 import { StepProgressBar } from '@components';
 import { URLS } from '@constants';
 import { Button, Icon } from '@rneui/themed';
-import { ProductIOS } from 'expo-iap';
+import { ProductSubscription } from 'expo-iap';
 
+import { PRODUCTS_IDS, useAuth, useSubscription } from '@hooks';
 import { COLORS, SharedStyles } from '@theme';
 import { Entitlement } from '@types';
-import { useSubscription, PRODUCTS_IDS } from '@hooks';
 
 type PaywallProps = {
   onSuccess: (entitlement: Entitlement) => void;
@@ -78,6 +77,7 @@ export const PaywallScreen = ({
   const styles = SharedStyles();
 
   const [selectedSku, setSelectedSku] = useState<string | null>(null);
+  const { signOut } = useAuth();
 
   const {
     status,
@@ -124,7 +124,7 @@ export const PaywallScreen = ({
     checkRet();
   };
 
-  const bySkuOrder = (a: ProductIOS, b: ProductIOS) => {
+  const bySkuOrder = (a: ProductSubscription, b: ProductSubscription) => {
     const ai = PRODUCTS_IDS.indexOf(a?.id ?? '');
     const bi = PRODUCTS_IDS.indexOf(b?.id ?? '');
     const ra = ai === -1 ? Number.MAX_SAFE_INTEGER : ai;
@@ -132,7 +132,7 @@ export const PaywallScreen = ({
     return ra - rb;
   };
 
-  const renderOption = (product: ProductIOS) => {
+  const renderOption = (product: ProductSubscription) => {
     const id = product.id;
     const metadata = PRODUCTS_METADATA[id];
     const selected = id && selectedSku === id;
@@ -162,6 +162,19 @@ export const PaywallScreen = ({
             <TouchableOpacity onPress={onBack} disabled={purchasing}>
               <Icon
                 name="chevron-left"
+                type="feather"
+                size={28}
+                color={COLORS.primaryColor}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {modal === true && (
+          <View style={styles.backButtonContainer}>
+            <TouchableOpacity onPress={() => signOut()} disabled={purchasing}>
+              <Icon
+                name="log-out"
                 type="feather"
                 size={28}
                 color={COLORS.primaryColor}
@@ -200,9 +213,7 @@ export const PaywallScreen = ({
 
         <View style={styles.optionsContainer}>
           {subscriptions ? (
-            subscriptions
-              .sort(bySkuOrder)
-              .map(sub => renderOption(sub as ProductIOS))
+            subscriptions.sort(bySkuOrder).map(sub => renderOption(sub))
           ) : (
             <View style={styles.optionButton}>
               <Text style={styles.optionText}>Loading options…</Text>

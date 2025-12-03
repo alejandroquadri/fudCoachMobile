@@ -31,5 +31,11 @@ export const ChatStyles = (
     iconsSend: {
       justifyContent: 'center',
     },
+    showSettingsText: {
+      color: COLORS.accentColor,
+    },
+    cancelSettingsText: {
+      color: COLORS.divider,
+    },
   });
 };

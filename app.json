@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.mauroq.fudCoach",
       "infoPlist": {
-        "NSCameraUsageDescription": "We need access to your camera to take food photos.",
+        "NSCameraUsageDescription": "Food Coach uses the camera so you can take photos of your meals to share with your coach and add them to your food log.",
         "NSMicrophoneUsageDescription": "We need access to your microphone for voice input.",
         "UIBackgroundModes": ["remote-notification"]
       }
@@ -41,7 +41,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "cameraPermission": "Food Coach uses the camera so you can take photos of your meals to share with your coach and add them to your food log.",
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
@@ -49,7 +49,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "Food Coach accesses your photos so you can share your meals with your coach and add them to your food log."
         }
       ],
       "expo-apple-authentication",

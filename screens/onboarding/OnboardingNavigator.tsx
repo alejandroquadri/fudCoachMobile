@@ -37,7 +37,7 @@ import { SignUpScreen } from './SignUpScreen';
 import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
 import { WelcomeScreen } from './WelcomeScreen';
 import { UserProfile } from '@types';
-import { createInitialNotificatinJobs } from '@services';
+import { appleLogin, createInitialNotificatinJobs } from '@services';
 
 export type OnboardingStackParamList = {
   SignIn: undefined;
@@ -154,18 +154,26 @@ export const OnboardingNavigator: FC = () => {
         email: (base.email || '').toLowerCase(),
       };
 
-      const response = await userAPI.loginApple(
+      // const response = await userAPI.loginApple(
+      //   appleIdToken as string,
+      //   true,
+      //   userData
+      // );
+      //
+      // const { token, refreshToken, user } = response;
+
+      const response = await appleLogin(
         appleIdToken as string,
-        true,
-        userData
+        false,
+        userData!
       );
 
-      const { token, refreshToken, user } = response;
+      const { token, refreshToken, user } = response!;
 
       // 🔑 Prime axios with the token before making any protected calls
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
       // Registro jobs de notifications
-      await createInitialNotificatinJobs(response.user._id);
+      await createInitialNotificatinJobs(user._id);
 
       dispatch({ type: 'RESET' });
       signUp(token, refreshToken, user);

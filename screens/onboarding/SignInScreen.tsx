@@ -17,6 +17,7 @@ import { SharedStyles } from '@theme';
 import { OnboardingStackParamList } from './OnboardingNavigator';
 // If you want to type userData we send to backend:
 import { UserProfile } from '@types';
+import { appleLogin } from '@services';
 
 type Props = NativeStackNavigationProp<OnboardingStackParamList, 'SignIn'>;
 
@@ -99,11 +100,15 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
             }
           : undefined;
 
-      const { token, refreshToken, user } = await userAPI.loginApple(
+      const result = await appleLogin(
         credential.identityToken,
         false,
-        userData
+        userData!
       );
+
+      if (!result) return;
+
+      const { token, refreshToken, user } = result;
 
       // Done — same auth path as email+password
       signIn(token, refreshToken, user);

@@ -1,8 +1,14 @@
-import { Icon } from '@rneui/themed';
-import { format } from 'date-fns';
+import { Dialog, Icon, Button } from '@rneui/themed';
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Modal, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Text,
+  Modal,
+  TouchableOpacity,
+  View,
+  Linking,
+} from 'react-native';
 import 'react-native-get-random-values';
 import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,11 +28,15 @@ import {
   sendChatMessage,
 } from '@services';
 import { useFocusEffect } from '@react-navigation/native';
+import { useCameraPermissions } from 'expo-camera';
+import { URLS } from '@constants';
 
 // const storeLastOpenedDate = async () => {
 //   const today = format(new Date(), 'yyyy-MM-dd');
 //   await SecureStore.setItemAsync('lastChatOpenedDate', today);
 // };
+
+const IOS_SETTINGS = URLS.iosSettings;
 
 const welcomeKeyFor = (userId: string) => `welcomeDelivered${userId}`;
 
@@ -53,6 +63,8 @@ export const Chat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [cameraVisible, setCameraVisible] = useState(false);
   const isKeyboardVisible = useKeyboard();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [showDialogSettings, setShowDialogSettings] = useState(false);
 
   const insets = useSafeAreaInsets();
   const styles = ChatStyles(isKeyboardVisible, insets.bottom);
@@ -160,6 +172,22 @@ export const Chat = () => {
     }
   };
 
+  const openCamera = async () => {
+    console.log('camera button pressed');
+    console.log('camera permission', permission);
+    if (!permission?.granted) {
+      if (permission?.canAskAgain) {
+        console.log('asking permission for camera');
+        await requestPermission();
+      } else {
+        console.log('permission not granted and cant ask again');
+        setShowDialogSettings(true);
+      }
+    } else {
+      setCameraVisible(true);
+    }
+  };
+
   const handlePictureTaken = async (imageUri: string) => {
     if (!user?._id) {
       return;
@@ -200,11 +228,7 @@ export const Chat = () => {
   const renderActions = () => {
     return (
       <View style={styles.actionWrapper}>
-        <TouchableOpacity
-          onPress={() => {
-            setCameraVisible(true);
-            console.log('camera button pressed');
-          }}>
+        <TouchableOpacity onPress={openCamera}>
           <Icon
             name="camera"
             type="feather"
@@ -252,6 +276,37 @@ export const Chat = () => {
           onClose={() => setCameraVisible(false)}
         />
       </Modal>
+
+      {/* Confirm Delete Dialog */}
+      <Dialog
+        isVisible={showDialogSettings}
+        onBackdropPress={() => setShowDialogSettings(false)}>
+        <Dialog.Title title="Camera" />
+        <Text>
+          To take meal photos, enable Camera access for Food Coach in Settings.
+        </Text>
+
+        <Dialog.Actions>
+          <Button
+            title="Open settings"
+            onPress={async () => {
+              setShowDialogSettings(false);
+              console.log('running after interacion');
+              await Linking.openURL(IOS_SETTINGS);
+            }}
+            titleStyle={styles.showSettingsText}
+            type="clear"
+            testID="confirm-delete"
+          />
+          <Button
+            title="Cancel"
+            type="clear"
+            titleStyle={styles.cancelSettingsText}
+            onPress={() => setShowDialogSettings(false)}
+            testID="cancel-delete"
+          />
+        </Dialog.Actions>
+      </Dialog>
     </View>
   );
 };

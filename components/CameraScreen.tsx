@@ -24,18 +24,6 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({
   onClose,
 }) => {
   const cameraRef = useRef<CameraRef | null>(null);
-  const [permission, requestPermission] = useCameraPermissions();
-
-  if (!permission?.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>Camera access is required</Text>
-        <TouchableOpacity onPress={requestPermission}>
-          <Text style={styles.permissionButton}>Grant Permission</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   const takePhoto = async () => {
     if (cameraRef.current) {
@@ -58,7 +46,12 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      <CameraView ref={cameraRef} style={styles.camera} facing={'back'} />
+      <CameraView
+        ref={cameraRef}
+        style={styles.camera}
+        facing={'back'}
+        autofocus={'on'}
+      />
 
       {/* Cancel button (top-right) */}
       <TouchableOpacity onPress={onClose} style={styles.closeButton}>
