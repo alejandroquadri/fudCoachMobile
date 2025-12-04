@@ -1,6 +1,6 @@
-import { useAuth, useSubscription } from '@hooks';
+import { useAuth, useNetwork, useSubscription } from '@hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { PayWallWrapper, SplashScreen } from '@screens';
+import { OfflineScreen, PayWallWrapper, LoadingScreen } from '@screens';
 import { OnboardingNavigator } from '@screens/onboarding';
 import { RootStackParamList } from '@types';
 import { DrawerNavigator } from './DrawerNavigator';
@@ -10,10 +10,12 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const RootStackNavigator = () => {
   const { loading: authLoading, userToken } = useAuth();
   const { status } = useSubscription();
+  const { online } = useNetwork();
 
   const loading = authLoading || status === 'checking';
 
-  if (loading) return <SplashScreen />;
+  if (loading) return <LoadingScreen />;
+  if (online === 'no') return <OfflineScreen />;
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

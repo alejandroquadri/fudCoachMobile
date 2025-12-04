@@ -11,6 +11,7 @@ import {
   shouldCheckNow,
   markChecked,
 } from '@utils';
+import NetInfo from '@react-native-community/netinfo';
 import {
   useIAP,
   Purchase,
@@ -37,6 +38,7 @@ type SubscriptionStatus = 'unknown' | 'checking' | 'active' | 'inactive';
 
 type SubscriptionContextType = {
   connected: boolean;
+  isOnline: boolean | null;
   status: SubscriptionStatus;
   purchasing: boolean;
   loadingProducts: boolean;
@@ -66,6 +68,7 @@ export const SubscriptionProvider = (props: {
   const [purchasing, setPurchasing] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [entitlement, setEntitlement] = useState<Entitlement | undefined>();
+  const [isOnline, setIsOnline] = useState<boolean | null>(null);
   const checkingRef = useRef(false);
 
   const { user } = useAuth();
@@ -290,6 +293,7 @@ export const SubscriptionProvider = (props: {
   const value = useMemo(
     () => ({
       connected,
+      isOnline,
       status,
       purchasing,
       loadingProducts,
@@ -300,7 +304,15 @@ export const SubscriptionProvider = (props: {
       checkSubscription: async (considerLastCheck?: boolean) =>
         checkSubscriptionStatus(considerLastCheck),
     }),
-    [connected, status, purchasing, loadingProducts, subscriptions, entitlement]
+    [
+      connected,
+      status,
+      purchasing,
+      loadingProducts,
+      subscriptions,
+      entitlement,
+      isOnline,
+    ]
   );
 
   return (

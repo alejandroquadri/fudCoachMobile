@@ -1,7 +1,7 @@
 import { COLORS } from '@theme';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-export const SplashScreen = () => {
+export const LoadingScreen = () => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color={COLORS.subText} />
