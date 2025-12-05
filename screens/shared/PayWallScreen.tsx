@@ -327,25 +327,3 @@ const payWallStyles = StyleSheet.create({
     color: COLORS.subText,
   },
 });
-
-// Inicio, aca tengo que buscar los productos
-// useEffect(() => {
-//   const fetchProds = async () => {
-//     console.log('got subscriptions?', subscriptions);
-//     try {
-//       // setLoadingProducts(true);
-//       // aca tengo que buscar los produtos.
-//       // Ojo que antes entraban directamente en subscriptions.
-//       // Ahora los voy a tener que meter por un state
-//       // await fetchProducts({
-//       //   skus: productsIds,
-//       //   type: 'subs',
-//       // });
-//     } catch {
-//       Alert.alert('Store error', 'Unable to load products.');
-//     } finally {
-//       // setLoadingProducts(false);
-//     }
-//   };
-//   fetchProds();
-// }, []);
