@@ -16,4 +16,5 @@ export type DrawerParamList = {
   Progress: undefined;
   Logs: undefined;
   Paywall: undefined;
+  Sources: undefined;
 };

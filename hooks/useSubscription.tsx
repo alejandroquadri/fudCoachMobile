@@ -31,10 +31,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert } from 'react-native';
 import { useAuth } from './useAuth';
 
 type SubscriptionStatus = 'unknown' | 'checking' | 'active' | 'inactive';
+type SubscriptionErrorType = 'validation' | 'processing' | 'purchase' | 'init';
+
+type SubscriptionError = {
+  type: SubscriptionErrorType;
+  message: string;
+};
 
 type SubscriptionContextType = {
   connected: boolean;
@@ -42,6 +47,8 @@ type SubscriptionContextType = {
   purchasing: boolean;
   loadingProducts: boolean;
   subscriptions: ProductSubscription[];
+  lastError: SubscriptionError | null;
+  clearError: () => void;
   requestPurchase: (subscriptionId: string) => Promise<void>;
   entitlement: Entitlement | undefined;
   checkSubscription: (considerLastCheck?: boolean) => Promise<void>;
@@ -67,7 +74,10 @@ export const SubscriptionProvider = (props: {
   const [purchasing, setPurchasing] = useState(false);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [entitlement, setEntitlement] = useState<Entitlement | undefined>();
+  const [lastError, setLastError] = useState<SubscriptionError | null>(null);
   const checkingRef = useRef(false);
+
+  const clearError = () => setLastError(null);
 
   const { user } = useAuth();
 
@@ -103,7 +113,7 @@ export const SubscriptionProvider = (props: {
         // Notify app logic (unlock access)
         setStatus('active');
         setEntitlement(res.entitlement);
-        // onSuccess(res.entitlement!);
+        setLastError(null);
         console.log('[IAP] purchase validated & finished successfully');
       } else {
         try {
@@ -112,12 +122,21 @@ export const SubscriptionProvider = (props: {
         } catch (err) {
           console.warn('[IAP] failed to finish invalid purchase', err);
         }
-        Alert.alert('Validation failed', 'Purchase could not be validated.');
+        // Alert.alert('Validation failed', 'Purchase could not be validated.');
+        setStatus('inactive');
+        setLastError({
+          type: 'validation',
+          message: 'Purchase could not be validated.',
+        });
         console.warn('[IAP] validation error', res.error);
       }
     } catch (error) {
       console.error('Error handling purchase:', error);
-      Alert.alert('Error', 'Failed to process purchase.');
+      // Alert.alert('Error', 'Failed to process purchase.');
+      setLastError({
+        type: 'processing',
+        message: 'Failed to process purchase. Please try again.',
+      });
     } finally {
       setPurchasing(false);
     }
@@ -126,7 +145,11 @@ export const SubscriptionProvider = (props: {
   // metodo que ejecuta una compra. vendra desde el paywall
   const handleRequestPurchase = async (subscriptionId: string) => {
     if (!connected) {
-      Alert.alert('Store unavailable', 'Please try again in a moment.');
+      // Alert.alert('Store unavailable', 'Please try again in a moment.');
+      setLastError({
+        type: 'init',
+        message: 'Store unavailable. Please try again in a moment.',
+      });
       return;
     }
     try {
@@ -196,6 +219,7 @@ export const SubscriptionProvider = (props: {
           await markChecked();
           setStatus('active');
           setEntitlement(validationRes.entitlement);
+          setLastError(null);
           return;
         } else {
           setStatus('inactive');
@@ -230,10 +254,14 @@ export const SubscriptionProvider = (props: {
       if (error.code === ErrorCode.UserCancelled) {
         return;
       }
-      Alert.alert(
-        'Purchase Error',
-        'Failed to complete purchase. Please try again.'
-      );
+      // Alert.alert(
+      //   'Purchase Error',
+      //   'Failed to complete purchase. Please try again.'
+      // );
+      setLastError({
+        type: 'purchase',
+        message: 'Failed to complete purchase. Please try again.',
+      });
       console.error('Purchase error:', error);
     },
   });
@@ -296,12 +324,22 @@ export const SubscriptionProvider = (props: {
       loadingProducts,
       subscriptions,
       entitlement,
+      lastError,
       requestPurchase: async (subscriptionId: string) =>
         handleRequestPurchase(subscriptionId),
       checkSubscription: async (considerLastCheck?: boolean) =>
         checkSubscriptionStatus(considerLastCheck),
+      clearError,
     }),
-    [connected, status, purchasing, loadingProducts, subscriptions, entitlement]
+    [
+      connected,
+      status,
+      purchasing,
+      loadingProducts,
+      subscriptions,
+      entitlement,
+      lastError,
+    ]
   );
 
   return (

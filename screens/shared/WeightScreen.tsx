@@ -1,10 +1,10 @@
-import { StepProgressBar } from '@components';
-import { Picker } from '@react-native-picker/picker';
-import { Button, Icon, Text } from '@rneui/themed';
-import { COLORS, SharedStyles } from '@theme';
-import { kgToLbs, lbsToKg } from '@utils';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { Button, Icon, Text } from '@rneui/themed';
+import { StepProgressBar } from '@components';
+import { COLORS, SharedStyles } from '@theme';
+import { kgToLbs, lbsToKg } from '@utils';
 
 const KG_START = 40;
 const KG_END = 139;

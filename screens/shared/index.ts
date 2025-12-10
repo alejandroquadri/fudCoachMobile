@@ -5,3 +5,4 @@ export * from './LifeStyleScreen';
 export * from './GenderScreen';
 export * from './ActivityLevelScreen';
 export * from './PayWallScreen';
+export * from './SourcesScreen';

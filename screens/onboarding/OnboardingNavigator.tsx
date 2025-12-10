@@ -21,6 +21,7 @@ import {
   LifeStyleScreen,
   WeightScreen,
   PaywallScreen,
+  SourcesScreen,
 } from '../shared';
 import { SignIn } from './SignInScreen';
 import { ChartToGoalScreen } from './ChartToGoalScreen';
@@ -62,6 +63,7 @@ export type OnboardingStackParamList = {
   PrepPlan: undefined;
   PayWall: undefined;
   SignUp: undefined;
+  Sources: undefined;
 };
 
 const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
@@ -164,7 +166,7 @@ export const OnboardingNavigator: FC = () => {
 
       const response = await appleLogin(
         appleIdToken as string,
-        false,
+        true,
         userData!
       );
 
@@ -217,6 +219,11 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
         <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
         <OnboardingStack.Screen name="SignIn" component={SignIn} />
+        <OnboardingStack.Screen
+          name="Sources"
+          component={SourcesScreen}
+          onBack={() => navigation.goBack()}
+        />
         <OnboardingStack.Screen name="Gender">
           {() => (
             <GenderScreen

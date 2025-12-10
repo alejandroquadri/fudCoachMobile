@@ -14,6 +14,9 @@ import { COLORS, SharedStyles } from '@theme';
 import { OnboardingState } from './context/OnboardingContext';
 import { userAPI } from '@api/AuthApi';
 import { NutritionGoals } from '@types'; // adjust if NutritionGoals lives elsewhere
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { OnboardingStackParamList } from './OnboardingNavigator';
 
 interface PrepPlanScreenProps {
   currentState: OnboardingState;
@@ -36,6 +39,12 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
   const [loading, setLoading] = useState(true);
   const [nutGoals, setNutGoals] = useState<NutritionGoals | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<OnboardingStackParamList>>();
+
+  const toSources = () => {
+    navigation.navigate('Sources');
+  };
 
   useEffect(() => {
     const fetchPlan = async () => {
@@ -127,7 +136,7 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
       </View>
 
       {/* Main Content */}
-      <View style={styles.content}>
+      <View style={[styles.content, loading && prepPlanStyles.loadingCont]}>
         {loading && (
           <>
             <Text style={styles.title}>
@@ -142,14 +151,21 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
         {!loading && nutGoals && (
           <>
             <Text style={styles.title}>Your personalized plan is ready 🎉</Text>
-            {/* If you have goal target text, add it here */}
-            {/* <Text style={styles.subtitle}>You should lose: 6 kg by February 21</Text> */}
             {renderMacrosChart()}
+            <Button
+              type="clear"
+              buttonStyle={prepPlanStyles.sourcesButton}
+              onPress={toSources}>
+              <Icon name="info" color={COLORS.accentColor} />
+              <Text style={prepPlanStyles.sourcesButtonText}>
+                {' '}
+                sources & methodology
+              </Text>
+            </Button>
           </>
         )}
       </View>
 
-      {/* Bottom Button */}
       {!loading && nutGoals && (
         <Button
           title="Let's get started!"
@@ -163,6 +179,7 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
 };
 
 const prepPlanStyles = StyleSheet.create({
+  loadingCont: { flex: 1, flexDirection: 'column', justifyContent: 'center' },
   card: { borderRadius: 16 },
   cardTitle: { textAlign: 'center', fontWeight: 'bold', marginBottom: 16 },
   pieChartText: { fontSize: 18, fontWeight: 'bold' },
@@ -174,4 +191,10 @@ const prepPlanStyles = StyleSheet.create({
   labelContainer: { alignItems: 'center' },
   textValue: { fontWeight: 'bold' },
   errorText: { color: 'red', textAlign: 'center' },
+  sourcesButtonText: {
+    color: COLORS.accentColor,
+  },
+  sourcesButton: {
+    marginTop: 20,
+  },
 });

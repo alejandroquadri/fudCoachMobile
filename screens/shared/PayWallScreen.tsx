@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Image,
   Linking,
   ScrollView,
@@ -17,6 +18,7 @@ import { ProductSubscription } from 'expo-iap';
 import { PRODUCTS_IDS, useAuth, useSubscription } from '@hooks';
 import { COLORS, SharedStyles } from '@theme';
 import { Entitlement } from '@types';
+import { useIsFocused } from '@react-navigation/native';
 
 type PaywallProps = {
   onSuccess: (entitlement: Entitlement) => void;
@@ -40,7 +42,7 @@ const PRODUCTS_METADATA: SubscirptionMetadaType = {
   },
   anual_plan: {
     displayTitle: 'Yearly Plan',
-    displaySubTitle: 'USD 39.99 per week',
+    displaySubTitle: 'USD 39.99 per year',
   },
 };
 
@@ -76,7 +78,7 @@ export const PaywallScreen = ({
 }: PaywallProps) => {
   const styles = SharedStyles();
 
-  const [selectedSku, setSelectedSku] = useState<string | null>(null);
+  const isFocused = useIsFocused();
   const { signOut } = useAuth();
 
   const {
@@ -87,7 +89,30 @@ export const PaywallScreen = ({
     requestPurchase,
     entitlement,
     checkSubscription,
+    lastError,
+    clearError,
   } = useSubscription();
+
+  const [selectedSku, setSelectedSku] = useState<string | null>(null);
+  const alertShownRef = useRef(false);
+
+  useEffect(() => {
+    if (!isFocused) return;
+    if (!lastError) return;
+    if (alertShownRef.current) return;
+
+    alertShownRef.current = true;
+
+    Alert.alert('Subscription Error', lastError.message, [
+      {
+        text: 'Ok',
+        onPress: () => {
+          alertShownRef.current = false;
+          clearError();
+        },
+      },
+    ]);
+  }, [lastError, isFocused]);
 
   // Esto para que elija la primera opcion por default
   useEffect(() => {

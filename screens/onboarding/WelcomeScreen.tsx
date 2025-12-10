@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useOnboarding } from './context/OnboardingContext';
-import { Button, Divider } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { OnboardingStackParamList } from './OnboardingNavigator';
+import { Button } from '@rneui/themed';
 import { COLORS, SharedStyles } from '@theme';
 import { wipeSecureStore } from '@utils';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { OnboardingStackParamList } from './OnboardingNavigator';
+import { useOnboarding } from './context/OnboardingContext';
 
-export const WelcomeScreen: FC = () => {
+export const WelcomeScreen = () => {
   const styles = SharedStyles();
   const { dispatch } = useOnboarding();
   const navigation =
@@ -20,6 +20,10 @@ export const WelcomeScreen: FC = () => {
 
   const handleLogin = () => {
     navigation.navigate('SignIn');
+  };
+
+  const toSources = () => {
+    navigation.navigate('Sources');
   };
 
   const wipeSecureStoreKeys = async () => {
@@ -70,6 +74,14 @@ export const WelcomeScreen: FC = () => {
         {/*   buttonStyle={welcomeStyles.wipeButton} */}
         {/*   titleStyle={welcomeStyles.wipeButtonText} */}
         {/*   onPress={wipeSecureStoreKeys} */}
+        {/* /> */}
+
+        {/* <Button */}
+        {/*   title="see sources" */}
+        {/*   type="clear" */}
+        {/*   buttonStyle={welcomeStyles.wipeButton} */}
+        {/*   titleStyle={welcomeStyles.wipeButtonText} */}
+        {/*   onPress={toSources} */}
         {/* /> */}
       </View>
     </ScrollView>
