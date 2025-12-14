@@ -7,7 +7,7 @@ import { Chat, LogScreen, ProgressScreen, SourcesScreen } from '@screens';
 import { ConfigStack } from '@screens/config-stack/ConfigStack';
 import { COLORS } from '@theme';
 import { DrawerParamList } from '@types';
-import { TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Icon } from '@rneui/themed';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -28,7 +28,7 @@ export const DrawerNavigator = () => {
           headerRight: () => (
             <TouchableOpacity
               onPress={() => navigation.navigate('Sources')}
-              style={{ paddingRight: 12 }}>
+              style={drawerStyles.sourcesIconStyle}>
               <Icon
                 name="info"
                 type="feather"
@@ -57,3 +57,9 @@ export const DrawerNavigator = () => {
     </Drawer.Navigator>
   );
 };
+
+const drawerStyles = StyleSheet.create({
+  sourcesIconStyle: {
+    paddingRight: 12,
+  },
+});

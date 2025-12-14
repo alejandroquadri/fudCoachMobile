@@ -1,4 +1,3 @@
-// import { COLORS } from '@theme';
 import { COLORS } from '@theme';
 import { StyleSheet } from 'react-native';
 
