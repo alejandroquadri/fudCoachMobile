@@ -4,6 +4,7 @@ import {
 } from '@services';
 import { Entitlement } from '@types';
 import {
+  ensureProcessedLineagesLoaded,
   isNewTransaction,
   logPurchaseSummary,
   markTransactionProcessed,
@@ -15,6 +16,7 @@ import {
   useIAP,
   Purchase,
   ErrorCode,
+  getAvailablePurchases,
   PurchaseIOS,
   ProductSubscription,
 } from 'expo-iap';
@@ -49,6 +51,7 @@ type SubscriptionContextType = {
   requestPurchase: (subscriptionId: string) => Promise<void>;
   entitlement: Entitlement | undefined;
   checkSubscription: (considerLastCheck?: boolean) => Promise<void>;
+  restorePurchases: () => Promise<void>;
 };
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(
@@ -73,53 +76,62 @@ export const SubscriptionProvider = (props: {
   const [entitlement, setEntitlement] = useState<Entitlement | undefined>();
   const [lastError, setLastError] = useState<SubscriptionError | null>(null);
   const checkingRef = useRef(false);
+  const processingTransactionIdsRef = useRef(new Set<string>());
 
   const clearError = () => setLastError(null);
 
   const { user, loading: authLoading, refreshUser } = useAuth();
 
   // proceso todas las compras que vienen de Store Kit (del telefono)
-  const handlePurchaseUpdate = async (purchase: PurchaseIOS) => {
+  const handlePurchaseUpdate = async (
+    purchase: PurchaseIOS,
+    { finish }: { finish: boolean }
+  ) => {
     // Log compact info
     logPurchaseSummary(purchase);
+    await ensureProcessedLineagesLoaded();
 
-    // 1️⃣ Ignore any transaction we've already handled
-    if (!isNewTransaction(purchase)) {
-      console.log('[IAP] duplicate / historical transaction, finishing only');
-      try {
-        await finishTransaction({ purchase });
-      } catch (err) {
-        console.warn('finishTransaction failed for historical txn', err);
-      }
+    const transactionId = purchase.transactionId || purchase.id;
+    if (processingTransactionIdsRef.current.has(transactionId)) {
+      console.log(
+        '[IAP] transaction is already being processed:',
+        transactionId
+      );
       return;
     }
 
-    // 2️⃣ This is the latest transaction for this subscription
+    // Ignore events that were already validated and finished on this device.
+    if (!isNewTransaction(purchase)) {
+      console.log('[IAP] duplicate / historical transaction, ignoring');
+      return;
+    }
+
+    processingTransactionIdsRef.current.add(transactionId);
     console.log('[IAP] new transaction detected, validating new purchase obj');
 
     try {
       const res = await validateIOSPurchaseSubscription(purchase);
 
       if (res.ok) {
-        // Mark lineage processed so renewals are ignored later
+        if (finish) {
+          // Finish only after server validation succeeds.
+          await finishTransaction({ purchase });
+        }
+
+        // A restored purchase was already completed by StoreKit. For a live
+        // purchase, reaching here means finishTransaction succeeded.
         await markTransactionProcessed(purchase);
 
-        // Finish transaction so StoreKit stops replaying it
-        await finishTransaction({ purchase });
-
-        // Notify app logic (unlock access)
         setStatus('active');
         setEntitlement(res.entitlement);
         setLastError(null);
-        console.log('[IAP] purchase validated & finished successfully');
+        console.log(
+          finish
+            ? '[IAP] purchase validated & finished successfully'
+            : '[IAP] restored purchase validated successfully'
+        );
       } else {
-        try {
-          await finishTransaction({ purchase });
-          console.log('[IAP] finished tx ', purchase.id);
-        } catch (err) {
-          console.warn('[IAP] failed to finish invalid purchase', err);
-        }
-        // Alert.alert('Validation failed', 'Purchase could not be validated.');
+        // Leave an unverified transaction unfinished so it can be retried.
         setStatus('inactive');
         setLastError({
           type: 'validation',
@@ -135,6 +147,7 @@ export const SubscriptionProvider = (props: {
         message: 'Failed to process purchase. Please try again.',
       });
     } finally {
+      processingTransactionIdsRef.current.delete(transactionId);
       setPurchasing(false);
     }
   };
@@ -238,16 +251,57 @@ export const SubscriptionProvider = (props: {
     }
   };
 
+  const handleRestorePurchases = async () => {
+    if (!connected) {
+      setLastError({
+        type: 'init',
+        message: 'Store unavailable. Please try again in a moment.',
+      });
+      return;
+    }
+
+    try {
+      setPurchasing(true);
+      await restorePurchases();
+      const purchases = await getAvailablePurchases({
+        alsoPublishToEventListenerIOS: false,
+        onlyIncludeActiveItemsIOS: true,
+      });
+
+      for (const purchase of purchases) {
+        if (
+          purchase.platform === 'ios' &&
+          PRODUCTS_IDS.includes(purchase.productId)
+        ) {
+          await handlePurchaseUpdate(purchase as PurchaseIOS, {
+            finish: false,
+          });
+        }
+      }
+
+      await checkSubscriptionStatus();
+    } catch (error) {
+      console.error('Restore purchases failed:', error);
+      setLastError({
+        type: 'processing',
+        message: 'Unable to restore purchases. Please try again.',
+      });
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
   const {
     connected,
     subscriptions,
     fetchProducts,
     requestPurchase,
     finishTransaction,
+    restorePurchases,
   } = useIAP({
     onPurchaseSuccess: async (purchase: Purchase) => {
       if (!connected) return;
-      await handlePurchaseUpdate(purchase as PurchaseIOS);
+      await handlePurchaseUpdate(purchase as PurchaseIOS, { finish: true });
     },
     onPurchaseError: error => {
       setPurchasing(false);
@@ -321,6 +375,7 @@ export const SubscriptionProvider = (props: {
         handleRequestPurchase(subscriptionId),
       checkSubscription: async (considerLastCheck?: boolean) =>
         checkSubscriptionStatus(considerLastCheck),
+      restorePurchases: handleRestorePurchases,
       clearError,
     }),
     [

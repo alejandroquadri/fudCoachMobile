@@ -88,7 +88,7 @@ export const PaywallScreen = ({
     subscriptions,
     requestPurchase,
     entitlement,
-    checkSubscription,
+    restorePurchases,
     lastError,
     clearError,
   } = useSubscription();
@@ -143,10 +143,7 @@ export const PaywallScreen = ({
   };
 
   const onRestore = async () => {
-    const checkRet = async () => {
-      await checkSubscription();
-    };
-    checkRet();
+    await restorePurchases();
   };
 
   const bySkuOrder = (a: ProductSubscription, b: ProductSubscription) => {

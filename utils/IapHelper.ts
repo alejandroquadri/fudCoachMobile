@@ -16,7 +16,9 @@ type LineageCheckpoint = {
 };
 const processedLineages = new Map<string, LineageCheckpoint>();
 
-/** Load persisted map from SecureStore */
+let processedLineagesLoadPromise: Promise<void> | undefined;
+
+/** Load persisted map once before deciding whether an event is new. */
 export const loadProcessedLineages = async () => {
   try {
     const json = await SecureStore.getItemAsync(STORAGE_KEY);
@@ -31,6 +33,13 @@ export const loadProcessedLineages = async () => {
   } catch (err) {
     console.warn('[IAP] failed to load lineage checkpoints', err);
   }
+};
+
+export const ensureProcessedLineagesLoaded = () => {
+  if (!processedLineagesLoadPromise) {
+    processedLineagesLoadPromise = loadProcessedLineages();
+  }
+  return processedLineagesLoadPromise;
 };
 
 /** Persist map to SecureStore */
