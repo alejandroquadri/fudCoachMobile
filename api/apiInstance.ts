@@ -18,7 +18,6 @@ api.interceptors.request.use(
     // Fetch the token from SecureStorer
     const token = await SecureStore.getItemAsync('userToken');
 
-    console.log('token de acceso:', token);
     // If the token exists, set it in the headers
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

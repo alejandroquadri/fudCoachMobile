@@ -12,7 +12,9 @@ export const RootStackNavigator = () => {
   const { status } = useSubscription();
   const { online } = useNetwork();
 
-  const loading = authLoading || status === 'checking';
+  const loading =
+    authLoading ||
+    (userToken != null && (status === 'unknown' || status === 'checking'));
 
   if (loading) return <LoadingScreen />;
   if (online === 'no') return <OfflineScreen />;
@@ -21,10 +23,7 @@ export const RootStackNavigator = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {userToken == null ? (
         <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
-      ) : // hago que cuando esta unknown tambien permita acceder a la app
-      // para mejorar la UX. Igualmente luego rapidamente va a decidir si es
-      // active, inactive o  checking
-      status === 'active' || status === 'unknown' ? (
+      ) : status === 'active' ? (
         // logged in and subscription ok
         <Stack.Screen name="App" component={DrawerNavigator} />
       ) : (

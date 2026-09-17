@@ -1,5 +1,5 @@
 import { userAPI } from '@api';
-import { UserProfile } from '@types';
+import { RegistrationUserInput, UserProfile } from '@types';
 import { Alert } from 'react-native';
 
 type AppleLoginResponse = {
@@ -23,7 +23,7 @@ const isValidAppleLoginResponse = (
 export const appleLogin = async (
   credential: string,
   register: boolean,
-  userData: Partial<UserProfile>
+  userData?: Partial<RegistrationUserInput>
 ): Promise<{
   token: string;
   refreshToken: string;

@@ -20,7 +20,6 @@ import {
   HeightScreen,
   LifeStyleScreen,
   WeightScreen,
-  PaywallScreen,
   SourcesScreen,
 } from '../shared';
 import { SignIn } from './SignInScreen';
@@ -37,7 +36,7 @@ import { PrepPlanScreen } from './PrepPlanScreen';
 import { SignUpScreen } from './SignUpScreen';
 import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
 import { WelcomeScreen } from './WelcomeScreen';
-import { UserProfile } from '@types';
+import { RegistrationUserInput, UserProfile } from '@types';
 import { appleLogin, createInitialNotificatinJobs } from '@services';
 
 export type OnboardingStackParamList = {
@@ -61,7 +60,6 @@ export type OnboardingStackParamList = {
   Outcome: undefined;
   ChartToGoal: undefined;
   PrepPlan: undefined;
-  PayWall: undefined;
   SignUp: undefined;
   Sources: undefined;
 };
@@ -70,7 +68,6 @@ const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
 
 const steps = [
   'Welcome',
-  // 'PayWall',
   'Gender',
   'LifeStyle',
   'ActivityLevel',
@@ -89,7 +86,6 @@ const steps = [
   'Outcome',
   'ChartToGoal',
   'PrepPlan',
-  'PayWall',
   'SignUp',
 ] as const;
 
@@ -98,121 +94,94 @@ export const OnboardingNavigator: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<OnboardingStackParamList>>();
 
-  const [appleIdToken, setAppleIdToken] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false); // 👈 NEW
+  const [submitting, setSubmitting] = useState(false);
 
   const { signUp } = useAuth();
 
-  const registerData = async () => {
-    if (submitting) return; // 👈 prevent double-fire
-    setSubmitting(true);
+  const buildRegistrationData = (
+    overrides: Partial<RegistrationUserInput>
+  ): RegistrationUserInput => {
+    const registrationData: Partial<UserProfile> & {
+      onboardingStep?: number;
+    } = { ...state, ...overrides };
+    delete registrationData.onboardingStep;
+    delete registrationData._id;
+    delete registrationData.createdAt;
+    delete registrationData.updatedAt;
+    delete registrationData.providers;
+    delete registrationData.appleSub;
+    delete registrationData.appleEmailPrivateRelay;
+    delete registrationData.appAccountToken;
+    delete registrationData.entitlement;
+    delete registrationData.deliveredWelcome;
+    return registrationData as RegistrationUserInput;
+  };
+
+  const completeAccountCreation = async (response: {
+    token: string;
+    refreshToken: string;
+    user: UserProfile;
+  }) => {
+    const { token, refreshToken, user } = response;
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    await signUp(token, refreshToken, user);
+    dispatch({ type: 'RESET' });
+
     try {
-      if (appleIdToken !== null) {
-        await appleSignUp();
-      } else {
-        await registerEmailPass();
-      }
-    } finally {
-      setSubmitting(false);
+      await createInitialNotificatinJobs(user._id);
+    } catch (error) {
+      console.warn('Unable to initialize notification jobs', error);
     }
   };
 
-  const registerEmailPass = async () => {
+  const registerEmailPass = async (
+    name: string,
+    email: string,
+    password: string
+  ) => {
+    if (submitting) return;
+    setSubmitting(true);
     try {
-      const { onboardingStep, ...userData } = state as {
-        onboardingStep: number;
-      } & UserProfile;
-
+      const userData = buildRegistrationData({ name, email, password });
       const response = await userAPI.register(userData);
-
-      const { token, refreshToken, user } = response;
-
-      // 🔑 Prime axios with the token before making any protected calls
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
-      // Registro jobs de notifications
-      await createInitialNotificatinJobs(response.user._id);
-      dispatch({ type: 'RESET' });
-      signUp(token, refreshToken, user);
+      await completeAccountCreation(response);
     } catch (error) {
       console.log(error);
       Alert.alert(
         'Sign Up',
         'Could not complete email sign up. Please try again.'
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  // const appleSignUp = async (idToken: string, name: string, email: string) => {
-  const appleSignUp = async () => {
+  const appleSignUp = async (idToken: string, name: string, email: string) => {
+    if (submitting) return;
+    setSubmitting(true);
     try {
-      // Build full userData from onboarding state
-      const { onboardingStep, ...base } = state as {
-        onboardingStep: number;
-      } & UserProfile;
-
-      const userData: UserProfile = {
-        ...(base as UserProfile),
-        name: base.name,
-        email: (base.email || '').toLowerCase(),
-      };
-
-      // const response = await userAPI.loginApple(
-      //   appleIdToken as string,
-      //   true,
-      //   userData
-      // );
-      //
-      // const { token, refreshToken, user } = response;
-
-      const response = await appleLogin(
-        appleIdToken as string,
-        true,
-        userData!
-      );
-
-      const { token, refreshToken, user } = response!;
-
-      // 🔑 Prime axios with the token before making any protected calls
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
-      // Registro jobs de notifications
-      await createInitialNotificatinJobs(user._id);
-
-      dispatch({ type: 'RESET' });
-      signUp(token, refreshToken, user);
+      const userData = buildRegistrationData({
+        name,
+        email: email.toLowerCase(),
+      });
+      const response = await appleLogin(idToken, true, userData);
+      if (response) await completeAccountCreation(response);
     } catch (e) {
       Alert.alert(
         'Sign Up',
         'Could not complete Apple sign up. Please try again.'
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
   useEffect(() => {
-    if (state.onboardingStep >= steps.length) {
-      registerData();
-      return;
-    }
+    if (state.onboardingStep >= steps.length) return;
 
     const nextScreen = steps[state.onboardingStep];
     navigation.navigate(nextScreen);
   }, [state.onboardingStep, navigation]);
-
-  // inside OnboardingNavigator component
-  const isOnPaywall = () => {
-    const getActiveRoute = (navState: any): string | null => {
-      if (!navState) return null;
-      const route = navState.routes?.[navState.index];
-      if (!route) return null;
-      // if it has nested state, recurse until we find the deepest active one
-      return route.state ? getActiveRoute(route.state) : route.name;
-    };
-
-    const rootState = navigation.getState?.();
-    const current = getActiveRoute(rootState);
-
-    console.log('[isOnPaywall] current route:', current);
-    return current === 'PayWall';
-  };
 
   return (
     <>
@@ -570,68 +539,14 @@ export const OnboardingNavigator: FC = () => {
             />
           )}
         </OnboardingStack.Screen>
-        <OnboardingStack.Screen name="PayWall">
-          {() => (
-            <PaywallScreen
-              onSuccess={entitlement => {
-                if (!isOnPaywall()) {
-                  console.log('[IAP] success received off-screen, ignoring');
-                  return;
-                }
-                dispatch({
-                  type: 'UPDATE_FIELD',
-                  field: 'entitlement',
-                  value: entitlement,
-                });
-                dispatch({ type: 'NEXT_STEP' });
-              }}
-              onBack={() => dispatch({ type: 'PREV_STEP' })}
-              showProgressBar
-              step={20}
-              modal={false}
-              totalSteps={steps.length}
-            />
-          )}
-        </OnboardingStack.Screen>
         <OnboardingStack.Screen name="SignUp">
           {() => (
             <SignUpScreen
-              onSave={(name, email, password) => {
-                setAppleIdToken(null);
-                dispatch({
-                  type: 'UPDATE_FIELD',
-                  field: 'name',
-                  value: name,
-                });
-                dispatch({
-                  type: 'UPDATE_FIELD',
-                  field: 'email',
-                  value: email,
-                });
-                dispatch({
-                  type: 'UPDATE_FIELD',
-                  field: 'password',
-                  value: password,
-                });
-                dispatch({ type: 'NEXT_STEP' });
-              }}
-              onApple={(idToken, name, email) => {
-                setAppleIdToken(idToken);
-                dispatch({
-                  type: 'UPDATE_FIELD',
-                  field: 'name',
-                  value: name,
-                });
-                dispatch({
-                  type: 'UPDATE_FIELD',
-                  field: 'email',
-                  value: email,
-                });
-                dispatch({ type: 'NEXT_STEP' });
-              }}
+              onSave={registerEmailPass}
+              onApple={appleSignUp}
               onBack={() => dispatch({ type: 'PREV_STEP' })}
               showProgressBar
-              step={21}
+              step={20}
               totalSteps={steps.length}
             />
           )}

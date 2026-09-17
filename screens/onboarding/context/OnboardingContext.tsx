@@ -1,4 +1,4 @@
-import { Entitlement, NutritionGoals, UserProfile } from '@types';
+import { NutritionGoals, UserProfile } from '@types';
 import React, { createContext, useReducer, useContext, ReactNode } from 'react';
 
 export interface OnboardingState extends Partial<UserProfile> {
@@ -9,7 +9,7 @@ type Action =
   | {
       type: 'UPDATE_FIELD';
       field: keyof OnboardingState;
-      value: string | number | boolean | NutritionGoals | Entitlement;
+      value: string | number | boolean | NutritionGoals;
     }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }

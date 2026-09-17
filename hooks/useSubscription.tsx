@@ -1,10 +1,9 @@
 import {
-  validateIOSActiveSubscription,
+  getIOSSubscriptionEntitlement,
   validateIOSPurchaseSubscription,
 } from '@services';
 import { Entitlement } from '@types';
 import {
-  loadProcessedLineages,
   isNewTransaction,
   logPurchaseSummary,
   markTransactionProcessed,
@@ -17,9 +16,7 @@ import {
   Purchase,
   ErrorCode,
   PurchaseIOS,
-  getAvailablePurchases,
   ProductSubscription,
-  getActiveSubscriptions,
 } from 'expo-iap';
 import React, {
   ReactElement,
@@ -79,7 +76,7 @@ export const SubscriptionProvider = (props: {
 
   const clearError = () => setLastError(null);
 
-  const { user } = useAuth();
+  const { user, loading: authLoading, refreshUser } = useAuth();
 
   // proceso todas las compras que vienen de Store Kit (del telefono)
   const handlePurchaseUpdate = async (purchase: PurchaseIOS) => {
@@ -103,7 +100,7 @@ export const SubscriptionProvider = (props: {
     try {
       const res = await validateIOSPurchaseSubscription(purchase);
 
-      if (res.ok === true) {
+      if (res.ok) {
         // Mark lineage processed so renewals are ignored later
         await markTransactionProcessed(purchase);
 
@@ -152,10 +149,23 @@ export const SubscriptionProvider = (props: {
       });
       return;
     }
+    if (!user?.appAccountToken) {
+      setLastError({
+        type: 'init',
+        message:
+          'Your account is not ready for purchases. Please sign in again.',
+      });
+      return;
+    }
     try {
       setPurchasing(true);
       await requestPurchase({
-        request: { ios: { sku: subscriptionId } },
+        request: {
+          ios: {
+            sku: subscriptionId,
+            appAccountToken: user.appAccountToken,
+          },
+        },
         type: 'subs',
       });
       // Result comes via onPurchaseSuccess/onPurchaseError
@@ -186,21 +196,8 @@ export const SubscriptionProvider = (props: {
       console.log('[IAP] Do not need to consider last check');
     }
 
-    // entitlement shortcut
-    const grant = user?.entitlement?.grant;
-    if (grant) {
-      const stillValid =
-        !grant.untilISO || new Date(grant.untilISO).getTime() > Date.now();
-      if (stillValid) {
-        console.log('[IAP] tiene grant valido');
-        await markChecked();
-        setStatus('active');
-        return;
-      }
-    }
-
-    if (!connected) {
-      console.log('[IAP] skipping not connected');
+    if (authLoading || !user) {
+      setStatus('unknown');
       return;
     }
 
@@ -208,29 +205,33 @@ export const SubscriptionProvider = (props: {
     setStatus('checking');
     checkingRef.current = true;
     try {
-      const activeSubs = await getActiveSubscriptions();
-      console.log('[IAP] tengo estas active subs', activeSubs);
-      const activeSub = activeSubs?.find(s => s.isActive);
-      if (activeSub) {
-        console.log('[IAP] start to validate subscirption');
-        const validationRes = await validateIOSActiveSubscription(activeSub);
-        if (validationRes?.ok) {
-          console.log('[IAP] subscription validated');
-          await markChecked();
-          setStatus('active');
-          setEntitlement(validationRes.entitlement);
-          setLastError(null);
-          return;
-        } else {
-          setStatus('inactive');
-        }
+      const validationRes = await getIOSSubscriptionEntitlement();
+      if (
+        validationRes.appAccountToken &&
+        validationRes.appAccountToken !== user.appAccountToken
+      ) {
+        await refreshUser({
+          ...user,
+          appAccountToken: validationRes.appAccountToken,
+          entitlement: validationRes.entitlement,
+        });
+      }
+      if (validationRes.ok && validationRes.entitlement?.active) {
+        await markChecked();
+        setStatus('active');
+        setEntitlement(validationRes.entitlement);
+        setLastError(null);
       } else {
-        // No entitlement known
-        console.log('[IAP] no tengo active sub, setting to inactive');
         setStatus('inactive');
+        setEntitlement(validationRes.entitlement);
       }
     } catch (error) {
       console.warn('[SUB] check failed', error);
+      setStatus('inactive');
+      setLastError({
+        type: 'validation',
+        message: 'Unable to check your subscription. Please try again.',
+      });
     } finally {
       checkingRef.current = false;
       setPurchasing(false);
@@ -277,25 +278,6 @@ export const SubscriptionProvider = (props: {
     }
     console.log('[IAP] conectado');
 
-    // NOTE: termino transacciones viejas que hayan quedado
-    const cleanTx = async () => {
-      // 1️⃣ Load checkpoints first
-      await loadProcessedLineages();
-
-      // 2️⃣ Then clean & fetch products
-      try {
-        const pending = await getAvailablePurchases();
-        for (const p of pending) {
-          if (!isNewTransaction(p as PurchaseIOS)) {
-            console.log('[IAP] cleaning old txn on startup:', p.id);
-            await finishTransaction({ purchase: p });
-          }
-        }
-      } catch (err) {
-        console.warn('Error cleaning old transactions', err);
-      }
-    };
-
     // Busco skus disponibles
     const fetchSubscriptions = async () => {
       try {
@@ -311,10 +293,20 @@ export const SubscriptionProvider = (props: {
         setLoadingProducts(false);
       }
     };
-    cleanTx();
-    checkSubscriptionStatus();
     fetchSubscriptions();
   }, [connected, fetchProducts]);
+
+  useEffect(() => {
+    setEntitlement(undefined);
+    setLastError(null);
+
+    if (authLoading || !user?._id) {
+      setStatus('unknown');
+      return;
+    }
+
+    checkSubscriptionStatus();
+  }, [authLoading, user?._id]);
 
   const value = useMemo(
     () => ({

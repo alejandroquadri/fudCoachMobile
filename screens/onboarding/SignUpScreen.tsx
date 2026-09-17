@@ -15,7 +15,11 @@ import { Button, Icon, Input } from '@rneui/themed';
 import { COLORS, SharedStyles } from '@theme';
 
 interface SignUpProps {
-  onSave: (name: string, email: string, password: string) => void;
+  onSave: (
+    name: string,
+    email: string,
+    password: string
+  ) => Promise<void> | void;
   onBack: () => void;
   onApple?: (
     idToken: string,
@@ -97,7 +101,7 @@ export const SignUpScreen = ({
       return;
     }
 
-    onSave(name, email, password);
+    await onSave(name, email, password);
   };
 
   const fullNameToString = (

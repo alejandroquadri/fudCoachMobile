@@ -1,7 +1,6 @@
-import { useAuth, useSubscription } from '@hooks';
+import { useAuth } from '@hooks';
 import { PaywallScreen } from '@screens/shared';
-import { updateProfile } from '@services';
-import { Entitlement } from '@types';
+import { getProfile } from '@services';
 
 export const PayWallWrapper = () => {
   const { user, refreshUser } = useAuth();
@@ -11,13 +10,10 @@ export const PayWallWrapper = () => {
     return null; // prevents crash
   }
 
-  const refresh = async (entitlement: Entitlement) => {
-    console.log('get new entitlement on the wrapper', entitlement);
+  const refresh = async () => {
     try {
-      const updated = { ...user, entitlement };
-      await updateProfile(updated);
-      console.log('entitlement saved in profile');
-      await refreshUser(updated);
+      const freshUser = await getProfile(user._id);
+      await refreshUser(freshUser);
     } catch (e) {
       console.log(e);
     }

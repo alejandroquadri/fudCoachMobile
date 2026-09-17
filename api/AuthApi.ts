@@ -1,10 +1,10 @@
 import { OnboardingState } from '@screens';
-import { NutritionGoals, UserProfile } from '../types';
+import { NutritionGoals, RegistrationUserInput, UserProfile } from '../types';
 import { api } from './ApiInstance';
 
 export const userAPI = {
   register: (
-    user: UserProfile
+    user: RegistrationUserInput
   ): Promise<{
     user: UserProfile;
     token: string;
@@ -19,14 +19,11 @@ export const userAPI = {
   loginApple: (
     idToken: string,
     register: boolean,
-    userData?: Partial<UserProfile>
+    userData?: Partial<RegistrationUserInput>
   ): Promise<{ user: UserProfile; token: string; refreshToken: string }> =>
     api
       .post('/users/login-apple', { idToken, userData, register })
       .then(response => response.data),
-
-  getProfile: (id: string): Promise<UserProfile> =>
-    api.post('/users/get-user-by-id', { id }).then(response => response.data),
 
   calculatePlan: (userData: OnboardingState): Promise<NutritionGoals> =>
     api
