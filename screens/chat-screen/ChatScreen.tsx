@@ -98,7 +98,7 @@ export const Chat = () => {
         await ensurePushTokenSynced(user._id, { requestIfDenied: true });
         console.log(user._id);
         const prevMessages = await fetchPreviousMessages(user._id);
-        console.log(prevMessages);
+        // console.log(prevMessages);
         if (prevMessages === null) {
           Alert.alert('Error', 'Could not load previous messages');
         } else {
