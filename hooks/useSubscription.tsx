@@ -174,7 +174,7 @@ export const SubscriptionProvider = (props: {
       setPurchasing(true);
       await requestPurchase({
         request: {
-          ios: {
+          apple: {
             sku: subscriptionId,
             appAccountToken: user.appAccountToken,
           },
@@ -270,7 +270,7 @@ export const SubscriptionProvider = (props: {
 
       for (const purchase of purchases) {
         if (
-          purchase.platform === 'ios' &&
+          purchase.store === 'apple' &&
           PRODUCTS_IDS.includes(purchase.productId)
         ) {
           await handlePurchaseUpdate(purchase as PurchaseIOS, {

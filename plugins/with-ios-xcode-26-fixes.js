@@ -1,18 +1,12 @@
 const { withPodfile, withXcodeProject } = require('expo/config-plugins');
 
-const OPENIAP_VERSION = '1.2.32';
-
 module.exports = function withIosXcode26Fixes(config, options = {}) {
   config = withPodfile(config, (podfileConfig) => {
     let contents = podfileConfig.modResults.contents;
 
-    // expo-iap 3.1.26 expects APIs from OpenIAP 1.2.32 that were removed by
-    // later 1.2.x releases. Pin the pod instead of accepting `~> 1.2.32`.
+    // Remove the old Expo-IAP 3.x workaround. Current Expo-IAP declares the
+    // matching OpenIAP native dependency through its own podspec.
     contents = contents.replace(/^\s*pod 'openiap'.*\n/gm, '');
-    contents = contents.replace(
-      /^(\s*use_expo_modules!\s*)$/m,
-      `$1\n  pod 'openiap', '${OPENIAP_VERSION}'`,
-    );
 
     // React Native 0.76 bundles fmt 11.0.2, whose consteval detection fails
     // with the Apple Clang toolchain shipped in Xcode 26.

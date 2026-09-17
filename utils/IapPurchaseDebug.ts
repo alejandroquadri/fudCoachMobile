@@ -46,7 +46,7 @@ export const toSanitizedPurchase = (p: Purchase): SanitizedPurchase => {
   const base: SanitizedPurchase = {
     id: p.id,
     productId: p.productId,
-    platform: p.platform,
+    platform: p.store === 'apple' ? 'ios' : 'android',
     purchaseState: p.purchaseState,
     transactionId: (p as any).transactionId ?? undefined,
     transactionDateMs: p.transactionDate,
@@ -54,7 +54,7 @@ export const toSanitizedPurchase = (p: Purchase): SanitizedPurchase => {
     isAutoRenewing: p.isAutoRenewing,
   };
 
-  if (p.platform === 'ios') {
+  if (p.store === 'apple') {
     const pi = p as any;
     base.environmentIOS = pi.environmentIOS;
     base.expirationDateMsIOS = pi.expirationDateIOS ?? undefined;
