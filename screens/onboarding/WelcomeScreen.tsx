@@ -44,7 +44,7 @@ export const WelcomeScreen = () => {
           Welcome to Food Coach!
         </Text>
         <Text style={[styles.subtitle, welcomeStyles.titleAlign]}>
-          Let's get started on your goals!
+          {"Let's"} get started on your goals!
         </Text>
         <Button
           buttonStyle={styles.nextButton}

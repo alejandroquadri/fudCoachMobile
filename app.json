@@ -3,6 +3,7 @@
     "name": "Food Coach",
     "slug": "fudCoachMobile",
     "version": "1.0.0",
+    "newArchEnabled": false,
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -13,6 +14,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "appleTeamId": "AVU48PUSM6",
+      "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "com.mauroq.fudCoach",
       "infoPlist": {
@@ -52,14 +55,10 @@
           "photosPermission": "Food Coach accesses your photos so you can share your meals with your coach and add them to your food log."
         }
       ],
+      "expo-notifications",
       "expo-apple-authentication",
       "expo-iap",
-      [
-        "./plugins/with-ios-xcode-26-fixes",
-        {
-          "developmentTeam": "AVU48PUSM6"
-        }
-      ]
+      "./plugins/with-ios-xcode-26-fixes"
     ]
   }
 }

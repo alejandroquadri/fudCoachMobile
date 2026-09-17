@@ -160,7 +160,7 @@ export const ChartToGoalScreen = ({
 
       <View style={styles.content}>
         <Text style={styles.title}>
-          After getting to know you better, we predict that you'll be{' '}
+          After getting to know you better, we predict that {"you'll"} be{' '}
           {calcGoalWeight} {unitType} by <Text>{goalDate}</Text>
         </Text>
 
