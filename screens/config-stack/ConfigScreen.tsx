@@ -89,73 +89,85 @@ export const ConfigScreen = ({ navigation }: Props) => {
           <ListItem
             bottomDivider
             onPress={() => navigation.navigate('ProfileStack')}>
-            <Icon name="user" type="feather" />
-            <ListItem.Content>
-              <ListItem.Title>
-                <Text>Profile</Text>
-              </ListItem.Title>
-              <ListItem.Subtitle>
-                <Text>Personal info, goals, height</Text>
-              </ListItem.Subtitle>
-            </ListItem.Content>
-            <Icon name="chevron-right" type="feather" />
+            <View key="content" style={configStyles.listItemRow}>
+              <Icon name="user" type="feather" />
+              <ListItem.Content>
+                <ListItem.Title>
+                  <Text>Profile</Text>
+                </ListItem.Title>
+                <ListItem.Subtitle>
+                  <Text>Personal info, goals, height</Text>
+                </ListItem.Subtitle>
+              </ListItem.Content>
+              <Icon name="chevron-right" type="feather" />
+            </View>
           </ListItem>
 
           <ListItem
             bottomDivider
             onPress={() => navigation.navigate('NotificationsScreen')}>
-            <Icon name="bell" type="feather" />
-            <ListItem.Content>
-              <ListItem.Title>
-                <Text>Notifications</Text>
-              </ListItem.Title>
-              <ListItem.Subtitle>
-                <Text>Reminders, push preferences</Text>
-              </ListItem.Subtitle>
-            </ListItem.Content>
-            <Icon name="chevron-right" type="feather" />
+            <View key="content" style={configStyles.listItemRow}>
+              <Icon name="bell" type="feather" />
+              <ListItem.Content>
+                <ListItem.Title>
+                  <Text>Notifications</Text>
+                </ListItem.Title>
+                <ListItem.Subtitle>
+                  <Text>Reminders, push preferences</Text>
+                </ListItem.Subtitle>
+              </ListItem.Content>
+              <Icon name="chevron-right" type="feather" />
+            </View>
           </ListItem>
         </View>
 
         <View style={[configStyles.cardShadow, configStyles.lastCard]}>
           <ListItem bottomDivider onPress={manageSubs}>
-            <Icon name="credit-card" type="feather" />
-            <ListItem.Content>
-              <ListItem.Title>
-                <Text>Manage subscription</Text>
-              </ListItem.Title>
-            </ListItem.Content>
-            <Icon name="chevron-right" type="feather" />
+            <View key="content" style={configStyles.listItemRow}>
+              <Icon name="credit-card" type="feather" />
+              <ListItem.Content>
+                <ListItem.Title>
+                  <Text>Manage subscription</Text>
+                </ListItem.Title>
+              </ListItem.Content>
+              <Icon name="chevron-right" type="feather" />
+            </View>
           </ListItem>
 
           <ListItem bottomDivider onPress={toTermsService}>
-            <Icon name="document-outline" type="ionicon" />
-            <ListItem.Content>
-              <ListItem.Title>
-                <Text>Terms of service</Text>
-              </ListItem.Title>
-            </ListItem.Content>
-            <Icon name="chevron-right" type="feather" />
+            <View key="content" style={configStyles.listItemRow}>
+              <Icon name="document-outline" type="ionicon" />
+              <ListItem.Content>
+                <ListItem.Title>
+                  <Text>Terms of service</Text>
+                </ListItem.Title>
+              </ListItem.Content>
+              <Icon name="chevron-right" type="feather" />
+            </View>
           </ListItem>
 
           <ListItem bottomDivider onPress={toPrivacyPolicy}>
-            <Icon name="police-badge-outline" type="material-community" />
-            <ListItem.Content>
-              <ListItem.Title>
-                <Text>Privacy policy</Text>
-              </ListItem.Title>
-            </ListItem.Content>
-            <Icon name="chevron-right" type="feather" />
+            <View key="content" style={configStyles.listItemRow}>
+              <Icon name="police-badge-outline" type="material-community" />
+              <ListItem.Content>
+                <ListItem.Title>
+                  <Text>Privacy policy</Text>
+                </ListItem.Title>
+              </ListItem.Content>
+              <Icon name="chevron-right" type="feather" />
+            </View>
           </ListItem>
 
           <ListItem bottomDivider={false} onPress={showAlert}>
-            <Icon name="user-minus" type="feather" />
-            <ListItem.Content>
-              <ListItem.Title>
-                <Text>Delete account</Text>
-              </ListItem.Title>
-            </ListItem.Content>
-            <Icon name="chevron-right" type="feather" />
+            <View key="content" style={configStyles.listItemRow}>
+              <Icon name="user-minus" type="feather" />
+              <ListItem.Content>
+                <ListItem.Title>
+                  <Text>Delete account</Text>
+                </ListItem.Title>
+              </ListItem.Content>
+              <Icon name="chevron-right" type="feather" />
+            </View>
           </ListItem>
 
           {/* Add more settings entries here */}
@@ -217,6 +229,12 @@ const configStyles = StyleSheet.create({
   },
   lastCard: {
     marginTop: 20,
+  },
+  listItemRow: {
+    alignItems: 'center',
+    columnGap: 16,
+    flex: 1,
+    flexDirection: 'row',
   },
   deleteAcountText: {
     color: COLORS.danger,
