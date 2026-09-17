@@ -219,11 +219,7 @@ export const OnboardingNavigator: FC = () => {
       <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
         <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
         <OnboardingStack.Screen name="SignIn" component={SignIn} />
-        <OnboardingStack.Screen
-          name="Sources"
-          component={SourcesScreen}
-          onBack={() => navigation.goBack()}
-        />
+        <OnboardingStack.Screen name="Sources" component={SourcesScreen} />
         <OnboardingStack.Screen name="Gender">
           {() => (
             <GenderScreen

@@ -130,12 +130,6 @@ export const ProgressScreen = () => {
     }
   };
 
-  const handleDataPointPress = (item, index) => {
-    // TODO: Cook logic
-    console.log('chart pressed', item, index, chartData[index]);
-    return 'hola';
-  };
-
   const renderDataPoint = (item: { value: number }, index: number) => {
     console.log('render data point', item, index);
     const point = chartData[index];

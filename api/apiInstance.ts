@@ -1,9 +1,9 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-// const url = 'http://Mac-Ale.local:3000'; // para desarrollo local
+const url = 'http://Mac-Ale.local:3000'; // para desarrollo local
 // const url = 'http://api.local.fud.coach'; // para desarrollo local desde docker net. No va a funcionar desde el telefono. No tiene mucha utilidad en realidad
-const url = 'https://api.fud.coach'; // backend de produccion
+// const url = 'https://api.fud.coach'; // backend de produccion
 
 export const api = axios.create({
   baseURL: url, // your API server

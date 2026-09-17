@@ -174,7 +174,6 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
           title="Create account"
           onPress={() => navigation.navigate('Welcome')}
           type="clear"
-          buttonStyle={styles.clearButtonText}
           titleStyle={styles.clearButtonText}
         />
       </View>

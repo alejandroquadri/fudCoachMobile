@@ -53,7 +53,13 @@
         }
       ],
       "expo-apple-authentication",
-      "expo-iap"
+      "expo-iap",
+      [
+        "./plugins/with-ios-xcode-26-fixes",
+        {
+          "developmentTeam": "AVU48PUSM6"
+        }
+      ]
     ]
   }
 }

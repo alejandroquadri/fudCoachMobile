@@ -15,20 +15,18 @@ interface CameraScreenProps {
   onClose: () => void;
 }
 
-interface CameraRef {
-  takePictureAsync: () => Promise<{ uri: string }>;
-}
-
 export const CameraScreen: React.FC<CameraScreenProps> = ({
   onPictureTaken,
   onClose,
 }) => {
-  const cameraRef = useRef<CameraRef | null>(null);
+  const cameraRef = useRef<CameraView | null>(null);
 
   const takePhoto = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
-      onPictureTaken(photo.uri);
+      if (photo) {
+        onPictureTaken(photo.uri);
+      }
     }
   };
 
