@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#4fc6c4"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "appleTeamId": "AVU48PUSM6",
       "usesAppleSignIn": true,
@@ -21,7 +23,9 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Food Coach uses the camera so you can take photos of your meals to share with your coach and add them to your food log.",
         "NSMicrophoneUsageDescription": "We need access to your microphone for voice input.",
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -58,7 +62,9 @@
       "expo-notifications",
       "expo-apple-authentication",
       "expo-iap",
-      "./plugins/with-ios-xcode-26-fixes"
+      "./plugins/with-ios-xcode-26-fixes",
+      "@react-native-community/datetimepicker",
+      "expo-font"
     ]
   }
 }
