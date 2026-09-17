@@ -3,6 +3,8 @@ export type Entitlement = {
   productId: string;
   originalTransactionId: string;
   expiresAtISO?: string;
+  accessExpiresAtISO?: string;
+  subscriptionStatus?: 'active' | 'grace' | 'inactive';
   platform: 'ios';
   environment?: 'Production' | 'Sandbox'; // NEW
   grant?: {
