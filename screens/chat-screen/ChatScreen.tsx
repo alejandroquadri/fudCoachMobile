@@ -11,14 +11,13 @@ import {
 } from 'react-native';
 import 'react-native-get-random-values';
 import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
 
 import { CameraScreen } from '@components';
-import { useAuth, useKeyboard, useSubscription } from '@hooks';
+import { useAuth, useSubscription } from '@hooks';
 import {
   ensurePushTokenSynced,
   fetchPreviousMessages,
@@ -63,13 +62,11 @@ export const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [cameraVisible, setCameraVisible] = useState(false);
-  const isKeyboardVisible = useKeyboard();
   const [permission, requestPermission] = useCameraPermissions();
   const [showDialogSettings, setShowDialogSettings] = useState(false);
 
   const insets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
-  const styles = ChatStyles(isKeyboardVisible, insets.bottom);
+  const styles = ChatStyles(insets.bottom);
 
   const { user } = useAuth();
   const { connected, checkSubscription } = useSubscription();
@@ -271,7 +268,7 @@ export const Chat = () => {
         renderSend={renderSend}
         isSendButtonAlwaysVisible={true}
         keyboardAvoidingViewProps={{
-          keyboardVerticalOffset: headerHeight,
+          automaticOffset: true,
         }}
       />
 
