@@ -5,6 +5,7 @@ import {
   Alert,
   Text,
   Modal,
+  Platform,
   TouchableOpacity,
   View,
   Linking,
@@ -38,6 +39,7 @@ import { URLS } from '@constants';
 // };
 
 const IOS_SETTINGS = URLS.iosSettings;
+const IOS_PREDICTIVE_TEXT_BAR_HEIGHT = 44;
 
 const welcomeKeyFor = (userId: string) => `welcomeDelivered${userId}`;
 
@@ -271,7 +273,11 @@ export const Chat = () => {
         renderSend={renderSend}
         isSendButtonAlwaysVisible={true}
         keyboardAvoidingViewProps={{
-          keyboardVerticalOffset: headerHeight,
+          // The iOS predictive-text bar sits above the keyboard but is not
+          // included in its reported height.
+          keyboardVerticalOffset:
+            headerHeight +
+            (Platform.OS === 'ios' ? IOS_PREDICTIVE_TEXT_BAR_HEIGHT : 0),
         }}
       />
 
