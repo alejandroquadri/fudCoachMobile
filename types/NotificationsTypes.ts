@@ -1,7 +1,5 @@
 export type NotificationKey =
-  | 'dailyPlanner'
-  | 'lunchLogReminder'
-  | 'dinnerLogReminder';
+  'dailyPlanner' | 'lunchLogReminder' | 'dinnerLogReminder';
 
 export interface NotificationTokenPayload {
   userId: string;
