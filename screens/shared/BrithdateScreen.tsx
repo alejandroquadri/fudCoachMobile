@@ -1,6 +1,6 @@
 import { StepProgressBar } from '@components';
 import RNDateTimePicker, {
-  DateTimePickerEvent,
+  DateTimePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
 import { Button, Icon } from '@rneui/themed';
 import { COLORS, SharedStyles } from '@theme';
@@ -46,9 +46,8 @@ export const BirthdateScreen = ({
     // navigation.goBack();
   };
 
-  const handleChange = (event: DateTimePickerEvent, date?: Date) => {
-    const dateTs = date ? date : new Date(event.nativeEvent.timestamp);
-    setSelectedDate(dateTs);
+  const handleValueChange = (_event: DateTimePickerChangeEvent, date: Date) => {
+    setSelectedDate(date);
   };
 
   return (
@@ -84,7 +83,7 @@ export const BirthdateScreen = ({
             mode="date"
             display="spinner"
             maximumDate={today}
-            onChange={handleChange}
+            onValueChange={handleValueChange}
             style={birthdateStyles.datePicker}
           />
         </View>

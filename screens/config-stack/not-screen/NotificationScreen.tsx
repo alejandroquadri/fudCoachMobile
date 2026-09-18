@@ -1,6 +1,6 @@
 import { useCurrentUser } from '@hooks';
 import DateTimePicker, {
-  DateTimePickerEvent,
+  DateTimePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BottomSheet, Button, Card, Icon, Switch, Text } from '@rneui/themed';
@@ -131,8 +131,8 @@ export const NotificationsScreen = ({ navigation }: Props) => {
   };
   const closeSheet = () => setActivePicker(null);
 
-  const onChangeTempTime = (_e: DateTimePickerEvent, date?: Date) => {
-    if (date) setTempTime(date);
+  const onValueChangeTempTime = (_e: DateTimePickerChangeEvent, date: Date) => {
+    setTempTime(date);
   };
 
   const saveTime = useCallback(async () => {
@@ -246,7 +246,7 @@ export const NotificationsScreen = ({ navigation }: Props) => {
               value={tempTime}
               mode="time"
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={onChangeTempTime}
+              onValueChange={onValueChangeTempTime}
             />
           </View>
 

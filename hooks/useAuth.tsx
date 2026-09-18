@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { UserProfile } from '@types';
-import { wipeSecureStore } from '@utils';
 
 export type AuthContextType = {
   loading: boolean;
@@ -65,6 +64,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const profileString = await SecureStore.getItemAsync('userProfile');
         setUserToken(token);
         if (profileString) setUser(JSON.parse(profileString));
+      } catch (error) {
+        // Keychain entries can be temporarily unavailable when iOS launches
+        // the app without allowing user interaction (for example, while the
+        // device is locked). Keep the persisted values intact and start in a
+        // signed-out state instead of leaving an unhandled promise rejection.
+        console.warn('[Auth] unable to restore the stored session', error);
+        setUserToken(null);
+        setUser(null);
       } finally {
         setLoading(false);
       }
