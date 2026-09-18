@@ -257,7 +257,7 @@ export const Chat = () => {
   return (
     <View style={styles.container}>
       <GiftedChat
-        showUserAvatar={true}
+        isUserAvatarVisible={true}
         isTyping={isTyping}
         messages={messages}
         onSend={sendMes}
@@ -267,7 +267,7 @@ export const Chat = () => {
         }}
         renderActions={renderActions}
         renderSend={renderSend}
-        alwaysShowSend={true}
+        isSendButtonAlwaysVisible={true}
       />
 
       <Modal visible={cameraVisible} animationType="slide">
