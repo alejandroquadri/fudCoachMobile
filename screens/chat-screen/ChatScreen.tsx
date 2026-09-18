@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import 'react-native-get-random-values';
 import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { COLORS } from '@theme';
@@ -67,6 +68,7 @@ export const Chat = () => {
   const [showDialogSettings, setShowDialogSettings] = useState(false);
 
   const insets = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
   const styles = ChatStyles(isKeyboardVisible, insets.bottom);
 
   const { user } = useAuth();
@@ -268,6 +270,9 @@ export const Chat = () => {
         renderActions={renderActions}
         renderSend={renderSend}
         isSendButtonAlwaysVisible={true}
+        keyboardAvoidingViewProps={{
+          keyboardVerticalOffset: headerHeight,
+        }}
       />
 
       <Modal visible={cameraVisible} animationType="slide">
