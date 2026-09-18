@@ -1,18 +1,13 @@
-const { withPodfile, withXcodeProject } = require('expo/config-plugins');
+const { withPodfile } = require('expo/config-plugins');
 
-module.exports = function withIosXcode26Fixes(config, options = {}) {
-  config = withPodfile(config, (podfileConfig) => {
-    let contents = podfileConfig.modResults.contents;
-
-    // Remove the old Expo-IAP 3.x workaround. Current Expo-IAP declares the
-    // matching OpenIAP native dependency through its own podspec.
-    contents = contents.replace(/^\s*pod 'openiap'.*\n/gm, '');
-
-    // React Native 0.76 bundles fmt 11.0.2, whose consteval detection fails
-    // with the Apple Clang toolchain shipped in Xcode 26.
+module.exports = function withIosXcode26Fixes(config) {
+  return withPodfile(config, podfileConfig => {
+    const contents = podfileConfig.modResults.contents;
     const reactNativePostInstall = /(\s+react_native_post_install\([\s\S]*?\n\s+\))/m;
     const fmtPatch = `
 
+    # Xcode 26's Apple Clang cannot evaluate fmt's consteval implementation
+    # bundled by React Native 0.81.
     fmt_base_header = File.join(__dir__, 'Pods', 'fmt', 'include', 'fmt', 'base.h')
     if File.exist?(fmt_base_header)
       fmt_base_contents = File.read(fmt_base_header)
@@ -22,28 +17,12 @@ module.exports = function withIosXcode26Fixes(config, options = {}) {
     end`;
 
     if (!contents.includes("fmt_base_header = File.join(__dir__, 'Pods', 'fmt'")) {
-      contents = contents.replace(reactNativePostInstall, `$1${fmtPatch}`);
+      podfileConfig.modResults.contents = contents.replace(
+        reactNativePostInstall,
+        `$1${fmtPatch}`
+      );
     }
 
-    podfileConfig.modResults.contents = contents;
     return podfileConfig;
-  });
-
-  if (!options.developmentTeam) {
-    return config;
-  }
-
-  return withXcodeProject(config, (projectConfig) => {
-    const buildConfigurations =
-      projectConfig.modResults.pbxXCBuildConfigurationSection();
-
-    for (const buildConfiguration of Object.values(buildConfigurations)) {
-      const buildSettings = buildConfiguration?.buildSettings;
-      if (buildSettings?.PRODUCT_BUNDLE_IDENTIFIER) {
-        buildSettings.DEVELOPMENT_TEAM = options.developmentTeam;
-      }
-    }
-
-    return projectConfig;
   });
 };
