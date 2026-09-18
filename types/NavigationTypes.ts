@@ -1,6 +1,9 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
+import type { OnboardingStackParamList } from '../screens/onboarding/OnboardingNavigator';
+
 export type RootStackParamList = {
   App: undefined;
-  Onboarding: undefined;
+  Onboarding: NavigatorScreenParams<OnboardingStackParamList>;
   Paywall: undefined;
 };
 

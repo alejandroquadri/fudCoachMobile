@@ -36,7 +36,7 @@ import { PrepPlanScreen } from './PrepPlanScreen';
 import { SignUpScreen } from './SignUpScreen';
 import { TriedOtherAppsScreen } from './TriedOtherAppsScreen';
 import { WelcomeScreen } from './WelcomeScreen';
-import { RegistrationUserInput, UserProfile } from '@types';
+import { RegistrationUserInput, RootStackParamList, UserProfile } from '@types';
 import { appleLogin, createInitialNotificatinJobs } from '@services';
 
 export type OnboardingStackParamList = {
@@ -92,7 +92,9 @@ const steps = [
 export const OnboardingNavigator: FC = () => {
   const { state, dispatch } = useOnboarding();
   const navigation =
-    useNavigation<NativeStackNavigationProp<OnboardingStackParamList>>();
+    useNavigation<
+      NativeStackNavigationProp<RootStackParamList, 'Onboarding'>
+    >();
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -180,7 +182,7 @@ export const OnboardingNavigator: FC = () => {
     if (state.onboardingStep >= steps.length) return;
 
     const nextScreen = steps[state.onboardingStep];
-    navigation.navigate(nextScreen);
+    navigation.navigate('Onboarding', { screen: nextScreen });
   }, [state.onboardingStep, navigation]);
 
   return (

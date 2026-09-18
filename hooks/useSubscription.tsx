@@ -87,6 +87,17 @@ export const SubscriptionProvider = (props: {
     purchase: PurchaseIOS,
     { finish }: { finish: boolean }
   ) => {
+    // StoreKit can emit subscription renewals after sign-out. There is no
+    // account token to validate against at that point; the server notification
+    // keeps the entitlement current and the next authenticated check reconciles
+    // it.
+    if (authLoading || !user?._id) {
+      console.log(
+        '[IAP] skipping transaction callback without an authenticated user'
+      );
+      return;
+    }
+
     // Log compact info
     logPurchaseSummary(purchase);
     await ensureProcessedLineagesLoaded();
