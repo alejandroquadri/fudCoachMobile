@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
+  Animated,
   Text,
   Modal,
   TouchableOpacity,
@@ -19,7 +20,7 @@ import {
 } from 'react-native-gifted-chat';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useKeyboardState } from 'react-native-keyboard-controller';
+import { useKeyboardAnimation } from 'react-native-keyboard-controller';
 
 import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
@@ -48,6 +49,29 @@ const IOS_SETTINGS = URLS.iosSettings;
 
 const welcomeKeyFor = (userId: string) => `welcomeDelivered${userId}`;
 
+type SafeAreaInputToolbarProps = InputToolbarProps<IMessage> & {
+  bottomInset: number;
+};
+
+const SafeAreaInputToolbar = ({
+  bottomInset,
+  ...props
+}: SafeAreaInputToolbarProps) => {
+  const { progress } = useKeyboardAnimation();
+
+  return (
+    <Animated.View
+      style={{
+        paddingBottom: progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [bottomInset, 0],
+        }),
+      }}>
+      <InputToolbar {...props} />
+    </Animated.View>
+  );
+};
+
 const hasDeliveredWelcomeLocal = async (userId: string) => {
   try {
     const v = await SecureStore.getItemAsync(welcomeKeyFor(userId));
@@ -75,7 +99,6 @@ export const Chat = () => {
 
   const headerHeight = useHeaderHeight();
   const insets = useSafeAreaInsets();
-  const isKeyboardVisible = useKeyboardState(state => state.isVisible);
   const styles = ChatStyles();
 
   const { user } = useAuth();
@@ -265,15 +288,9 @@ export const Chat = () => {
 
   const renderInputToolbar = useCallback(
     (props: InputToolbarProps<IMessage>) => (
-      <InputToolbar
-        {...props}
-        containerStyle={[
-          props.containerStyle,
-          !isKeyboardVisible && { paddingBottom: insets.bottom },
-        ]}
-      />
+      <SafeAreaInputToolbar {...props} bottomInset={insets.bottom} />
     ),
-    [insets.bottom, isKeyboardVisible]
+    [insets.bottom]
   );
 
   return (
