@@ -10,8 +10,16 @@ import {
   Linking,
 } from 'react-native';
 import 'react-native-get-random-values';
-import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
+import {
+  GiftedChat,
+  IMessage,
+  InputToolbar,
+  InputToolbarProps,
+  Send,
+} from 'react-native-gifted-chat';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useKeyboardState } from 'react-native-keyboard-controller';
 
 import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
@@ -66,6 +74,8 @@ export const Chat = () => {
   const [showDialogSettings, setShowDialogSettings] = useState(false);
 
   const headerHeight = useHeaderHeight();
+  const insets = useSafeAreaInsets();
+  const isKeyboardVisible = useKeyboardState(state => state.isVisible);
   const styles = ChatStyles();
 
   const { user } = useAuth();
@@ -253,6 +263,19 @@ export const Chat = () => {
     );
   };
 
+  const renderInputToolbar = useCallback(
+    (props: InputToolbarProps<IMessage>) => (
+      <InputToolbar
+        {...props}
+        containerStyle={[
+          props.containerStyle,
+          !isKeyboardVisible && { paddingBottom: insets.bottom },
+        ]}
+      />
+    ),
+    [insets.bottom, isKeyboardVisible]
+  );
+
   return (
     <View style={styles.container}>
       <GiftedChat
@@ -266,6 +289,7 @@ export const Chat = () => {
         }}
         renderActions={renderActions}
         renderSend={renderSend}
+        renderInputToolbar={renderInputToolbar}
         isSendButtonAlwaysVisible={true}
         keyboardAvoidingViewProps={{
           // Gifted Chat's keyboard container starts below the Drawer header.
