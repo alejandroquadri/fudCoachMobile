@@ -3,7 +3,6 @@ import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
-  Animated,
   Text,
   Modal,
   TouchableOpacity,
@@ -11,16 +10,9 @@ import {
   Linking,
 } from 'react-native';
 import 'react-native-get-random-values';
-import {
-  GiftedChat,
-  IMessage,
-  InputToolbar,
-  InputToolbarProps,
-  Send,
-} from 'react-native-gifted-chat';
+import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useKeyboardAnimation } from 'react-native-keyboard-controller';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
@@ -49,29 +41,6 @@ const IOS_SETTINGS = URLS.iosSettings;
 
 const welcomeKeyFor = (userId: string) => `welcomeDelivered${userId}`;
 
-type SafeAreaInputToolbarProps = InputToolbarProps<IMessage> & {
-  bottomInset: number;
-};
-
-const SafeAreaInputToolbar = ({
-  bottomInset,
-  ...props
-}: SafeAreaInputToolbarProps) => {
-  const { progress } = useKeyboardAnimation();
-
-  return (
-    <Animated.View
-      style={{
-        paddingBottom: progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [bottomInset, 0],
-        }),
-      }}>
-      <InputToolbar {...props} />
-    </Animated.View>
-  );
-};
-
 const hasDeliveredWelcomeLocal = async (userId: string) => {
   try {
     const v = await SecureStore.getItemAsync(welcomeKeyFor(userId));
@@ -98,7 +67,6 @@ export const Chat = () => {
   const [showDialogSettings, setShowDialogSettings] = useState(false);
 
   const headerHeight = useHeaderHeight();
-  const insets = useSafeAreaInsets();
   const styles = ChatStyles();
 
   const { user } = useAuth();
@@ -286,15 +254,8 @@ export const Chat = () => {
     );
   };
 
-  const renderInputToolbar = useCallback(
-    (props: InputToolbarProps<IMessage>) => (
-      <SafeAreaInputToolbar {...props} bottomInset={insets.bottom} />
-    ),
-    [insets.bottom]
-  );
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <GiftedChat
         isUserAvatarVisible={true}
         isTyping={isTyping}
@@ -306,7 +267,6 @@ export const Chat = () => {
         }}
         renderActions={renderActions}
         renderSend={renderSend}
-        renderInputToolbar={renderInputToolbar}
         isSendButtonAlwaysVisible={true}
         keyboardAvoidingViewProps={{
           // Gifted Chat's keyboard container starts below the Drawer header.
@@ -351,6 +311,6 @@ export const Chat = () => {
           />
         </Dialog.Actions>
       </Dialog>
-    </View>
+    </SafeAreaView>
   );
 };
