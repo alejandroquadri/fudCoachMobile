@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import 'react-native-get-random-values';
 import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 import { COLORS } from '@theme';
 import { ChatStyles } from './ChatStyles';
@@ -65,8 +65,8 @@ export const Chat = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [showDialogSettings, setShowDialogSettings] = useState(false);
 
-  const insets = useSafeAreaInsets();
-  const styles = ChatStyles(insets.bottom);
+  const headerHeight = useHeaderHeight();
+  const styles = ChatStyles();
 
   const { user } = useAuth();
   const { connected, checkSubscription } = useSubscription();
@@ -268,8 +268,8 @@ export const Chat = () => {
         renderSend={renderSend}
         isSendButtonAlwaysVisible={true}
         keyboardAvoidingViewProps={{
-          // The Drawer already lays its screen content below its header.
-          keyboardVerticalOffset: 0,
+          // Gifted Chat's keyboard container starts below the Drawer header.
+          keyboardVerticalOffset: headerHeight,
         }}
       />
 

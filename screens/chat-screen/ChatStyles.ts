@@ -1,12 +1,11 @@
 import { COLORS } from '@theme';
 import { StyleSheet } from 'react-native';
 
-export const ChatStyles = (insetsBottom: number) => {
+export const ChatStyles = () => {
   return StyleSheet.create({
     container: {
       backgroundColor: COLORS.cardBackground,
       flex: 1,
-      paddingBottom: insetsBottom,
     },
     actionWrapper: {
       height: 44, // same as the default minInputToolbarHeight in GiftedChat
