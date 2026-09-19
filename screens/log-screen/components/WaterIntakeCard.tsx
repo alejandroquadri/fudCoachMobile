@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Card, Button, Text } from '@rneui/themed';
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@react-native-vector-icons/material-icons';
 import { WaterLogStyles } from '../LogStyles';
 import { WaterLog } from '@types';
 import { COLORS } from '@theme';

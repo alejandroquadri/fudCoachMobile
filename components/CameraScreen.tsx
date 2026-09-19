@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions, CameraType } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import Feather from '@react-native-vector-icons/feather';
+import Ionicons from '@react-native-vector-icons/ionicons';
 
 interface CameraScreenProps {
   onPictureTaken: (uri: string) => void;

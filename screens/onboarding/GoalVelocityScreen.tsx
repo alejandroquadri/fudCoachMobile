@@ -119,15 +119,10 @@ export const GoalVelocityScreen = ({
           </View>
 
           <View style={goalVelocityStyles.sliderLabels}>
-            <Icon
-              name="walk"
-              type="material-community"
-              size={24}
-              color="#444"
-            />
+            <Icon name="walk" type="material-design" size={24} color="#444" />
             <Icon
               name="run-fast"
-              type="material-community"
+              type="material-design"
               size={24}
               color="#000"
             />

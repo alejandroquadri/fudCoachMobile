@@ -148,7 +148,7 @@ export const ConfigScreen = ({ navigation }: Props) => {
 
           <ListItem bottomDivider onPress={toPrivacyPolicy}>
             <View key="content" style={configStyles.listItemRow}>
-              <Icon name="police-badge-outline" type="material-community" />
+              <Icon name="police-badge-outline" type="material-design" />
               <ListItem.Content>
                 <ListItem.Title>
                   <Text>Privacy policy</Text>
