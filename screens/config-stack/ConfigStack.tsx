@@ -3,7 +3,7 @@ import { ProfileStack } from '@screens';
 import { ConfigScreen } from './ConfigScreen';
 import { NotificationsScreen } from './not-screen/NotificationScreen';
 import { DrawerToggleButton } from '@react-navigation/drawer';
-import { View } from 'react-native';
+import { getHeaderTitle, Header } from '@react-navigation/elements';
 import { COLORS } from '@theme';
 
 export type ConfigStackParamList = {
@@ -22,11 +22,13 @@ export const ConfigStack = () => (
       options={{
         headerShown: true,
         title: 'Settings',
-        headerLeft: () => (
-          <View style={{ marginLeft: -18 }}>
-            {/* tweak -8 / -12 until it lines up */}
-            <DrawerToggleButton tintColor={COLORS.accentColor} />
-          </View>
+        header: ({ options, route }) => (
+          <Header
+            title={getHeaderTitle(options, route.name)}
+            headerLeft={() => (
+              <DrawerToggleButton tintColor={COLORS.accentColor} />
+            )}
+          />
         ),
       }}
     />
