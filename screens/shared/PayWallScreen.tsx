@@ -56,15 +56,15 @@ const FEATURES: { text: string; icon: { name: string; type: string } }[] = [
   },
   {
     text: 'Personalized plan that adapts to you',
-    icon: { name: 'tune-variant', type: 'material-community' },
+    icon: { name: 'tune-variant', type: 'material-design' },
   },
   {
     text: 'Quick meal logging, zero friction',
-    icon: { name: 'clipboard-text-outline', type: 'material-community' },
+    icon: { name: 'clipboard-text-outline', type: 'material-design' },
   },
   {
     text: 'Gentle accountability nudges',
-    icon: { name: 'bell-check-outline', type: 'material-community' },
+    icon: { name: 'bell-check-outline', type: 'material-design' },
   },
 ];
 
