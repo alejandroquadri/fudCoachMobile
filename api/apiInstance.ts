@@ -92,7 +92,7 @@ const refreshToken = async (): Promise<{
 
   // Use a bare axios instance so we do NOT hit interceptors again here
   const response = await axios.post(
-    `${url}/users/refreshToken`,
+    `${url}/users/refresh-token`,
     { refreshToken: storedRefreshToken },
     {
       headers: { 'Content-Type': 'application/json' },
