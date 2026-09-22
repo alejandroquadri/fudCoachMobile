@@ -10,7 +10,7 @@ import { useOnboarding } from './context/OnboardingContext';
 import { Overlay } from '@rneui/themed';
 
 import { useAuth } from '@hooks';
-import { api } from '@api/ApiInstance';
+import { api } from '@api/apiInstance';
 import { userAPI } from '@api/AuthApi';
 import { COLORS } from '@theme';
 import {

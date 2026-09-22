@@ -1,6 +1,6 @@
 import { OnboardingState } from '@screens';
 import { NutritionGoals, RegistrationUserInput, UserProfile } from '../types';
-import { api } from './ApiInstance';
+import { api } from './apiInstance';
 
 export const userAPI = {
   register: (

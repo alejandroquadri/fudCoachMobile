@@ -1,5 +1,5 @@
 import { UserProfile } from '../types';
-import { api } from './ApiInstance';
+import { api } from './apiInstance';
 
 export const profileApi = {
   getProfile: async (id: string) =>

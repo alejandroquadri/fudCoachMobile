@@ -5,7 +5,7 @@ import {
   NotificationTokenPayload,
   UpdateJobPayload,
 } from '@types';
-import { api } from './ApiInstance';
+import { api } from './apiInstance';
 
 export const notificationsApi = {
   saveExpoPushToken: async (

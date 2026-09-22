@@ -1,5 +1,5 @@
 import { WeightLogInterface } from '../types';
-import { api } from './ApiInstance';
+import { api } from './apiInstance';
 
 export const weightLogsApi = {
   getWeightLogs: async (user_id: string): Promise<WeightLogInterface[]> =>

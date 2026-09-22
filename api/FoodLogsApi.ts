@@ -1,4 +1,4 @@
-import { api } from './ApiInstance';
+import { api } from './apiInstance';
 import { ExerciseLog, FoodLog, WaterLog } from '../types';
 
 export const foodLogsApi = {

@@ -1,5 +1,5 @@
 import { ValidateIOSPayload, ValidateResponse } from '@types';
-import { api } from './ApiInstance';
+import { api } from './apiInstance';
 
 export const iapApi = {
   validateIOS: async (payload: ValidateIOSPayload): Promise<ValidateResponse> =>
