@@ -13,6 +13,13 @@ export const aiApi = {
     api.post('/coach/mark-welcome-delivered', { userId }).then(),
   getMesgs: async (userId: string): Promise<ChatMsg[]> =>
     api.post('/coach/get-messages', { userId }).then(response => response.data),
+  getMessagePage: async (
+    userId: string,
+    before?: string
+  ): Promise<{ messages: ChatMsg[]; nextCursor: string | null }> =>
+    api
+      .post('/coach/get-messages-page', { userId, before, limit: 40 })
+      .then(response => response.data),
   aiResponse: async (message: string, userId: string): Promise<ChatMsg> =>
     api
       .post('/coach/get-answer', { message, userId })

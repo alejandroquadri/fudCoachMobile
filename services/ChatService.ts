@@ -21,6 +21,14 @@ export const fetchPreviousMessages = async (
   }
 };
 
+export const fetchMessagePage = async (userId: string, before?: string) => {
+  const page = await aiApi.getMessagePage(userId, before);
+  return {
+    messages: buildIMessageArray(page.messages),
+    nextCursor: page.nextCursor,
+  };
+};
+
 export const getInitialWelcomeMessage = async (
   userId: string
 ): Promise<IMessage[]> => {
@@ -60,7 +68,7 @@ export const sendChatImage = async (
 
 const buildIMessageArray = (messages: ChatMsg[]): IMessage[] => {
   return messages.map(mes => ({
-    _id: uuidv4(),
+    _id: mes.messageId ?? uuidv4(),
     text: mes.content,
     createdAt: new Date(mes.timestamp),
     // system: true, // esto sirve para que en lugar de aparecer en un globo aparezca como mensaje del sistema

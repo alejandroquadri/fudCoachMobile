@@ -1,4 +1,6 @@
 export interface ChatMsg {
+  messageId?: string;
+  turnId?: string;
   userId?: string;
   sender: 'ai' | 'user';
   content: string;

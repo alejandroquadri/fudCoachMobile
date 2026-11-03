@@ -105,6 +105,23 @@ export const ConfigScreen = ({ navigation }: Props) => {
 
           <ListItem
             bottomDivider
+            onPress={() => navigation.navigate('CoachMemoryScreen')}>
+            <View key="content" style={configStyles.listItemRow}>
+              <Icon name="heart" type="feather" />
+              <ListItem.Content>
+                <ListItem.Title>
+                  <Text>Coach memory</Text>
+                </ListItem.Title>
+                <ListItem.Subtitle>
+                  <Text>What your coach remembers about you</Text>
+                </ListItem.Subtitle>
+              </ListItem.Content>
+              <Icon name="chevron-right" type="feather" />
+            </View>
+          </ListItem>
+
+          <ListItem
+            bottomDivider
             onPress={() => navigation.navigate('NotificationsScreen')}>
             <View key="content" style={configStyles.listItemRow}>
               <Icon name="bell" type="feather" />

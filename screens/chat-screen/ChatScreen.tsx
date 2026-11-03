@@ -1,6 +1,6 @@
 import { Dialog, Icon, Button } from '@rneui/themed';
 import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Text,
@@ -21,7 +21,7 @@ import { CameraScreen } from '@components';
 import { useAuth, useSubscription } from '@hooks';
 import {
   ensurePushTokenSynced,
-  fetchPreviousMessages,
+  fetchMessagePage,
   getInitialWelcomeMessage,
   markWelcomeDeliveredOnServer,
   prepareForUpload,
@@ -62,6 +62,10 @@ const markWelcomeDeliveredLocal = async (userId: string) => {
 export const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingEarlier, setLoadingEarlier] = useState(false);
+  const loadingPage = useRef(false);
+  const activeUserId = useRef<string | undefined>(undefined);
   const [cameraVisible, setCameraVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [showDialogSettings, setShowDialogSettings] = useState(false);
@@ -90,6 +94,10 @@ export const Chat = () => {
   );
 
   useEffect(() => {
+    let active = true;
+    activeUserId.current = user?._id;
+    setNextCursor(null);
+    setMessages([]);
     console.log('corre use Effect de initialize Chat');
     const initializeChat = async () => {
       if (user && user._id) {
@@ -97,7 +105,10 @@ export const Chat = () => {
         // si no, pido permiso para notificaciones y luego guardo el token
         await ensurePushTokenSynced(user._id, { requestIfDenied: true });
         console.log(user._id);
-        const prevMessages = await fetchPreviousMessages(user._id);
+        const page = await fetchMessagePage(user._id).catch(() => null);
+        if (!active) return;
+        const prevMessages = page?.messages ?? null;
+        setNextCursor(page?.nextCursor ?? null);
         // console.log(prevMessages);
         if (prevMessages === null) {
           Alert.alert('Error', 'Could not load previous messages');
@@ -144,8 +155,37 @@ export const Chat = () => {
       }
     };
 
-    initializeChat();
-  }, [user]);
+    void initializeChat();
+    return () => {
+      active = false;
+      activeUserId.current = undefined;
+    };
+  }, [user?._id]);
+
+  const loadEarlier = async () => {
+    if (!user?._id || !nextCursor || loadingPage.current) return;
+    const userId = user._id;
+    loadingPage.current = true;
+    setLoadingEarlier(true);
+    try {
+      const page = await fetchMessagePage(userId, nextCursor);
+      if (activeUserId.current !== userId) return;
+      setMessages(current => {
+        const seen = new Set(current.map(message => message._id));
+        return [
+          ...current,
+          ...page.messages.filter(message => !seen.has(message._id)),
+        ];
+      });
+      setNextCursor(page.nextCursor);
+    } catch {
+      if (activeUserId.current === userId)
+        Alert.alert('Could not load earlier messages', 'Please try again.');
+    } finally {
+      loadingPage.current = false;
+      setLoadingEarlier(false);
+    }
+  };
 
   const sendMes = async (message: IMessage[]) => {
     if (user && user._id) {
@@ -155,9 +195,7 @@ export const Chat = () => {
         const userMes = message[0].text;
         const userId = user._id;
         setIsTyping(true);
-        const apiResponseMessage = await sendChatMessage(userMes, userId).catch(
-          error => console.log('error enviando mensage a ai', error)
-        );
+        const apiResponseMessage = await sendChatMessage(userMes, userId);
         if (!apiResponseMessage) throw new Error();
         setIsTyping(false);
         // Append the API's response message
@@ -166,7 +204,17 @@ export const Chat = () => {
         });
       } catch (error) {
         console.log(error);
-        Alert.alert('Error', 'Coach seems to have problems responding');
+        const message = (
+          error as {
+            response?: { status?: number; data?: { message?: string } };
+          }
+        ).response;
+        Alert.alert(
+          'Error',
+          message?.status === 413
+            ? (message.data?.message ?? 'Please send a shorter message.')
+            : 'Coach seems to have problems responding'
+        );
         setIsTyping(false);
       }
     }
@@ -259,6 +307,11 @@ export const Chat = () => {
       <GiftedChat
         isUserAvatarVisible={true}
         isTyping={isTyping}
+        loadEarlierMessagesProps={{
+          isAvailable: !!nextCursor,
+          isLoading: loadingEarlier,
+          onPress: loadEarlier,
+        }}
         messages={messages}
         onSend={sendMes}
         user={{
