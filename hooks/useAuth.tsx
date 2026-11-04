@@ -4,9 +4,17 @@ import React, {
   useEffect,
   useState,
   useMemo,
+  useRef,
 } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { UserProfile } from '@types';
+import { profileApi } from '@api';
+
+const saveProfile = async (profile: UserProfile) => {
+  const withoutAvatar = { ...profile };
+  delete withoutAvatar.avatar;
+  await SecureStore.setItemAsync('userProfile', JSON.stringify(withoutAvatar));
+};
 
 export type AuthContextType = {
   loading: boolean;
@@ -51,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState(true);
   const [userToken, setUserToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
+  const userRevision = useRef(0);
 
   /** Load persisted session once on mount */
   useEffect(() => {
@@ -63,7 +72,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const token = await SecureStore.getItemAsync('userToken');
         const profileString = await SecureStore.getItemAsync('userProfile');
         setUserToken(token);
-        if (profileString) setUser(JSON.parse(profileString));
+        if (profileString) {
+          const stored = JSON.parse(profileString) as UserProfile;
+          setUser(stored);
+          if (token) {
+            const revision = userRevision.current;
+            void profileApi
+              .getProfile(stored._id)
+              .then(async fresh => {
+                if (
+                  fresh &&
+                  userRevision.current === revision &&
+                  (await SecureStore.getItemAsync('userToken')) === token &&
+                  userRevision.current === revision
+                ) {
+                  await saveProfile(fresh);
+                  if (userRevision.current === revision) setUser(fresh);
+                }
+              })
+              .catch(() => {});
+          }
+        }
       } catch (error) {
         // Keychain entries can be temporarily unavailable when iOS launches
         // the app without allowing user interaction (for example, while the
@@ -85,20 +114,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       userToken,
       user,
       signIn: async (token, refreshToken, profile) => {
+        userRevision.current++;
         await SecureStore.setItemAsync('userToken', token);
         await SecureStore.setItemAsync('refreshUserToken', refreshToken);
-        await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
+        await saveProfile(profile);
         setUserToken(token);
         setUser(profile);
       },
       signUp: async (token, refreshToken, profile) => {
+        userRevision.current++;
         await SecureStore.setItemAsync('userToken', token);
         await SecureStore.setItemAsync('refreshUserToken', refreshToken);
-        await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
+        await saveProfile(profile);
         setUserToken(token);
         setUser(profile);
       },
       signOut: async () => {
+        userRevision.current++;
         await SecureStore.deleteItemAsync('userToken');
         await SecureStore.deleteItemAsync('refreshUserToken');
         await SecureStore.deleteItemAsync('userProfile');
@@ -106,7 +138,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(null);
       },
       refreshUser: async profile => {
-        await SecureStore.setItemAsync('userProfile', JSON.stringify(profile));
+        userRevision.current++;
+        await saveProfile(profile);
         setUser(profile);
       },
     }),

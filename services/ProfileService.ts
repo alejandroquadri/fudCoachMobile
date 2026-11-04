@@ -2,9 +2,11 @@ import { aiApi, profileApi } from '@api';
 import { UserProfile } from '@types';
 
 export const updateProfile = async (user: UserProfile) => {
-  const profile = profileApi.updateUser(user);
-  const state = aiApi.initPrefernces(user);
-  const [profileRes, stateRes] = await Promise.all([profile, state]);
+  const profileData = { ...user };
+  delete profileData.avatar;
+  const profile = profileApi.updateUser(profileData);
+  const state = aiApi.initPrefernces(profileData);
+  const [profileRes] = await Promise.all([profile, state]);
   return profileRes;
 };
 

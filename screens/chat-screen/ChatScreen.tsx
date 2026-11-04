@@ -387,7 +387,7 @@ export const Chat = () => {
   return (
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <GiftedChat
-        isUserAvatarVisible={true}
+        renderAvatar={null}
         isTyping={isTyping}
         loadEarlierMessagesProps={{
           isAvailable: !!nextCursor,
