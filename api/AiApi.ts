@@ -24,7 +24,12 @@ export const aiApi = {
     api
       .post('/coach/get-answer', { message, userId })
       .then(response => response.data),
-  parseImage: async (uri: string, userId: string): Promise<ChatMsg> => {
+  parseImage: async (
+    uri: string,
+    userId: string,
+    message: string,
+    clientRequestId: string
+  ): Promise<ChatMsg> => {
     const formData = new FormData();
 
     formData.append('image', {
@@ -34,6 +39,8 @@ export const aiApi = {
     } as any);
 
     formData.append('userId', userId);
+    formData.append('message', message);
+    formData.append('clientRequestId', clientRequestId);
 
     return api
       .post('/coach/parse-image', formData, {

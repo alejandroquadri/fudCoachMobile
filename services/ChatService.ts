@@ -60,9 +60,16 @@ export const sendChatMessage = async (
 
 export const sendChatImage = async (
   imageUri: string,
-  userId: string
+  userId: string,
+  caption: string,
+  clientRequestId: string
 ): Promise<IMessage> => {
-  const aiParsedImage = await aiApi.parseImage(imageUri, userId);
+  const aiParsedImage = await aiApi.parseImage(
+    imageUri,
+    userId,
+    caption,
+    clientRequestId
+  );
   return buildIMessageArray([aiParsedImage])[0];
 };
 

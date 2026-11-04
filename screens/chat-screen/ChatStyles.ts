@@ -26,6 +26,37 @@ export const ChatStyles = () => {
     iconsSend: {
       justifyContent: 'center',
     },
+    photoMessage: {
+      alignSelf: 'flex-end',
+      borderRadius: 16,
+      overflow: 'hidden',
+    },
+    chatPhoto: {
+      width: 200,
+      height: 200,
+      margin: 0,
+      borderRadius: 16,
+    },
+    photoTime: {
+      position: 'absolute',
+      right: 8,
+      bottom: 7,
+      color: 'white',
+      fontSize: 12,
+      textShadowColor: 'rgba(0, 0, 0, 0.8)',
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 3,
+    },
+    photoRetry: {
+      position: 'absolute',
+      left: 8,
+      bottom: 7,
+      borderRadius: 8,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+    },
+    photoRetryText: { color: 'white', fontWeight: '600' },
     showSettingsText: {
       color: COLORS.accentColor,
     },

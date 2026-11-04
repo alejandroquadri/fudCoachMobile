@@ -10,7 +10,14 @@ import {
   Linking,
 } from 'react-native';
 import 'react-native-get-random-values';
-import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
+import {
+  Bubble,
+  GiftedChat,
+  IMessage,
+  MessageImage,
+  Send,
+} from 'react-native-gifted-chat';
+import type { BubbleProps } from 'react-native-gifted-chat/lib/Bubble/types';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -67,6 +74,9 @@ export const Chat = () => {
   const loadingPage = useRef(false);
   const activeUserId = useRef<string | undefined>(undefined);
   const [cameraVisible, setCameraVisible] = useState(false);
+  const [failedPhotos, setFailedPhotos] = useState<
+    Record<string, { uri: string; caption: string; userId: string }>
+  >({});
   const [permission, requestPermission] = useCameraPermissions();
   const [showDialogSettings, setShowDialogSettings] = useState(false);
 
@@ -98,6 +108,7 @@ export const Chat = () => {
     activeUserId.current = user?._id;
     setNextCursor(null);
     setMessages([]);
+    setFailedPhotos({});
     console.log('corre use Effect de initialize Chat');
     const initializeChat = async () => {
       if (user && user._id) {
@@ -236,41 +247,112 @@ export const Chat = () => {
     }
   };
 
-  const handlePictureTaken = async (imageUri: string) => {
-    if (!user?._id) {
-      return;
-    }
-    const userId = user._id;
-    console.log(user);
-    const processedUri = await prepareForUpload(imageUri); // <-- new
-    const imageMessage: IMessage = {
-      _id: new Date().getTime(),
-      createdAt: new Date(),
-      text: '',
-      user: {
-        _id: 1,
-        name: user?.name || 'User',
-      },
-      image: processedUri,
-    };
-
-    setMessages(prevMessages =>
-      GiftedChat.append(prevMessages, [imageMessage])
-    );
-    console.log('got image!', imageUri);
-    setCameraVisible(false);
+  const sendPhotoRequest = async (
+    imageUri: string,
+    caption: string,
+    requestId: string,
+    userId: string
+  ) => {
+    setFailedPhotos(previous => {
+      const updated = { ...previous };
+      delete updated[requestId];
+      return updated;
+    });
+    setIsTyping(true);
     try {
-      setIsTyping(true);
-      const aiResponseMessage = await sendChatImage(processedUri, userId);
-      setIsTyping(false);
+      const processedUri = await prepareForUpload(imageUri);
+      const aiResponseMessage = await sendChatImage(
+        processedUri,
+        userId,
+        caption.trim(),
+        requestId
+      );
+      if (activeUserId.current !== userId) return;
       setMessages(prevMessages =>
         GiftedChat.append(prevMessages, [aiResponseMessage])
       );
     } catch (error) {
       console.log(error);
-      Alert.alert('Error', 'Coach could not process the image');
-      setIsTyping(false);
+      if (activeUserId.current !== userId) return;
+      setFailedPhotos(previous => ({
+        ...previous,
+        [requestId]: { uri: imageUri, caption, userId },
+      }));
+      const response = (
+        error as { response?: { status?: number; data?: { message?: string } } }
+      ).response;
+      Alert.alert(
+        'Could not send photo',
+        response?.status === 413
+          ? (response.data?.message ?? 'Please shorten your note.')
+          : 'Tap Retry on the photo to try again.'
+      );
+    } finally {
+      if (activeUserId.current === userId) setIsTyping(false);
     }
+  };
+
+  const handlePictureTaken = (
+    imageUri: string,
+    caption: string,
+    requestId: string
+  ) => {
+    if (!user?._id) return;
+    const createdAt = new Date();
+    const messageUser = { _id: 1, name: user.name || 'User' };
+    const imageMessage: IMessage = {
+      _id: requestId,
+      createdAt,
+      text: '',
+      user: messageUser,
+      image: imageUri,
+    };
+    const note = caption.trim();
+    const outgoing: IMessage[] = note
+      ? [
+          {
+            _id: `${requestId}-caption`,
+            createdAt,
+            text: note,
+            user: messageUser,
+          },
+          imageMessage,
+        ]
+      : [imageMessage];
+    setMessages(previous => GiftedChat.append(previous, outgoing));
+    setCameraVisible(false);
+    void sendPhotoRequest(imageUri, note, requestId, user._id);
+  };
+
+  const renderBubble = (props: BubbleProps<IMessage>) => {
+    const message = props.currentMessage;
+    if (!message?.image) return <Bubble {...props} />;
+    const failed = failedPhotos[String(message._id)];
+    return (
+      <View style={styles.photoMessage}>
+        <MessageImage currentMessage={message} imageStyle={styles.chatPhoto} />
+        <Text style={styles.photoTime}>
+          {new Date(message.createdAt).toLocaleTimeString([], {
+            hour: 'numeric',
+            minute: '2-digit',
+          })}
+        </Text>
+        {failed && (
+          <TouchableOpacity
+            style={styles.photoRetry}
+            onPress={() =>
+              void sendPhotoRequest(
+                failed.uri,
+                failed.caption,
+                String(message._id),
+                failed.userId
+              )
+            }>
+            <Text style={styles.photoRetryText}>Retry</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
   };
 
   const renderActions = () => {
@@ -320,6 +402,7 @@ export const Chat = () => {
         }}
         renderActions={renderActions}
         renderSend={renderSend}
+        renderBubble={renderBubble}
         isSendButtonAlwaysVisible={true}
         keyboardAvoidingViewProps={{
           // Gifted Chat's keyboard container starts below the Drawer header.
@@ -328,10 +411,12 @@ export const Chat = () => {
       />
 
       <Modal visible={cameraVisible} animationType="slide">
-        <CameraScreen
-          onPictureTaken={handlePictureTaken}
-          onClose={() => setCameraVisible(false)}
-        />
+        {cameraVisible && (
+          <CameraScreen
+            onPictureTaken={handlePictureTaken}
+            onClose={() => setCameraVisible(false)}
+          />
+        )}
       </Modal>
 
       {/* Confirm Delete Dialog */}
