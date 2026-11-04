@@ -1,7 +1,36 @@
 import { AiState, ChatMsg, UserProfile } from '../types';
 import { api } from './apiInstance';
 
+export interface BarcodeProduct {
+  barcode: string;
+  name: string;
+  brand: string;
+  imageUrl?: string;
+  per100g: { calories: number; protein: number; carbs: number; fat: number };
+  servingGrams?: number;
+  version: string;
+}
+
 export const aiApi = {
+  lookupBarcode: async (barcode: string): Promise<BarcodeProduct> =>
+    api
+      .post('/coach/barcode/lookup', { barcode })
+      .then(response => response.data),
+  logBarcode: async (
+    product: BarcodeProduct,
+    grams: number,
+    clientRequestId: string,
+    note: string
+  ): Promise<ChatMsg> =>
+    api
+      .post('/coach/barcode/log', {
+        barcode: product.barcode,
+        version: product.version,
+        grams,
+        clientRequestId,
+        note,
+      })
+      .then(response => response.data),
   initPrefernces: async (userProfile: UserProfile): Promise<AiState> => {
     return api
       .post('/coach/init-user-preferences', { userProfile })

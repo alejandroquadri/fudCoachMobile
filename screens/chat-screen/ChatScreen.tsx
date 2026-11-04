@@ -415,6 +415,18 @@ export const Chat = () => {
           <CameraScreen
             onPictureTaken={handlePictureTaken}
             onClose={() => setCameraVisible(false)}
+            onBarcodeLogged={(answer, description) => {
+              const outgoing: IMessage = {
+                _id: `barcode-${Date.now()}`,
+                createdAt: new Date(),
+                text: description,
+                user: { _id: 1, name: user?.name || 'User' },
+              };
+              setMessages(previous =>
+                GiftedChat.append(previous, [answer, outgoing])
+              );
+              setCameraVisible(false);
+            }}
           />
         )}
       </Modal>

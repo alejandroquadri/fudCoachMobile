@@ -1,4 +1,5 @@
 import { aiApi } from '../api';
+import type { BarcodeProduct } from '../api/AiApi';
 import { v4 as uuidv4 } from 'uuid';
 import { IMessage } from 'react-native-gifted-chat';
 import { AiState, ChatMsg, UserProfile } from '../types';
@@ -6,6 +7,16 @@ import * as ImageManipulator from 'expo-image-manipulator';
 
 const PREUPLOAD_MAX = 1024; // longest side
 const PREUPLOAD_QUALITY = 0.7; // 0..1
+
+export const sendBarcodeMeal = async (
+  product: BarcodeProduct,
+  grams: number,
+  requestId: string,
+  note: string
+): Promise<IMessage> => {
+  const response = await aiApi.logBarcode(product, grams, requestId, note);
+  return buildIMessageArray([response])[0];
+};
 
 export const fetchPreviousMessages = async (
   userId: string

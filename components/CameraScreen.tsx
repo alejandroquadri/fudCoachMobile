@@ -14,18 +14,23 @@ import * as ImagePicker from 'expo-image-picker';
 import Feather from '@react-native-vector-icons/feather';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { v4 as uuidv4 } from 'uuid';
+import type { IMessage } from 'react-native-gifted-chat';
+import { BarcodeScanner } from './BarcodeScanner';
 
 interface CameraScreenProps {
   onPictureTaken: (uri: string, caption: string, requestId: string) => void;
   onClose: () => void;
+  onBarcodeLogged: (message: IMessage, description: string) => void;
 }
 
 export const CameraScreen: React.FC<CameraScreenProps> = ({
   onPictureTaken,
   onClose,
+  onBarcodeLogged,
 }) => {
   const cameraRef = useRef<CameraView | null>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [scanningBarcode, setScanningBarcode] = useState(false);
   const [caption, setCaption] = useState('');
   const [requestId, setRequestId] = useState('');
   const sendingRef = useRef(false);
@@ -61,6 +66,14 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({
     sendingRef.current = true;
     onPictureTaken(photoUri, caption, requestId);
   };
+
+  if (scanningBarcode)
+    return (
+      <BarcodeScanner
+        onClose={() => setScanningBarcode(false)}
+        onLogged={onBarcodeLogged}
+      />
+    );
 
   if (photoUri) {
     return (
@@ -108,7 +121,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({
         ref={cameraRef}
         style={styles.camera}
         facing={'back'}
-        autofocus={'on'}
+        autofocus="off"
       />
 
       {/* Cancel button (top-right) */}
@@ -127,6 +140,12 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({
           onPress={pickFromLibrary}
           style={styles.libraryButton}>
           <Ionicons name="images-outline" size={28} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setScanningBarcode(true)}
+          style={styles.barcodeButton}
+          accessibilityLabel="Scan barcode">
+          <Ionicons name="barcode-outline" size={32} color="white" />
         </TouchableOpacity>
       </View>
     </View>
@@ -213,6 +232,7 @@ const styles = StyleSheet.create({
     left: 30,
     bottom: 20,
   },
+  barcodeButton: { position: 'absolute', right: 30, bottom: 20 },
   message: {
     marginTop: 100,
     textAlign: 'center',
