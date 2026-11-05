@@ -51,7 +51,11 @@ export const aiApi = {
       .then(response => response.data),
   aiResponse: async (message: string, userId: string): Promise<ChatMsg> =>
     api
-      .post('/coach/get-answer', { message, userId })
+      .post('/coach/get-answer', {
+        message,
+        userId,
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      })
       .then(response => response.data),
   parseImage: async (
     uri: string,

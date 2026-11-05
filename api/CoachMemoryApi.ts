@@ -1,6 +1,14 @@
 import { api } from './apiInstance';
 
+export interface MealRoutine {
+  id: string;
+  meal: 'breakfast' | 'lunch' | 'dinner' | 'snack';
+  weekdays: number[];
+  description: string;
+}
+
 export interface CoachMemory {
+  routines: MealRoutine[];
   goals: string;
   relationships: string;
   preferences: string;

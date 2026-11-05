@@ -37,7 +37,7 @@ export const ConfigStack = () => (
     <Stack.Screen
       name="CoachMemoryScreen"
       component={CoachMemoryScreen}
-      options={{ headerShown: true, title: 'Coach memory' }}
+      options={{ headerShown: false }}
     />
     <Stack.Screen name="ProfileStack" component={ProfileStack} />
     <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
