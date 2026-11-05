@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates, localeTag } from '../../../localization';
 import { useCurrentUser } from '@hooks';
 import DateTimePicker, {
   DateTimePickerChangeEvent,
@@ -24,6 +25,7 @@ type Props = NativeStackScreenProps<
 >;
 
 export const NotificationsScreen = ({ navigation }: Props) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const user = useCurrentUser();
 
@@ -172,7 +174,7 @@ export const NotificationsScreen = ({ navigation }: Props) => {
     return (
       <Card containerStyle={notStyles.card}>
         <View style={notStyles.rowTop}>
-          <Text style={notStyles.cardTitle}>{title}</Text>
+          <Text style={notStyles.cardTitle}>{tr(title)}</Text>
           <Switch
             color={COLORS.accentColor}
             value={setting.enabled}
@@ -187,7 +189,7 @@ export const NotificationsScreen = ({ navigation }: Props) => {
           style={[notStyles.rowBottom, disabled && notStyles.rowDisabled]}>
           <Text
             style={[notStyles.timeLabel, disabled && notStyles.textDisabled]}>
-            Time
+            {tr('Time')}
           </Text>
           <View style={notStyles.timeRight}>
             <Text
@@ -225,24 +227,29 @@ export const NotificationsScreen = ({ navigation }: Props) => {
       </View>
 
       <Text h4 style={notStyles.title}>
-        Notifications
+        {tr('Notifications')}
       </Text>
 
-      {renderCard('dailyPlanner', 'Daily planner', dailyPlanner)}
-      {renderCard('lunchLogReminder', 'Lunch log reminder', lunchLogReminder)}
+      {renderCard('dailyPlanner', tr('Daily planner'), dailyPlanner)}
+      {renderCard(
+        'lunchLogReminder',
+        tr('Lunch log reminder'),
+        lunchLogReminder
+      )}
       {renderCard(
         'dinnerLogReminder',
-        'Dinner log reminder',
+        tr('Dinner log reminder'),
         dinnerLogReminder
       )}
 
       <BottomSheet isVisible={!!activePicker} onBackdropPress={closeSheet}>
         <View style={notStyles.sheetContainer}>
           <View style={notStyles.sheetHandle} />
-          <Text style={notStyles.sheetTitle}>Select time</Text>
+          <Text style={notStyles.sheetTitle}>{tr('Select time')}</Text>
 
           <View style={notStyles.pickerWrapper}>
             <DateTimePicker
+              locale={localeTag()}
               value={tempTime}
               mode="time"
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
@@ -253,13 +260,13 @@ export const NotificationsScreen = ({ navigation }: Props) => {
           <View style={notStyles.sheetButtons}>
             <Button
               type="clear"
-              title="Cancel"
+              title={tr('Cancel')}
               onPress={closeSheet}
               titleStyle={notStyles.btnCancelText}
               buttonStyle={notStyles.btnCancel}
             />
             <Button
-              title="Save"
+              title={tr('Save')}
               type="clear"
               onPress={saveTime}
               titleStyle={notStyles.btnSaveText}

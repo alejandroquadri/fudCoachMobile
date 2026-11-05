@@ -1,3 +1,10 @@
+import { useLanguage } from '../../localization/LanguageProvider';
+import {
+  tr,
+  useLanguageUpdates,
+  languages,
+  LanguagePreference,
+} from '../../localization';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Dialog, Icon, ListItem, Button } from '@rneui/themed';
 import React, { useState } from 'react';
@@ -20,6 +27,19 @@ import { deleteUser } from '@services';
 type Props = NativeStackScreenProps<ConfigStackParamList, 'ConfigScreen'>;
 
 export const ConfigScreen = ({ navigation }: Props) => {
+  useLanguageUpdates();
+  const { language, setPreference } = useLanguage();
+  const chooseLanguage = () =>
+    Alert.alert(tr('Language'), undefined, [
+      ...Object.entries(languages).map(([value, entry]) => ({
+        text: (language === value ? '✓ ' : '') + entry.label,
+        onPress: () => {
+          void setPreference(value as LanguagePreference).catch(() =>
+            Alert.alert(tr('Could not save language'), tr('Please try again.'))
+          );
+        },
+      })),
+    ]);
   const { signOut } = useAuth();
   const user = useCurrentUser();
 
@@ -39,13 +59,13 @@ export const ConfigScreen = ({ navigation }: Props) => {
       }
       // no-op for other platforms for now
       Alert.alert(
-        'Subscriptions',
-        'Available on iOS from the App Store account page.'
+        tr('Subscriptions'),
+        tr('Available on iOS from the App Store account page.')
       );
     } catch {
       Alert.alert(
-        'Unable to open',
-        'Open the App Store, tap your avatar, then Subscriptions.'
+        tr('Unable to open'),
+        tr('Open the App Store, tap your avatar, then Subscriptions.')
       );
     }
   };
@@ -93,10 +113,10 @@ export const ConfigScreen = ({ navigation }: Props) => {
               <Icon name="user" type="feather" />
               <ListItem.Content>
                 <ListItem.Title>
-                  <Text>Profile</Text>
+                  <Text>{tr('Profile')}</Text>
                 </ListItem.Title>
                 <ListItem.Subtitle>
-                  <Text>Personal info, goals, height</Text>
+                  <Text>{tr('Personal data, objectives')}</Text>
                 </ListItem.Subtitle>
               </ListItem.Content>
               <Icon name="chevron-right" type="feather" />
@@ -110,10 +130,10 @@ export const ConfigScreen = ({ navigation }: Props) => {
               <Icon name="heart" type="feather" />
               <ListItem.Content>
                 <ListItem.Title>
-                  <Text>Coach memory</Text>
+                  <Text>{tr('Coach memory')}</Text>
                 </ListItem.Title>
                 <ListItem.Subtitle>
-                  <Text>What your coach remembers about you</Text>
+                  <Text>{tr('What the coach remembers')}</Text>
                 </ListItem.Subtitle>
               </ListItem.Content>
               <Icon name="chevron-right" type="feather" />
@@ -127,10 +147,22 @@ export const ConfigScreen = ({ navigation }: Props) => {
               <Icon name="bell" type="feather" />
               <ListItem.Content>
                 <ListItem.Title>
-                  <Text>Notifications</Text>
+                  <Text>{tr('Notifications')}</Text>
                 </ListItem.Title>
                 <ListItem.Subtitle>
-                  <Text>Reminders, push preferences</Text>
+                  <Text>{tr('Reminders, push preferences')}</Text>
+                </ListItem.Subtitle>
+              </ListItem.Content>
+              <Icon name="chevron-right" type="feather" />
+            </View>
+          </ListItem>
+          <ListItem onPress={chooseLanguage}>
+            <View key="content" style={configStyles.listItemRow}>
+              <Icon name="translate" type="material" />
+              <ListItem.Content>
+                <ListItem.Title>{tr('Language')}</ListItem.Title>
+                <ListItem.Subtitle>
+                  {languages[language].label}
                 </ListItem.Subtitle>
               </ListItem.Content>
               <Icon name="chevron-right" type="feather" />
@@ -144,7 +176,7 @@ export const ConfigScreen = ({ navigation }: Props) => {
               <Icon name="credit-card" type="feather" />
               <ListItem.Content>
                 <ListItem.Title>
-                  <Text>Manage subscription</Text>
+                  <Text>{tr('Manage subscription')}</Text>
                 </ListItem.Title>
               </ListItem.Content>
               <Icon name="chevron-right" type="feather" />
@@ -156,7 +188,7 @@ export const ConfigScreen = ({ navigation }: Props) => {
               <Icon name="document-outline" type="ionicon" />
               <ListItem.Content>
                 <ListItem.Title>
-                  <Text>Terms of service</Text>
+                  <Text>{tr('Terms of service')}</Text>
                 </ListItem.Title>
               </ListItem.Content>
               <Icon name="chevron-right" type="feather" />
@@ -168,7 +200,7 @@ export const ConfigScreen = ({ navigation }: Props) => {
               <Icon name="police-badge-outline" type="material-design" />
               <ListItem.Content>
                 <ListItem.Title>
-                  <Text>Privacy policy</Text>
+                  <Text>{tr('Privacy policy')}</Text>
                 </ListItem.Title>
               </ListItem.Content>
               <Icon name="chevron-right" type="feather" />
@@ -180,7 +212,7 @@ export const ConfigScreen = ({ navigation }: Props) => {
               <Icon name="user-minus" type="feather" />
               <ListItem.Content>
                 <ListItem.Title>
-                  <Text>Delete account</Text>
+                  <Text>{tr('Delete account')}</Text>
                 </ListItem.Title>
               </ListItem.Content>
               <Icon name="chevron-right" type="feather" />
@@ -195,15 +227,16 @@ export const ConfigScreen = ({ navigation }: Props) => {
       <Dialog
         isVisible={confirmVisible}
         onBackdropPress={() => setConfirmVisible(false)}>
-        <Dialog.Title title="Delete Account?" />
+        <Dialog.Title title={tr('Delete Account?')} />
         <Text>
-          Are you sure you want to permanently delete your account? This action
-          cannot be undone.
+          {tr(
+            'Are you sure you want to permanently delete your account? This action cannot be undone.'
+          )}
         </Text>
 
         <Dialog.Actions>
           <Button
-            title="Delete"
+            title={tr('Delete')}
             onPress={async () => {
               setConfirmVisible(false);
               console.log('running after interacion');
@@ -214,7 +247,7 @@ export const ConfigScreen = ({ navigation }: Props) => {
             testID="confirm-delete"
           />
           <Button
-            title="Cancel"
+            title={tr('Cancel')}
             type="clear"
             onPress={() => setConfirmVisible(false)}
             testID="cancel-delete"
@@ -226,7 +259,7 @@ export const ConfigScreen = ({ navigation }: Props) => {
       <Dialog isVisible={deleting}>
         <View style={configStyles.loaderBox}>
           <ActivityIndicator size="large" />
-          <Text style={configStyles.loading}>Deleting account...</Text>
+          <Text style={configStyles.loading}>{tr('Deleting account...')}</Text>
         </View>
       </Dialog>
     </>

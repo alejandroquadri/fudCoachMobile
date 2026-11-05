@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Button, Icon } from '@rneui/themed';
@@ -21,6 +22,7 @@ export const GoalObstacleScreen = ({
   step = 0,
   totalSteps = 0,
 }: GoalObstacleProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   const [selectedObstacle, setSelectedObstacle] = useState(initialValue);
@@ -40,7 +42,7 @@ export const GoalObstacleScreen = ({
         onPress={() => setSelectedObstacle(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {value}
+          {tr(value)}
         </Text>
       </TouchableOpacity>
     );
@@ -69,7 +71,7 @@ export const GoalObstacleScreen = ({
 
       <View style={styles.content}>
         <Text style={styles.titleNoSub}>
-          What holds you back from achieving your goals?
+          {tr('What holds you back from achieving your goals?')}
         </Text>
 
         <View style={styles.optionsContainer}>
@@ -81,7 +83,7 @@ export const GoalObstacleScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={handleSave}
         disabled={!selectedObstacle}
         buttonStyle={styles.nextButton}

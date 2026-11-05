@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../../localization';
 import React from 'react';
 import { View } from 'react-native';
 import { Card, Button, Text } from '@rneui/themed';
@@ -18,14 +19,18 @@ export const WaterIntakeCard: React.FC<WaterIntakeCardProps> = ({
   handleIncrease,
   handleDecrease,
 }) => {
+  useLanguageUpdates();
   const styles = WaterLogStyles();
   const waterCups = waterLog?.waterCups ?? 0;
   return (
     <Card containerStyle={styles.waterCard}>
       <View style={styles.waterHeader}>
-        <Text style={styles.waterTitle}>Water</Text>
-        <Text style={styles.waterGoal}>Goal: 8 cups</Text>
-        <Text style={styles.totalWater}>Total Water: {waterCups} cups</Text>
+        <Text style={styles.waterTitle}>{tr('Water')}</Text>
+        <Text style={styles.waterGoal}>{tr('Goal: 8 cups')}</Text>
+        <Text style={styles.totalWater}>
+          {tr('Total Water:')}
+          {waterCups} {tr('cups')}
+        </Text>
       </View>
 
       <View style={styles.waterRow}>

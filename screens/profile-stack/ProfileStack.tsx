@@ -17,13 +17,15 @@ export type ProfileStackParamList = {
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
-export const ProfileStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="ProfileHome" component={ProfileScreen} />
-    <Stack.Screen name="WeightGoalWrapper" component={WeightGoalWrapper} />
-    <Stack.Screen name="HeightWrapper" component={HeightWrapper} />
-    <Stack.Screen name="BirthDateWrapper" component={BirthdateWrapper} />
-    <Stack.Screen name="GenderWrapper" component={GenderWrapper} />
-    <Stack.Screen name="EditNameScreen" component={EditNameScreen} />
-  </Stack.Navigator>
-);
+export const ProfileStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProfileHome" component={ProfileScreen} />
+      <Stack.Screen name="WeightGoalWrapper" component={WeightGoalWrapper} />
+      <Stack.Screen name="HeightWrapper" component={HeightWrapper} />
+      <Stack.Screen name="BirthDateWrapper" component={BirthdateWrapper} />
+      <Stack.Screen name="GenderWrapper" component={GenderWrapper} />
+      <Stack.Screen name="EditNameScreen" component={EditNameScreen} />
+    </Stack.Navigator>
+  );
+};

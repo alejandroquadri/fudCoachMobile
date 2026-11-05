@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../../localization';
 import React from 'react';
 import { View } from 'react-native';
 import { Card, Button, Text } from '@rneui/themed';
@@ -9,14 +10,17 @@ interface ExerciseCardProps {
 }
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({ logs }) => {
+  useLanguageUpdates();
   const styles = ExerciseLogStyles();
   const totalCalories = logs.reduce((sum, log) => sum + log.caloriesBurned, 0);
 
   return (
     <Card containerStyle={styles.exerciseCard}>
       <View style={styles.exerciseHeader}>
-        <Text style={styles.exerciseTitle}>Exercise</Text>
-        <Text style={styles.exerciseBurned}>({totalCalories} burned)</Text>
+        <Text style={styles.exerciseTitle}>{tr('Exercise')}</Text>
+        <Text style={styles.exerciseBurned}>
+          ({totalCalories} {tr('burned)')}
+        </Text>
         {/* <Button title="+ Add Exercise" type="clear" onPress={() => {}} /> */}
       </View>
 
@@ -26,7 +30,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ logs }) => {
           <View style={styles.exerciseDetails}>
             <Text style={styles.exerciseType}>{log.exerciseName}</Text>
             <Text style={styles.exerciseCalories}>
-              {log.caloriesBurned} calories burned
+              {log.caloriesBurned} {tr('calories burned')}
             </Text>
           </View>
         </View>

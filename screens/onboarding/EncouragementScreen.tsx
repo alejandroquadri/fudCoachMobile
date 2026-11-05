@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React from 'react';
 import {
   View,
@@ -31,9 +32,10 @@ export const EcouragementScreen = ({
   step = 0,
   totalSteps = 0,
 }: LongTermResultsProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
-  const direction = weightDelta < 0 ? 'To gain' : 'To loose';
+  const direction = weightDelta < 0 ? tr('To gain') : tr('To loose');
   const convertedDelta =
     unitType === 'metric' ? weightDelta : kgToLbs(weightDelta);
   const unit = unitType === 'metric' ? 'kg' : 'lbs';
@@ -62,17 +64,20 @@ export const EcouragementScreen = ({
         <Text style={[styles.title, encouragementStyles.text]}>
           {direction}{' '}
           <Text style={encouragementStyles.textAccent}>{convertedDelta}</Text>{' '}
-          {unit} is totally attainable. It is not difficult at all! You got
-          this!
+          {unit}{' '}
+          {tr(
+            'is totally attainable. It is not difficult at all! You got this!'
+          )}
         </Text>
         <Text style={encouragementStyles.text2}>
-          90% of users say that once they reach their goal, they are able to
-          sustain it with Food Coach
+          {tr(
+            '90% of users say that once they reach their goal, they are able to sustain it with Food Coach'
+          )}
         </Text>
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={onNext}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}

@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import { useState } from 'react';
 import {
   ScrollView,
@@ -33,6 +34,7 @@ export const GoalVelocityScreen = ({
   step = 0,
   totalSteps = 0,
 }: GoalVelocityProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const [selectedVel, setSelectedVel] = useState<number>(
     unitType === 'imperial'
@@ -80,11 +82,13 @@ export const GoalVelocityScreen = ({
 
       <View style={styles.content}>
         <Text style={styles.title}>
-          How fast do you want to reach your goal?
+          {tr('How fast do you want to reach your goal?')}
         </Text>
 
         <View style={goalVelocityStyles.sliderContainer}>
-          <Text style={goalVelocityStyles.label}>Weekly weight loss rate</Text>
+          <Text style={goalVelocityStyles.label}>
+            {tr('Weekly weight loss rate')}
+          </Text>
 
           <Text style={goalVelocityStyles.selectedValue}>
             {selectedVel.toFixed(1)} {unit}
@@ -132,7 +136,7 @@ export const GoalVelocityScreen = ({
             {selectedVel >= minRecommendeVelocity &&
               selectedVel <= maxRecommendeVelocity && (
                 <Text style={goalVelocityStyles.recommendedText}>
-                  Recommended
+                  {tr('Recommended')}
                 </Text>
               )}
           </View>
@@ -140,7 +144,7 @@ export const GoalVelocityScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={handleSave}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}

@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import { useAuth, useCurrentUser } from '@hooks';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -25,6 +26,7 @@ import { SharedStyles, COLORS } from '@theme';
 type Props = NativeStackScreenProps<ProfileStackParamList, 'ProfileHome'>;
 
 export const ProfileScreen = ({ navigation }: Props) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const user = useCurrentUser();
   const { refreshUser } = useAuth();
@@ -43,7 +45,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
           setProfile(fresh);
           await refreshUser(fresh);
         } catch (e) {
-          Alert.alert('Error', 'Could not load profile');
+          Alert.alert(tr('Error'), tr('Could not load profile'));
         }
       })();
     }, [user._id])
@@ -58,7 +60,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
       setProfile(updated);
       await refreshUser(updated);
     } catch {
-      Alert.alert('Could not update photo', 'Please try again.');
+      Alert.alert(tr('Could not update photo'), tr('Please try again.'));
     } finally {
       setSavingAvatar(false);
     }
@@ -72,10 +74,12 @@ export const ProfileScreen = ({ navigation }: Props) => {
           : await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
         Alert.alert(
-          'Permission needed',
+          tr('Permission needed'),
           source === 'camera'
-            ? 'Allow camera access in Settings to take a profile photo.'
-            : 'Allow photo library access in Settings to choose a profile photo.'
+            ? tr('Allow camera access in Settings to take a profile photo.')
+            : tr(
+                'Allow photo library access in Settings to choose a profile photo.'
+              )
         );
         return;
       }
@@ -117,30 +121,30 @@ export const ProfileScreen = ({ navigation }: Props) => {
       await saveAvatar(`data:image/jpeg;base64,${image.base64}`);
     } catch {
       Alert.alert(
-        'Could not use photo',
-        'Please choose another photo and try again.'
+        tr('Could not use photo'),
+        tr('Please choose another photo and try again.')
       );
     }
   };
 
   const showAvatarOptions = () => {
     if (savingAvatar) return;
-    Alert.alert('Profile photo', 'Choose a photo for your profile.', [
-      { text: 'Take photo', onPress: () => void chooseAvatar('camera') },
+    Alert.alert(tr('Profile photo'), tr('Choose a photo for your profile.'), [
+      { text: tr('Take photo'), onPress: () => void chooseAvatar('camera') },
       {
-        text: 'Choose from library',
+        text: tr('Choose from library'),
         onPress: () => void chooseAvatar('library'),
       },
       ...(profile.avatar
         ? [
             {
-              text: 'Remove photo',
+              text: tr('Remove photo'),
               style: 'destructive' as const,
               onPress: () => void saveAvatar(''),
             },
           ]
         : []),
-      { text: 'Cancel', style: 'cancel' },
+      { text: tr('Cancel'), style: 'cancel' },
     ]);
   };
 
@@ -164,7 +168,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
           onPress={showAvatarOptions}
           disabled={savingAvatar}
           accessibilityRole="button"
-          accessibilityLabel="Change profile photo"
+          accessibilityLabel={tr('Change profile photo')}
           style={profileStyles.avatar}>
           {savingAvatar ? (
             <ActivityIndicator color={COLORS.white} />
@@ -188,20 +192,20 @@ export const ProfileScreen = ({ navigation }: Props) => {
           {profile.name?.trim() || 'Your profile'}
         </Text>
         <TouchableOpacity onPress={showAvatarOptions} disabled={savingAvatar}>
-          <Text style={profileStyles.changePhoto}>Change photo</Text>
+          <Text style={profileStyles.changePhoto}>{tr('Change photo')}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={profileStyles.card}>
         <View style={profileStyles.goalRow}>
           <View>
-            <Text style={profileStyles.label}>Goal Weight</Text>
+            <Text style={profileStyles.label}>{tr('Goal Weight')}</Text>
             <Text style={profileStyles.value}>
               {profile.weightGoal ?? '--'} kg
             </Text>
           </View>
           <Button
-            title="Change Goal"
+            title={tr('Change Goal')}
             onPress={() => navigation.navigate('WeightGoalWrapper')}
             buttonStyle={profileStyles.changeGoalButton}
             titleStyle={profileStyles.changeGoalButtonText}
@@ -212,7 +216,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
       <View style={profileStyles.card}>
         <Pressable onPress={() => navigation.navigate('EditNameScreen')}>
           <View style={profileStyles.itemRow}>
-            <Text style={profileStyles.label}>Name</Text>
+            <Text style={profileStyles.label}>{tr('Name')}</Text>
             <Text style={profileStyles.value}>
               {profile.name?.trim() ? profile.name : '--'}
             </Text>
@@ -222,7 +226,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
         <View style={profileStyles.separator} />
         <Pressable onPress={() => navigation.navigate('HeightWrapper')}>
           <View style={profileStyles.itemRow}>
-            <Text style={profileStyles.label}>Height</Text>
+            <Text style={profileStyles.label}>{tr('Height')}</Text>
             <Text style={profileStyles.value}>{profile.height} cm</Text>
           </View>
         </Pressable>
@@ -230,7 +234,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
 
         <Pressable onPress={() => navigation.navigate('BirthDateWrapper')}>
           <View style={profileStyles.itemRow}>
-            <Text style={profileStyles.label}>Date of birth</Text>
+            <Text style={profileStyles.label}>{tr('Date of birth')}</Text>
             <Text style={profileStyles.value}>
               {profile.birthdate
                 ? format(new Date(profile.birthdate), 'dd/MM/yyyy')
@@ -242,9 +246,9 @@ export const ProfileScreen = ({ navigation }: Props) => {
 
         <Pressable onPress={() => navigation.navigate('GenderWrapper')}>
           <View style={profileStyles.itemRow}>
-            <Text style={profileStyles.label}>Gender</Text>
+            <Text style={profileStyles.label}>{tr('Gender')}</Text>
             <Text style={profileStyles.value}>
-              {capitalizeFirst(profile.gender)}
+              {tr(capitalizeFirst(profile.gender))}
             </Text>
           </View>
         </Pressable>

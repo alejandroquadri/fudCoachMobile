@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React from 'react';
 import {
   View,
@@ -26,6 +27,7 @@ export const LongTermResults = ({
   step = 0,
   totalSteps = 0,
 }: LongTermResultsProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   return (
@@ -50,7 +52,9 @@ export const LongTermResults = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>With Food Coach, get long term results</Text>
+        <Text style={styles.title}>
+          {tr('With Food Coach, get long term results')}
+        </Text>
 
         <Image
           source={require('../../assets/long_term.png')} // Update the path to your actual chart asset
@@ -60,7 +64,7 @@ export const LongTermResults = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={onNext}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}

@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../localization';
 import React from 'react';
 import {
   View,
@@ -14,6 +15,7 @@ import { useAuth } from '@hooks';
 import { COLORS } from '@theme';
 
 export const CustomDrawer = (props: DrawerContentComponentProps) => {
+  useLanguageUpdates();
   const { navigation, state } = props;
   const insets = useSafeAreaInsets();
 
@@ -42,6 +44,7 @@ export const CustomDrawer = (props: DrawerContentComponentProps) => {
     iconName: string;
     route: string;
   }) => {
+    useLanguageUpdates();
     const isActive = currentRoute === route;
 
     return (
@@ -55,7 +58,7 @@ export const CustomDrawer = (props: DrawerContentComponentProps) => {
           style={styles.icon}
         />
         <Text style={[styles.label, isActive && styles.activeLabel]}>
-          {label}
+          {tr(label)}
         </Text>
       </TouchableOpacity>
     );
@@ -81,17 +84,25 @@ export const CustomDrawer = (props: DrawerContentComponentProps) => {
       <View style={styles.divider} />
 
       {/* Navigation Items */}
-      <DrawerItem label="Coach" iconName="message-circle" route="Coach" />
-      <DrawerItem label="Logs" iconName="clipboard" route="Logs" />
-      <DrawerItem label="Progress" iconName="bar-chart" route="Progress" />
-      <DrawerItem label="Settings" iconName="settings" route="ConfigStack" />
+      <DrawerItem label={tr('Coach')} iconName="message-circle" route="Coach" />
+      <DrawerItem label={tr('Logs')} iconName="clipboard" route="Logs" />
+      <DrawerItem
+        label={tr('Progress')}
+        iconName="bar-chart"
+        route="Progress"
+      />
+      <DrawerItem
+        label={tr('Settings')}
+        iconName="settings"
+        route="ConfigStack"
+      />
       {/* Bottom Divider */}
       <View style={styles.bottomDivider} />
 
       {/* Sign Out */}
       <TouchableOpacity style={styles.itemContainer} onPress={signOutUser}>
         <Icon name="log-out" type="feather" color="#888" style={styles.icon} />
-        <Text style={styles.label}>Sign Out</Text>
+        <Text style={styles.label}>{tr('Sign Out')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

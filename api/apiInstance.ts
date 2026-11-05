@@ -1,3 +1,4 @@
+import i18n from '../localization';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
@@ -15,6 +16,7 @@ export const api = axios.create({
 // Add a request interceptor. I am using it to add token to headers
 api.interceptors.request.use(
   async config => {
+    config.headers['X-App-Language'] = i18n.resolvedLanguage || 'en';
     // Fetch the token from SecureStorer
     const token = await SecureStore.getItemAsync('userToken');
 

@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../../localization';
 import { Card, Text } from '@rneui/themed';
 import React from 'react';
 import { Image, View } from 'react-native';
@@ -12,6 +13,7 @@ interface FoodLogCardProps {
 }
 
 export const FoodLogCard: React.FC<FoodLogCardProps> = ({ mealType, logs }) => {
+  useLanguageUpdates();
   const styles = FoodLogStyles();
 
   // Calculate the total calories for this meal
@@ -25,8 +27,10 @@ export const FoodLogCard: React.FC<FoodLogCardProps> = ({ mealType, logs }) => {
       {/* Meal Header with total calories */}
       <View style={styles.mealHeader}>
         {/* <Text style={styles.mealTitle}>{mealType}</Text> */}
-        <Text style={styles.mealTitle}>Food</Text>
-        <Text style={styles.mealCalories}>({totalCalories} calories)</Text>
+        <Text style={styles.mealTitle}>{tr('Food')}</Text>
+        <Text style={styles.mealCalories}>
+          ({totalCalories} {tr('calories)')}
+        </Text>
         {/* <Button title="+ Add Meal" type="clear" onPress={() => {}} /> */}
       </View>
 
@@ -60,7 +64,7 @@ export const FoodLogCard: React.FC<FoodLogCardProps> = ({ mealType, logs }) => {
               </View>
             </View>
             <Text style={styles.foodCalories}>
-              {log.foodObj.calories} calories
+              {log.foodObj.calories} {tr('calories')}
             </Text>
           </View>
 

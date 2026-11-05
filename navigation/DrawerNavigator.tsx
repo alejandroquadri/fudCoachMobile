@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../localization';
 import { CustomDrawer } from '@components';
 import {
   DrawerToggleButton,
@@ -13,13 +14,15 @@ import { Icon } from '@rneui/themed';
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export const DrawerNavigator = () => {
+  useLanguageUpdates();
   return (
     <Drawer.Navigator
       initialRouteName="Coach"
       drawerContent={props => <CustomDrawer {...props} />}
-      screenOptions={{
+      screenOptions={({ route }) => ({
+        title: tr(route.name),
         headerLeft: () => <DrawerToggleButton tintColor={COLORS.accentColor} />,
-      }}>
+      })}>
       {/* <Drawer.Screen name="Coach" component={Chat} /> */}
       <Drawer.Screen
         name="Coach"

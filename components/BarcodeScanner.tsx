@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../localization';
 import React, { useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -26,6 +27,7 @@ type Props = {
 };
 
 export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
+  useLanguageUpdates();
   const [product, setProduct] = useState<BarcodeProduct | null>(null);
   const [grams, setGrams] = useState('');
   const [note, setNote] = useState('');
@@ -55,10 +57,14 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
         ?.data?.code;
       setError(
         code === 'not_found'
-          ? "We couldn't find this product. Try another barcode or use a photo instead."
+          ? tr(
+              "We couldn't find this product. Try another barcode or use a photo instead."
+            )
           : code === 'incomplete'
-            ? "This product doesn't have enough nutrition information. Try another barcode or use a photo instead."
-            : 'Product lookup is unavailable. Please try again.'
+            ? tr(
+                "This product doesn't have enough nutrition information. Try another barcode or use a photo instead."
+              )
+            : tr('Product lookup is unavailable. Please try again.')
       );
     } finally {
       busy.current = false;
@@ -70,7 +76,7 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
     const amount = Number(grams.replace(',', '.'));
     if (!product || busy.current) return;
     if (!Number.isFinite(amount) || amount <= 0 || amount > 10000) {
-      setError('Enter an amount between 0 and 10,000 g.');
+      setError(tr('Enter an amount between 0 and 10,000 g.'));
       return;
     }
     busy.current = true;
@@ -86,15 +92,21 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
       );
       onLogged(
         answer,
-        `Log ${amount} g of ${[product.brand, product.name].filter(Boolean).join(' - ')} (barcode ${product.barcode}).${note.trim() ? ` ${note.trim()}` : ''}`
+        tr('Log {{grams}} g of {{product}} (barcode {{barcode}}).', {
+          grams: amount,
+          product: [product.brand, product.name].filter(Boolean).join(' - '),
+          barcode: product.barcode,
+        }) + (note.trim() ? ` ${note.trim()}` : '')
       );
     } catch (e) {
       const code = (e as { response?: { data?: { code?: string } } }).response
         ?.data?.code;
       setError(
         code === 'changed'
-          ? 'The product information changed. Scan it again to review the updated information.'
-          : 'Could not log this product. Retry to send the same amount.'
+          ? tr(
+              'The product information changed. Scan it again to review the updated information.'
+            )
+          : tr('Could not log this product. Retry to send the same amount.')
       );
     } finally {
       busy.current = false;
@@ -117,7 +129,7 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
           }
         />
         <View style={styles.scanOverlay}>
-          <Text style={styles.scanTitle}>Scan a food barcode</Text>
+          <Text style={styles.scanTitle}>{tr('Scan a food barcode')}</Text>
           <View style={styles.frame} />
           {loading ? (
             <ActivityIndicator color="white" />
@@ -130,18 +142,20 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
             <TouchableOpacity
               onPress={() => void lookup(lastCode)}
               style={styles.button}>
-              <Text style={styles.buttonText}>Retry lookup</Text>
+              <Text style={styles.buttonText}>{tr('Retry lookup')}</Text>
             </TouchableOpacity>
           )}
           {Boolean(error) && (
             <TouchableOpacity
               onPress={() => setError('')}
               style={styles.outline}>
-              <Text style={styles.buttonText}>Scan another barcode</Text>
+              <Text style={styles.buttonText}>
+                {tr('Scan another barcode')}
+              </Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity onPress={onClose} style={styles.outline}>
-            <Text style={styles.buttonText}>Back to camera</Text>
+            <Text style={styles.buttonText}>{tr('Back to camera')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -154,9 +168,9 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Confirm product</Text>
+        <Text style={styles.title}>{tr('Confirm product')}</Text>
         <Text style={styles.subtitle}>
-          Check the details before logging your food.
+          {tr('Check the details before logging your food.')}
         </Text>
         <View style={styles.productCard}>
           {product.imageUrl && !imageFailed && (
@@ -176,15 +190,16 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
         </View>
         <View style={styles.nutritionCard}>
           <Text style={styles.sectionTitle}>
-            Nutrition <Text style={styles.perAmount}>per 100 g</Text>
+            {tr('Nutrition')}
+            <Text style={styles.perAmount}>{tr('per 100 g')}</Text>
           </Text>
           <View style={styles.nutrientRow}>
             {(
               [
                 ['Calories', product.per100g.calories, 'kcal'],
-                ['Protein', product.per100g.protein, 'g'],
-                ['Carbs', product.per100g.carbs, 'g'],
-                ['Fat', product.per100g.fat, 'g'],
+                [tr('Protein'), product.per100g.protein, 'g'],
+                [tr('Carbs'), product.per100g.carbs, 'g'],
+                [tr('Fat'), product.per100g.fat, 'g'],
               ] as const
             ).map(([label, value, unit]) => (
               <View key={label} style={styles.nutrient}>
@@ -192,30 +207,31 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
                   {Number(value.toFixed(1))}
                   <Text style={styles.nutrientUnit}> {unit}</Text>
                 </Text>
-                <Text style={styles.nutrientLabel}>{label}</Text>
+                <Text style={styles.nutrientLabel}>{tr(label)}</Text>
               </View>
             ))}
           </View>
         </View>
         <Text style={styles.source}>
-          Product data: Open Food Facts. Check it against the package.
+          {tr('Product data: Open Food Facts. Check it against the package.')}
         </Text>
-        <Text style={styles.label}>How much did you eat? (g)</Text>
+        <Text style={styles.label}>{tr('How much did you eat? (g)')}</Text>
         <TextInput
           style={styles.input}
           value={grams}
           onChangeText={setGrams}
           keyboardType="decimal-pad"
           editable={!loading && !attempted}
-          accessibilityLabel="Amount eaten in grams"
-          placeholder="e.g. 150"
+          accessibilityLabel={tr('Amount eaten in grams')}
+          placeholder={tr('e.g. 150')}
         />
         {product.servingGrams && (
           <Text style={styles.detail}>
-            Listed serving: {product.servingGrams} g
+            {tr('Listed serving:')}
+            {product.servingGrams} g
           </Text>
         )}
-        <Text style={styles.label}>Note (optional)</Text>
+        <Text style={styles.label}>{tr('Note (optional)')}</Text>
         <TextInput
           style={styles.input}
           value={note}
@@ -223,8 +239,8 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
           editable={!loading && !attempted}
           maxLength={1000}
           multiline
-          accessibilityLabel="Meal note"
-          placeholder="Add any details for your coach"
+          accessibilityLabel={tr('Meal note')}
+          placeholder={tr('Add any details for your coach')}
         />
         {!!error && <Text style={styles.error}>{error}</Text>}
         <View style={styles.actions}>
@@ -236,7 +252,7 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
               <ActivityIndicator color="white" />
             ) : (
               <Text style={styles.buttonText}>
-                {attempted ? 'Retry' : 'Log food'}
+                {attempted ? tr('Retry') : tr('Log food')}
               </Text>
             )}
           </TouchableOpacity>
@@ -249,14 +265,16 @@ export const BarcodeScanner = ({ onClose, onLogged }: Props) => {
             }}
             style={styles.secondary}>
             <Ionicons name="barcode-outline" size={20} color={COLORS.text} />
-            <Text style={styles.secondaryText}>Scan another barcode</Text>
+            <Text style={styles.secondaryText}>
+              {tr('Scan another barcode')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             disabled={loading}
             onPress={onClose}
             style={styles.backButton}>
             <Ionicons name="arrow-back" size={18} color={COLORS.subText} />
-            <Text style={styles.secondaryText}>Back to camera</Text>
+            <Text style={styles.secondaryText}>{tr('Back to camera')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

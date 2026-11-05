@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import { StepProgressBar } from '@components';
 import { Picker } from '@react-native-picker/picker';
 import { Button, Icon } from '@rneui/themed';
@@ -43,6 +44,7 @@ export const HeightScreen = ({
   totalSteps = 0,
   standAlone = false,
 }: HeightProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const [unit, setUnit] = useState<'metric' | 'imperial'>(unitType);
   const [selectedCm, setSelectedCm] = useState<number>(initialValue || 170);
@@ -93,9 +95,9 @@ export const HeightScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Height</Text>
+        <Text style={styles.title}>{tr('Height')}</Text>
         <Text style={styles.subtitle}>
-          We will use it to calibrate your personalized plan
+          {tr('We will use it to calibrate your personalized plan')}
         </Text>
 
         {/* Unit Toggle */}
@@ -111,7 +113,7 @@ export const HeightScreen = ({
                 heightStyles.unitOptionText,
                 !isMetric && heightStyles.unitOptionTextSelected,
               ]}>
-              Imperial
+              {tr('Imperial')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -125,7 +127,7 @@ export const HeightScreen = ({
                 heightStyles.unitOptionText,
                 isMetric && heightStyles.unitOptionTextSelected,
               ]}>
-              Metric
+              {tr('Metric')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -174,7 +176,7 @@ export const HeightScreen = ({
       </View>
 
       <Button
-        title={standAlone ? 'Save' : 'Next'}
+        title={standAlone ? tr('Save') : tr('Next')}
         onPress={handleSave}
         // disabled={!selectedActivity}
         buttonStyle={styles.nextButton}

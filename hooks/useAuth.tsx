@@ -1,3 +1,6 @@
+import { useLanguage } from '../localization/LanguageProvider';
+import { api } from '../api/apiInstance';
+import { AppState } from 'react-native';
 import React, {
   createContext,
   useContext,
@@ -56,6 +59,7 @@ export const useCurrentUser = (): UserProfile => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [userToken, setUserToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -106,6 +110,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (!userToken) return;
+    let cancelled = false;
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    const sync = () => {
+      if (cancelled) return;
+      void api.put('/profile/language', { language }).catch(() => {
+        if (!cancelled) retry = setTimeout(sync, 30000);
+      });
+    };
+    sync();
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') {
+        clearTimeout(retry);
+        sync();
+      }
+    });
+    return () => {
+      cancelled = true;
+      clearTimeout(retry);
+      subscription.remove();
+    };
+  }, [language, userToken]);
 
   /** Memoise context value */
   const value = useMemo<AuthContextType>(

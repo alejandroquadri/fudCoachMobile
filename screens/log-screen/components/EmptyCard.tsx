@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../../localization';
 import { Card, Text } from '@rneui/themed';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
@@ -13,11 +14,12 @@ export const EmptyCard: React.FC<EmptyCardProps> = ({
   cardType,
   isLoading,
 }) => {
+  useLanguageUpdates();
   const styles = EmtpyCardStyles();
   return (
     <Card containerStyle={styles.emptyCard}>
       <View style={styles.emptyHeader}>
-        <Text style={styles.emptyTitle}>{cardType.type}</Text>
+        <Text style={styles.emptyTitle}>{tr(cardType.type)}</Text>
         {isLoading && (
           <ActivityIndicator
             style={styles.spinner}
@@ -28,7 +30,7 @@ export const EmptyCard: React.FC<EmptyCardProps> = ({
       </View>
 
       <View style={styles.emptyTextContainer}>
-        <Text>No logs yet</Text>
+        <Text>{tr('No logs yet')}</Text>
       </View>
     </Card>
   );

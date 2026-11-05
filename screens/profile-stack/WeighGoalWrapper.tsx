@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import { useCurrentUser } from '@hooks';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { updateProfile } from '@services';
@@ -7,6 +8,7 @@ import { WeightScreen } from '../shared';
 type Props = NativeStackScreenProps<ProfileStackParamList, 'WeightGoalWrapper'>;
 
 export const WeightGoalWrapper = ({ navigation }: Props) => {
+  useLanguageUpdates();
   const user = useCurrentUser();
   const saveWeight = async ({
     weight,
@@ -28,7 +30,7 @@ export const WeightGoalWrapper = ({ navigation }: Props) => {
     <WeightScreen
       initialValue={user.weightGoal}
       unitType={user.unitType}
-      title="Set your goal weight"
+      title={tr('Set your goal weight')}
       onSave={saveWeight}
       onBack={() => navigation.goBack()}
       standAlone={true}

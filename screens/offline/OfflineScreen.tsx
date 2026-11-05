@@ -1,11 +1,13 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import { COLORS } from '@theme';
 import { StyleSheet, View, Text } from 'react-native';
 import { Icon } from '@rneui/themed';
 
 export const OfflineScreen = () => {
+  useLanguageUpdates();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>You are offline</Text>
+      <Text style={styles.title}>{tr('You are offline')}</Text>
       <Icon
         name="cloud-offline-outline"
         type="ionicon"
@@ -13,8 +15,9 @@ export const OfflineScreen = () => {
         color={COLORS.text}
       />
       <Text style={styles.copy}>
-        FoodCoach needs an internet connection to work. Please connect to Wi-Fi
-        or mobile data and open the app again.
+        {tr(
+          'FoodCoach needs an internet connection to work. Please connect to Wi-Fi or mobile data and open the app again.'
+        )}
       </Text>
     </View>
   );

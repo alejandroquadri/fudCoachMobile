@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useEffect, useState } from 'react';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import {
@@ -38,10 +39,11 @@ export const SignUpScreen = ({
   step = 0,
   totalSteps = 0,
 }: SignUpProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
-  const emailErrorString = 'Please enter a valid email address';
-  const nameErrorString = 'Name cannot be empty';
-  const passwordErrorString = 'Password must be longer than 6 characters';
+  const emailErrorString = tr('Please enter a valid email address');
+  const nameErrorString = tr('Name cannot be empty');
+  const passwordErrorString = tr('Password must be longer than 6 characters');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -129,8 +131,8 @@ export const SignUpScreen = ({
 
       if (!credential.identityToken) {
         Alert.alert(
-          'Apple Sign In',
-          'No identity token returned. Try again on a real device.'
+          tr('Apple Sign In'),
+          tr('No identity token returned. Try again on a real device.')
         );
         return;
       }
@@ -145,7 +147,7 @@ export const SignUpScreen = ({
       }
     } catch (e: any) {
       if (e?.code === 'ERR_REQUEST_CANCELED') return;
-      Alert.alert('Apple Sign In failed', 'Please try again.');
+      Alert.alert(tr('Apple Sign In failed'), tr('Please try again.'));
     }
   };
 
@@ -173,17 +175,17 @@ export const SignUpScreen = ({
       <View style={signUpStyles.container}>
         <View style={signUpStyles.inputContainer}>
           <Input
-            placeholder="Name"
+            placeholder={tr('Name')}
             value={name}
             onChangeText={value => {
               setName(value);
               validateName(value);
             }}
             onBlur={() => setNameBlurred(true)}
-            errorMessage={nameBlurred && nameError ? nameError : ''}
+            errorMessage={nameBlurred && nameError ? tr(nameError) : ''}
           />
           <Input
-            placeholder="Email"
+            placeholder={tr('Email')}
             value={email}
             keyboardType="email-address"
             onChangeText={value => {
@@ -191,11 +193,11 @@ export const SignUpScreen = ({
               validateEmail(value);
             }}
             onBlur={() => setEmailBlurred(true)}
-            errorMessage={emailBlurred && emailError ? emailError : ''}
+            errorMessage={emailBlurred && emailError ? tr(emailError) : ''}
           />
 
           <Input
-            placeholder="Password"
+            placeholder={tr('Password')}
             secureTextEntry
             value={password}
             onChangeText={value => {
@@ -203,11 +205,13 @@ export const SignUpScreen = ({
               validatePassword(value);
             }}
             onBlur={() => setPasswordBlurred(true)}
-            errorMessage={passwordBlurred && passwordError ? passwordError : ''}
+            errorMessage={
+              passwordBlurred && passwordError ? tr(passwordError) : ''
+            }
           />
         </View>
         <Button
-          title="Create account"
+          title={tr('Create account')}
           onPress={handleSignUp}
           buttonStyle={styles.nextButton}
           disabled={!!emailError || !!nameError || !!passwordError}
@@ -216,7 +220,7 @@ export const SignUpScreen = ({
         {/* Separator */}
         <View style={styles.separatorContainer}>
           <View style={styles.line} />
-          <Text style={styles.orText}>or</Text>
+          <Text style={styles.orText}>{tr('or')}</Text>
           <View style={styles.line} />
         </View>
 

@@ -1,0 +1,7 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Food Coach usa la cámara para fotografiar tus comidas y tomar fotos de perfil.",
+    "NSPhotoLibraryUsageDescription": "Food Coach accede a tus fotos para compartir comidas y elegir una foto de perfil.",
+    "NSMicrophoneUsageDescription": "Food Coach usa el micrófono para la entrada de voz."
+  }
+}

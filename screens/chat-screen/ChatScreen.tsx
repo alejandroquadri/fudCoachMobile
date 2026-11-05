@@ -1,3 +1,5 @@
+import 'dayjs/locale/es';
+import { tr, useLanguageUpdates, localeTag } from '../../localization';
 import { Dialog, Icon, Button } from '@rneui/themed';
 import * as SecureStore from 'expo-secure-store';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -67,6 +69,7 @@ const markWelcomeDeliveredLocal = async (userId: string) => {
 };
 
 export const Chat = () => {
+  useLanguageUpdates();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -122,7 +125,7 @@ export const Chat = () => {
         setNextCursor(page?.nextCursor ?? null);
         // console.log(prevMessages);
         if (prevMessages === null) {
-          Alert.alert('Error', 'Could not load previous messages');
+          Alert.alert(tr('Error'), tr('Could not load previous messages'));
         } else {
           setMessages(prevMessages!);
 
@@ -191,7 +194,10 @@ export const Chat = () => {
       setNextCursor(page.nextCursor);
     } catch {
       if (activeUserId.current === userId)
-        Alert.alert('Could not load earlier messages', 'Please try again.');
+        Alert.alert(
+          tr('Could not load earlier messages'),
+          tr('Please try again.')
+        );
     } finally {
       loadingPage.current = false;
       setLoadingEarlier(false);
@@ -221,10 +227,10 @@ export const Chat = () => {
           }
         ).response;
         Alert.alert(
-          'Error',
+          tr('Error'),
           message?.status === 413
             ? (message.data?.message ?? 'Please send a shorter message.')
-            : 'Coach seems to have problems responding'
+            : tr('Coach seems to have problems responding')
         );
         setIsTyping(false);
       }
@@ -282,10 +288,10 @@ export const Chat = () => {
         error as { response?: { status?: number; data?: { message?: string } } }
       ).response;
       Alert.alert(
-        'Could not send photo',
+        tr('Could not send photo'),
         response?.status === 413
           ? (response.data?.message ?? 'Please shorten your note.')
-          : 'Tap Retry on the photo to try again.'
+          : tr('Tap Retry on the photo to try again.')
       );
     } finally {
       if (activeUserId.current === userId) setIsTyping(false);
@@ -332,7 +338,7 @@ export const Chat = () => {
       <View style={styles.photoMessage}>
         <MessageImage currentMessage={message} imageStyle={styles.chatPhoto} />
         <Text style={styles.photoTime}>
-          {new Date(message.createdAt).toLocaleTimeString([], {
+          {new Date(message.createdAt).toLocaleTimeString(localeTag(), {
             hour: 'numeric',
             minute: '2-digit',
           })}
@@ -348,7 +354,7 @@ export const Chat = () => {
                 failed.userId
               )
             }>
-            <Text style={styles.photoRetryText}>Retry</Text>
+            <Text style={styles.photoRetryText}>{tr('Retry')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -387,9 +393,12 @@ export const Chat = () => {
   return (
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <GiftedChat
+        locale={localeTag().split('-')[0]}
+        textInputProps={{ placeholder: tr('Type a message…') }}
         renderAvatar={null}
         isTyping={isTyping}
         loadEarlierMessagesProps={{
+          label: tr('Load earlier messages'),
           isAvailable: !!nextCursor,
           isLoading: loadingEarlier,
           onPress: loadEarlier,
@@ -435,14 +444,16 @@ export const Chat = () => {
       <Dialog
         isVisible={showDialogSettings}
         onBackdropPress={() => setShowDialogSettings(false)}>
-        <Dialog.Title title="Camera" />
+        <Dialog.Title title={tr('Camera')} />
         <Text>
-          To take meal photos, enable Camera access for Food Coach in Settings.
+          {tr(
+            'To take meal photos, enable Camera access for Food Coach in Settings.'
+          )}
         </Text>
 
         <Dialog.Actions>
           <Button
-            title="Open settings"
+            title={tr('Open settings')}
             onPress={async () => {
               setShowDialogSettings(false);
               console.log('running after interacion');
@@ -453,7 +464,7 @@ export const Chat = () => {
             testID="confirm-delete"
           />
           <Button
-            title="Cancel"
+            title={tr('Cancel')}
             type="clear"
             titleStyle={styles.cancelSettingsText}
             onPress={() => setShowDialogSettings(false)}

@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button } from '@rneui/themed';
@@ -9,6 +10,7 @@ import { OnboardingStackParamList } from './OnboardingNavigator';
 import { useOnboarding } from './context/OnboardingContext';
 
 export const WelcomeScreen = () => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const { dispatch } = useOnboarding();
   const navigation =
@@ -41,28 +43,28 @@ export const WelcomeScreen = () => {
       contentContainerStyle={[styles.container, styles.containerCenter]}>
       <View style={welcomeStyles.content}>
         <Text style={[styles.title, welcomeStyles.titleAlign]}>
-          Welcome to Food Coach!
+          {tr('Welcome to Food Coach!')}
         </Text>
         <Text style={[styles.subtitle, welcomeStyles.titleAlign]}>
-          {"Let's"} get started on your goals!
+          {"Let's"} {tr('get started on your goals!')}
         </Text>
         <Button
           buttonStyle={styles.nextButton}
           titleStyle={styles.nextButtonText}
-          title="Start"
+          title={tr('Start')}
           onPress={handleStart}
         />
 
         {/* Separator */}
         <View style={styles.separatorContainer}>
           <View style={styles.line} />
-          <Text style={styles.orText}>or</Text>
+          <Text style={styles.orText}>{tr('or')}</Text>
           <View style={styles.line} />
         </View>
 
         {/* Login Button */}
         <Button
-          title="I already have an account"
+          title={tr('I already have an account')}
           type="clear"
           titleStyle={styles.clearButtonText}
           onPress={handleLogin}

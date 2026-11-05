@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Button, Icon } from '@rneui/themed';
@@ -21,6 +22,7 @@ export const ActivityLevelScreen = ({
   step = 0,
   totalSteps = 0,
 }: ActivityLevelScreenProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   const [selectedActivity, setSelectedActivity] = useState(initialValue);
@@ -40,7 +42,7 @@ export const ActivityLevelScreen = ({
         onPress={() => setSelectedActivity(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {value}
+          {tr(value)}
         </Text>
       </TouchableOpacity>
     );
@@ -69,10 +71,10 @@ export const ActivityLevelScreen = ({
 
       <View style={styles.content}>
         <Text style={styles.title}>
-          How often do you work out in a typical week?
+          {tr('How often do you work out in a typical week?')}
         </Text>
         <Text style={styles.subtitle}>
-          This helps us personalize your training and nutrition strategy
+          {tr('This helps us personalize your training and nutrition strategy')}
         </Text>
 
         <View style={styles.optionsContainer}>
@@ -83,7 +85,7 @@ export const ActivityLevelScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={handleSave}
         disabled={!selectedActivity}
         buttonStyle={styles.nextButton}

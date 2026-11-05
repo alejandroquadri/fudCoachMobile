@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button, Input } from '@rneui/themed';
 import React, { useEffect, useState } from 'react';
@@ -34,6 +35,7 @@ function fullNameToString(
 }
 
 export const SignIn = ({ navigation }: { navigation: Props }) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,7 +64,10 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
       const { token, refreshToken, user: profile } = response; // adjust if needed
       signIn(token, refreshToken, profile);
     } catch (error) {
-      Alert.alert('Error', 'Failed to sign in. Please check your credentials.');
+      Alert.alert(
+        tr('Error'),
+        tr('Failed to sign in. Please check your credentials.')
+      );
     } finally {
       setLoading(false);
     }
@@ -81,8 +86,8 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
 
       if (!credential.identityToken) {
         Alert.alert(
-          'Apple Sign In',
-          'No identity token returned. Try again on a real device.'
+          tr('Apple Sign In'),
+          tr('No identity token returned. Try again on a real device.')
         );
         return;
       }
@@ -114,7 +119,7 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
       signIn(token, refreshToken, user);
     } catch (e: any) {
       if (e?.code === 'ERR_REQUEST_CANCELED') return; // user canceled
-      Alert.alert('Apple Sign In failed', 'Please try again.');
+      Alert.alert(tr('Apple Sign In failed'), tr('Please try again.'));
     }
   };
 
@@ -123,7 +128,7 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
       <View style={signInStyles.container}>
         <View style={signInStyles.inputContainer}>
           <Input
-            placeholder="Email"
+            placeholder={tr('Email')}
             value={email}
             keyboardType="email-address"
             autoCapitalize="none"
@@ -131,7 +136,7 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
           />
 
           <Input
-            placeholder="Password"
+            placeholder={tr('Password')}
             secureTextEntry
             value={password}
             onChangeText={value => setPassword(value)}
@@ -139,7 +144,7 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
         </View>
 
         <Button
-          title="Sign In"
+          title={tr('Sign In')}
           onPress={handleSignIn}
           buttonStyle={styles.nextButton}
         />
@@ -147,7 +152,7 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
         {/* Separator */}
         <View style={styles.separatorContainer}>
           <View style={styles.line} />
-          <Text style={styles.orText}>or</Text>
+          <Text style={styles.orText}>{tr('or')}</Text>
           <View style={styles.line} />
         </View>
 
@@ -171,7 +176,7 @@ export const SignIn = ({ navigation }: { navigation: Props }) => {
         <View style={signInStyles.separator}></View>
 
         <Button
-          title="Create account"
+          title={tr('Create account')}
           onPress={() => navigation.navigate('Welcome')}
           type="clear"
           titleStyle={styles.clearButtonText}

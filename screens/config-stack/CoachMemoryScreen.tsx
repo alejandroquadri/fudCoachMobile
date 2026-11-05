@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates, localeTag } from '../../localization';
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -57,6 +58,7 @@ const fields = [
 ] as const;
 
 export const CoachMemoryScreen = ({ navigation }: Props) => {
+  useLanguageUpdates();
   const sharedStyles = SharedStyles();
   const [memory, setMemory] = useState<CoachMemory | null>(null);
   const [saved, setSaved] = useState<CoachMemory | null>(null);
@@ -78,7 +80,7 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
       setMemory(result);
       setSaved(result);
     } catch {
-      setError('Could not load your coach memory. Please try again.');
+      setError(tr('Could not load your coach memory. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -94,14 +96,18 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
       navigation.addListener('beforeRemove', event => {
         if (!dirty || saving) return;
         event.preventDefault();
-        Alert.alert('Discard changes?', 'Your edits have not been saved.', [
-          { text: 'Keep editing', style: 'cancel' },
-          {
-            text: 'Discard',
-            style: 'destructive',
-            onPress: () => navigation.dispatch(event.data.action),
-          },
-        ]);
+        Alert.alert(
+          tr('Discard changes?'),
+          tr('Your edits have not been saved.'),
+          [
+            { text: tr('Keep editing'), style: 'cancel' },
+            {
+              text: tr('Discard'),
+              style: 'destructive',
+              onPress: () => navigation.dispatch(event.data.action),
+            },
+          ]
+        );
       }),
     [navigation, dirty, saving]
   );
@@ -124,20 +130,22 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
       setMemory(result);
       setSaved(result);
       Alert.alert(
-        'Memory saved',
-        'Your coach will use your updated notes in the next message.'
+        tr('Memory saved'),
+        tr('Your coach will use your updated notes in the next message.')
       );
     } catch (failure) {
       if (
         (failure as { response?: { status?: number } }).response?.status === 409
       ) {
         Alert.alert(
-          'Your memory has changed',
-          'The coach updated these notes while you were editing. Your draft is still here. Reload to see the latest notes before editing again.',
+          tr('Your memory has changed'),
+          tr(
+            'The coach updated these notes while you were editing. Your draft is still here. Reload to see the latest notes before editing again.'
+          ),
           [
-            { text: 'Keep draft', style: 'cancel' },
+            { text: tr('Keep draft'), style: 'cancel' },
             {
-              text: 'Reload',
+              text: tr('Reload'),
               onPress: () => {
                 void load();
               },
@@ -146,7 +154,9 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
         );
       } else
         setError(
-          'Could not save your notes. Your edits are still here. Please try again.'
+          tr(
+            'Could not save your notes. Your edits are still here. Please try again.'
+          )
         );
     } finally {
       setSaving(false);
@@ -183,7 +193,7 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
           <View style={sharedStyles.backButtonContainer}>
             <TouchableOpacity
               accessibilityRole="button"
-              accessibilityLabel="Back to settings"
+              accessibilityLabel={tr('Back to settings')}
               onPress={() => navigation.goBack()}>
               <Icon
                 name="chevron-left"
@@ -194,35 +204,36 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
             </TouchableOpacity>
           </View>
         </View>
-        <Text style={styles.title}>What your coach remembers</Text>
+        <Text style={styles.title}>{tr('What your coach remembers')}</Text>
         <Text style={styles.description}>
-          Your coach adds useful details you share in chat to help support you.
-          Review, correct, or remove anything here. These notes complement your
-          profile and onboarding answers.
+          {tr(
+            'Your coach adds useful details you share in chat to help support you. Review, correct, or remove anything here. These notes complement your profile and onboarding answers.'
+          )}
         </Text>
         <Text style={styles.description}>
-          After you save an edit, your coach starts with fresh chat context and
-          these notes. Your chat history stays visible.
+          {tr(
+            'After you save an edit, your coach starts with fresh chat context and these notes. Your chat history stays visible.'
+          )}
         </Text>
         {loading ? (
           <ActivityIndicator
-            accessibilityLabel="Loading coach memory"
+            accessibilityLabel={tr('Loading coach memory')}
             color={COLORS.accentColor}
           />
         ) : (
           memory &&
           fields.map(({ key, title, hint }) => (
             <View key={key} style={styles.field}>
-              <Text style={styles.label}>{title}</Text>
+              <Text style={styles.label}>{tr(title)}</Text>
               <TextInput
-                accessibilityLabel={title}
+                accessibilityLabel={tr(title)}
                 value={memory[key]}
                 onChangeText={text =>
                   setMemory(current =>
                     current ? { ...current, [key]: text } : current
                   )
                 }
-                placeholder={hint}
+                placeholder={tr(hint)}
                 placeholderTextColor={COLORS.subText}
                 multiline
                 maxLength={2000}
@@ -236,10 +247,11 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
         )}
         {!!memory && !loading && (
           <View style={styles.field}>
-            <Text style={styles.label}>Usual meals</Text>
+            <Text style={styles.label}>{tr('Usual meals')}</Text>
             <Text style={styles.description}>
-              Your coach adds meals you describe in chat. You can also add or
-              edit them here.
+              {tr(
+                'Your coach adds meals you describe in chat. You can also add or edit them here.'
+              )}
             </Text>
             {meals.map(({ key, title }) => {
               const existing = (memory.routines ?? []).filter(
@@ -257,12 +269,12 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
                   ];
               return (
                 <View key={key} style={styles.field}>
-                  <Text style={styles.label}>{title}</Text>
+                  <Text style={styles.label}>{tr(title)}</Text>
                   {displayed.map(routine => (
                     <View key={routine.id} style={styles.routine}>
                       <TextInput
-                        accessibilityLabel={`${title} foods and portions`}
-                        placeholder={`Add your usual ${title.toLowerCase()}`}
+                        accessibilityLabel={`${tr(title)} foods and portions`}
+                        placeholder={`${tr('Add your usual meal')}: ${tr(title)}`}
                         placeholderTextColor={COLORS.subText}
                         value={routine.description}
                         maxLength={500}
@@ -276,8 +288,8 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
                       />
                       <Text style={styles.dayHint}>
                         {routine.weekdays.length
-                          ? 'Selected days'
-                          : 'Every day'}
+                          ? tr('Selected days')
+                          : tr('Every day')}
                       </Text>
                       <View style={styles.days}>
                         {days.map((day, index) => {
@@ -286,7 +298,7 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
                             <TouchableOpacity
                               key={day}
                               accessibilityRole="checkbox"
-                              accessibilityLabel={`${day} for ${title}`}
+                              accessibilityLabel={`${tr(day)} for ${tr(title)}`}
                               accessibilityState={{
                                 checked: selected,
                                 disabled: saving,
@@ -314,7 +326,7 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
                                 ]}
                                 numberOfLines={1}
                                 adjustsFontSizeToFit>
-                                {day}
+                                {tr(day)}
                               </Text>
                             </TouchableOpacity>
                           );
@@ -322,7 +334,7 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
                       </View>
                       {!!routine.description && (
                         <Button
-                          title="Remove usual meal"
+                          title={tr('Remove usual meal')}
                           type="clear"
                           titleStyle={styles.link}
                           disabled={saving}
@@ -354,7 +366,7 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
         )}
         {!loading && !memory && (
           <Button
-            title="Try again"
+            title={tr('Try again')}
             buttonStyle={styles.save}
             onPress={() => {
               void load();
@@ -364,25 +376,27 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
         {!!memory && !loading && (
           <>
             <Button
-              title="Save memory"
+              title={tr('Save memory')}
               loading={saving}
               disabled={!dirty || saving}
               onPress={save}
               buttonStyle={styles.save}
             />
             <Button
-              title="Clear all notes"
+              title={tr('Clear all notes')}
               type="clear"
               titleStyle={styles.link}
               disabled={saving}
               onPress={() =>
                 Alert.alert(
-                  'Clear coach memory?',
-                  'This clears these personal notes when you save. Your profile and onboarding answers stay available.',
+                  tr('Clear coach memory?'),
+                  tr(
+                    'This clears these personal notes when you save. Your profile and onboarding answers stay available.'
+                  ),
                   [
-                    { text: 'Cancel', style: 'cancel' },
+                    { text: tr('Cancel'), style: 'cancel' },
                     {
-                      text: 'Clear notes',
+                      text: tr('Clear notes'),
                       style: 'destructive',
                       onPress: () =>
                         setMemory(current =>
@@ -404,7 +418,8 @@ export const CoachMemoryScreen = ({ navigation }: Props) => {
             />
             {!!saved?.updatedAt && (
               <Text style={styles.updated}>
-                Last updated: {new Date(saved.updatedAt).toLocaleString()}
+                {tr('Last updated:')}
+                {new Date(saved.updatedAt).toLocaleString(localeTag())}
               </Text>
             )}
           </>

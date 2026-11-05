@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates, localeTag } from '../../localization';
 import { StepProgressBar } from '@components';
 import RNDateTimePicker, {
   DateTimePickerChangeEvent,
@@ -33,6 +34,7 @@ export const BirthdateScreen = ({
   totalSteps = 0,
   standAlone = false,
 }: BirthdateProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState<Date>(
@@ -72,13 +74,14 @@ export const BirthdateScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>When where you born?</Text>
+        <Text style={styles.title}>{tr('When where you born?')}</Text>
         <Text style={styles.subtitle}>
-          We will use it to calibrate your personalized plan
+          {tr('We will use it to calibrate your personalized plan')}
         </Text>
 
         <View style={birthdateStyles.container}>
           <RNDateTimePicker
+            locale={localeTag()}
             value={selectedDate}
             mode="date"
             display="spinner"
@@ -90,7 +93,7 @@ export const BirthdateScreen = ({
       </View>
 
       <Button
-        title={standAlone ? 'Save' : 'Next'}
+        title={standAlone ? tr('Save') : tr('Next')}
         onPress={handleSave}
         // disabled={!selectedActivity}
         buttonStyle={styles.nextButton}

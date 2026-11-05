@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { addDays, format, parseISO, subDays } from 'date-fns';
@@ -52,6 +53,7 @@ const groupFoodLogsByMeal = (foodLogs: FoodLog[]) => {
 };
 
 export const LogScreen = () => {
+  useLanguageUpdates();
   const styles = LogStyles();
 
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -90,7 +92,7 @@ export const LogScreen = () => {
           setFoodLogs(foodLogs);
         } catch (error) {
           console.error(error);
-          Alert.alert('Error', 'Failed to fetch food log data.');
+          Alert.alert(tr('Error'), tr('Failed to fetch food log data.'));
         } finally {
           setIsLoadingFoodLog(false);
         }
@@ -117,7 +119,7 @@ export const LogScreen = () => {
           setExerciseLogs(exerciseLogs);
         } catch (error) {
           console.error(error);
-          Alert.alert('Error', 'Failed to fetch exercise log data.');
+          Alert.alert(tr('Error'), tr('Failed to fetch exercise log data.'));
         } finally {
           setIsLoadingExerciseLog(false);
         }
@@ -138,7 +140,7 @@ export const LogScreen = () => {
           setWaterLog(waterLogs);
         } catch (error) {
           console.error(error);
-          Alert.alert('Error', 'Failed to fetch exercise log data.');
+          Alert.alert(tr('Error'), tr('Failed to fetch exercise log data.'));
         }
       }
     },
@@ -202,7 +204,7 @@ export const LogScreen = () => {
       await foodLogsApi.upsertWaterLog(updatedWaterLog);
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Failed to update water intake.');
+      Alert.alert(tr('Error'), tr('Failed to update water intake.'));
     }
   };
 
@@ -218,7 +220,7 @@ export const LogScreen = () => {
       await foodLogsApi.upsertWaterLog(updatedWaterLog);
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Failed to update water intake.');
+      Alert.alert(tr('Error'), tr('Failed to update water intake.'));
     }
   };
 
@@ -262,7 +264,7 @@ export const LogScreen = () => {
 
         {exerciseLogs.length === 0 ? (
           <EmptyCard
-            cardType={{ type: 'Exerecise' }}
+            cardType={{ type: 'Exercise' }}
             isLoading={isLoadingExerciseLog}
           />
         ) : (

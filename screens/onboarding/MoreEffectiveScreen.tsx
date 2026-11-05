@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React from 'react';
 import {
   View,
@@ -26,6 +27,7 @@ export const MoreEffective = ({
   step = 0,
   totalSteps = 0,
 }: MoreEffectiveProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   return (
@@ -51,7 +53,9 @@ export const MoreEffective = ({
 
       <View style={styles.content}>
         <Text style={styles.title}>
-          Loosing weight with Food Coach is much more effective than on your own
+          {tr(
+            'Loosing weight with Food Coach is much more effective than on your own'
+          )}
         </Text>
 
         <Image
@@ -62,7 +66,7 @@ export const MoreEffective = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={onNext}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}

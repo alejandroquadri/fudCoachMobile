@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Button, Icon } from '@rneui/themed';
@@ -21,6 +22,7 @@ export const OutcomeScreen = ({
   step = 0,
   totalSteps = 0,
 }: OutcomeProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   const [selectedOutcome, setSelectedOutcome] = useState(initialValue);
@@ -40,7 +42,7 @@ export const OutcomeScreen = ({
         onPress={() => setSelectedOutcome(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {value}
+          {tr(value)}
         </Text>
       </TouchableOpacity>
     );
@@ -68,7 +70,9 @@ export const OutcomeScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.titleNoSub}>Which is your desired outcome?</Text>
+        <Text style={styles.titleNoSub}>
+          {tr('Which is your desired outcome?')}
+        </Text>
         <View style={styles.optionsContainer}>
           {renderOption('Eat and live healthier')}
           {renderOption('Have more energy')}
@@ -78,7 +82,7 @@ export const OutcomeScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={handleSave}
         disabled={!selectedOutcome}
         buttonStyle={styles.nextButton}

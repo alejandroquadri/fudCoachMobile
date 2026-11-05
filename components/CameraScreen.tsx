@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../localization';
 import React, { useRef, useState } from 'react';
 import {
   StyleSheet,
@@ -28,6 +29,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({
   onClose,
   onBarcodeLogged,
 }) => {
+  useLanguageUpdates();
   const cameraRef = useRef<CameraView | null>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [scanningBarcode, setScanningBarcode] = useState(false);
@@ -86,29 +88,31 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({
           resizeMode="contain"
         />
         <View style={styles.previewControls}>
-          <Text style={styles.previewTitle}>Add a note (optional)</Text>
+          <Text style={styles.previewTitle}>{tr('Add a note (optional)')}</Text>
           <TextInput
             style={styles.captionInput}
-            placeholder="e.g. Chicken cooked in olive oil, about 150 g"
+            placeholder={tr('e.g. Chicken cooked in olive oil, about 150 g')}
             placeholderTextColor="#777"
             multiline
             maxLength={1500}
             value={caption}
             onChangeText={setCaption}
-            accessibilityLabel="Meal photo note"
+            accessibilityLabel={tr('Meal photo note')}
           />
           <View style={styles.previewActions}>
             <TouchableOpacity
               onPress={() => setPhotoUri(null)}
               style={styles.secondaryButton}>
-              <Text style={styles.secondaryButtonText}>Retake or replace</Text>
+              <Text style={styles.secondaryButtonText}>
+                {tr('Retake or replace')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={sendPhoto} style={styles.sendButton}>
-              <Text style={styles.sendButtonText}>Send to coach</Text>
+              <Text style={styles.sendButtonText}>{tr('Send to coach')}</Text>
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-            <Text style={styles.secondaryButtonText}>Cancel</Text>
+            <Text style={styles.secondaryButtonText}>{tr('Cancel')}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -144,7 +148,7 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({
         <TouchableOpacity
           onPress={() => setScanningBarcode(true)}
           style={styles.barcodeButton}
-          accessibilityLabel="Scan barcode">
+          accessibilityLabel={tr('Scan barcode')}>
           <Ionicons name="barcode-outline" size={32} color="white" />
         </TouchableOpacity>
       </View>

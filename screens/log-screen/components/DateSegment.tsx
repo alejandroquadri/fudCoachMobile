@@ -1,7 +1,7 @@
+import { useLanguageUpdates, localeTag } from '../../../localization';
 import React from 'react';
 import { View } from 'react-native';
-import { Button, Card, Icon, Text } from '@rneui/themed';
-import { format } from 'date-fns';
+import { Button, Icon, Text } from '@rneui/themed';
 import { DateSegmentStyles } from '../LogStyles';
 
 interface DateSegmentProps {
@@ -15,6 +15,7 @@ export const DateSegment: React.FC<DateSegmentProps> = ({
   onSubtractDay,
   onAddDay,
 }) => {
+  useLanguageUpdates();
   const styles = DateSegmentStyles();
   return (
     <View style={styles.dateSegment}>
@@ -23,7 +24,9 @@ export const DateSegment: React.FC<DateSegmentProps> = ({
         icon={<Icon name="chevron-left" type="feather" size={24} />}
         type="clear"
       />
-      <Text style={styles.dateText}>{format(currentDate, 'PPP')}</Text>
+      <Text style={styles.dateText}>
+        {currentDate.toLocaleDateString(localeTag(), { dateStyle: 'long' })}
+      </Text>
       <Button
         onPress={onAddDay}
         icon={<Icon name="chevron-right" type="feather" size={24} />}

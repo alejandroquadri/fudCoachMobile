@@ -1,8 +1,9 @@
+import { tr, useLanguageUpdates, localeTag } from '../../localization';
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
 import { COLORS, SharedStyles } from '@theme';
 import { kgToLbs } from '@utils';
-import { addDays, format } from 'date-fns';
+import { addDays } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
@@ -84,7 +85,7 @@ export const generateChartData = (
         index === 0
           ? 'Now'
           : index === normalizedY.length - 1
-            ? format(date, 'MMM')
+            ? date.toLocaleDateString(localeTag(), { month: 'short' })
             : '',
       value: parseFloat(weight.toFixed(1)),
       dataPointText:
@@ -117,6 +118,7 @@ export const ChartToGoalScreen = ({
   step = 0,
   totalSteps = 0,
 }: ChartToGoalProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   const [chartData, setChartData] = useState<ChartDataInterface[]>([]);
@@ -128,7 +130,10 @@ export const ChartToGoalScreen = ({
   useEffect(() => {
     const data = generateChartData(currentWeight, goalWeight, pace, unit);
     const minValue = data[data.length - 1].value;
-    const goalDate = format(data[data.length - 1].date!, 'dd MMMM');
+    const goalDate = data[data.length - 1].date!.toLocaleDateString(
+      localeTag(),
+      { day: 'numeric', month: 'long' }
+    );
     const calcGoalWeight = unit === 'metric' ? goalWeight : kgToLbs(goalWeight);
     setChartData(data);
     setMinValue(minValue);
@@ -160,8 +165,8 @@ export const ChartToGoalScreen = ({
 
       <View style={styles.content}>
         <Text style={styles.title}>
-          After getting to know you better, we predict that {"you'll"} be{' '}
-          {calcGoalWeight} {unitType} by <Text>{goalDate}</Text>
+          {tr('Estimated goal:')} {calcGoalWeight} {unitType} {tr('by')}{' '}
+          <Text>{goalDate}</Text>
         </Text>
 
         <View style={chartGoalStyles.chartGoalContainer}>
@@ -192,7 +197,7 @@ export const ChartToGoalScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={onNext}
         buttonStyle={styles.nextButton}
         titleStyle={styles.nextButtonText}

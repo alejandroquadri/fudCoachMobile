@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import { StepProgressBar } from '@components';
 import { Button, Icon } from '@rneui/themed';
 import { COLORS, SharedStyles } from '@theme';
@@ -21,6 +22,7 @@ export const TriedOtherAppsScreen = ({
   step = 0,
   totalSteps = 0,
 }: TriedOtherAppsScreenProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   const [selectedOption, setSelectedOption] = useState<boolean | null>(
@@ -42,7 +44,7 @@ export const TriedOtherAppsScreen = ({
         onPress={() => setSelectedOption(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {label}
+          {tr(label)}
         </Text>
       </TouchableOpacity>
     );
@@ -70,7 +72,9 @@ export const TriedOtherAppsScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Did you try other nutrition apps?</Text>
+        <Text style={styles.title}>
+          {tr('Did you try other nutrition apps?')}
+        </Text>
 
         <View style={styles.optionsContainer}>
           {renderOption(true, 'Yes')}
@@ -79,7 +83,7 @@ export const TriedOtherAppsScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={handleSave}
         disabled={selectedOption === null}
         buttonStyle={styles.nextButton}

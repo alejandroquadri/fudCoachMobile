@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -42,6 +43,7 @@ export const WeightScreen = ({
   totalSteps = 0,
   standAlone = false,
 }: WeightProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const [unit, setUnit] = useState<'metric' | 'imperial'>(unitType);
   const [selectedKg, setSelectedKg] = useState(initialValue || 75);
@@ -109,9 +111,9 @@ export const WeightScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{tr(title)}</Text>
         <Text style={styles.subtitle}>
-          We will use it to calibrate your personalized plan
+          {tr('We will use it to calibrate your personalized plan')}
         </Text>
 
         <View style={weightStyles.container}>
@@ -127,7 +129,7 @@ export const WeightScreen = ({
                   weightStyles.unitOptionText,
                   !isMetric && weightStyles.unitOptionTextSelected,
                 ]}>
-                Imperial
+                {tr('Imperial')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -141,7 +143,7 @@ export const WeightScreen = ({
                   weightStyles.unitOptionText,
                   isMetric && weightStyles.unitOptionTextSelected,
                 ]}>
-                Metric
+                {tr('Metric')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -165,7 +167,7 @@ export const WeightScreen = ({
       </View>
 
       <Button
-        title={standAlone ? 'Save' : 'Next'}
+        title={standAlone ? tr('Save') : tr('Next')}
         onPress={handleSave}
         // disabled={!selectedActivity}
         buttonStyle={styles.nextButton}

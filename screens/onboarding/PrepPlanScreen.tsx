@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -35,6 +36,7 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
   step = 0,
   totalSteps = 0,
 }) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const [loading, setLoading] = useState(true);
   const [nutGoals, setNutGoals] = useState<NutritionGoals | null>(null);
@@ -52,7 +54,7 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
         const nutritionGoals = await userAPI.calculatePlan(currentState);
         setNutGoals(nutritionGoals);
       } catch (e) {
-        setError('Failed to load plan. Please try again.');
+        setError(tr('Failed to load plan. Please try again.'));
       } finally {
         setLoading(false);
       }
@@ -73,14 +75,14 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
     const total = dailyCarbsTarget + dailyProteinTarget + dailyFatTarget;
 
     const pieData = [
-      { value: dailyCarbsTarget, color: '#F39C12', label: 'Carbs' },
-      { value: dailyProteinTarget, color: '#27AE60', label: 'Protein' },
-      { value: dailyFatTarget, color: '#2980B9', label: 'Fat' },
+      { value: dailyCarbsTarget, color: '#F39C12', label: tr('Carbs') },
+      { value: dailyProteinTarget, color: '#27AE60', label: tr('Protein') },
+      { value: dailyFatTarget, color: '#2980B9', label: tr('Fat') },
     ];
 
     return (
       <Card containerStyle={prepPlanStyles.card}>
-        <Text style={prepPlanStyles.cardTitle}>Daily Targets</Text>
+        <Text style={prepPlanStyles.cardTitle}>{tr('Daily Targets')}</Text>
 
         <PieChart
           data={pieData}
@@ -106,7 +108,7 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
                   marginBottom: 4,
                 }}
               />
-              <Text>{d.label}</Text>
+              <Text>{tr(d.label)}</Text>
               <Text style={prepPlanStyles.textValue}>{d.value}g</Text>
             </View>
           ))}
@@ -140,7 +142,7 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
         {loading && (
           <>
             <Text style={styles.title}>
-              We are preparing your personalized plan
+              {tr('We are preparing your personalized plan')}
             </Text>
             <ActivityIndicator size="large" color={COLORS.primaryColor} />
           </>
@@ -150,7 +152,9 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
 
         {!loading && nutGoals && (
           <>
-            <Text style={styles.title}>Your personalized plan is ready 🎉</Text>
+            <Text style={styles.title}>
+              {tr('Your personalized plan is ready 🎉')}
+            </Text>
             {renderMacrosChart()}
             <Button
               type="clear"
@@ -159,7 +163,7 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
               <Icon name="info" color={COLORS.accentColor} />
               <Text style={prepPlanStyles.sourcesButtonText}>
                 {' '}
-                sources & methodology
+                {tr('sources & methodology')}
               </Text>
             </Button>
           </>
@@ -168,7 +172,7 @@ export const PrepPlanScreen: React.FC<PrepPlanScreenProps> = ({
 
       {!loading && nutGoals && (
         <Button
-          title="Let's get started!"
+          title={tr("Let's get started!")}
           onPress={handleOnNext}
           buttonStyle={styles.nextButton}
           titleStyle={styles.nextButtonText}

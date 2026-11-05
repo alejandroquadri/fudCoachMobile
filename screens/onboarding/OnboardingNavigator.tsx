@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import {
   NativeStackNavigationProp,
   createNativeStackNavigator,
@@ -90,6 +91,7 @@ const steps = [
 ] as const;
 
 export const OnboardingNavigator: FC = () => {
+  useLanguageUpdates();
   const { state, dispatch } = useOnboarding();
   const navigation =
     useNavigation<
@@ -150,8 +152,8 @@ export const OnboardingNavigator: FC = () => {
     } catch (error) {
       console.log(error);
       Alert.alert(
-        'Sign Up',
-        'Could not complete email sign up. Please try again.'
+        tr('Sign Up'),
+        tr('Could not complete email sign up. Please try again.')
       );
     } finally {
       setSubmitting(false);
@@ -170,8 +172,8 @@ export const OnboardingNavigator: FC = () => {
       if (response) await completeAccountCreation(response);
     } catch (e) {
       Alert.alert(
-        'Sign Up',
-        'Could not complete Apple sign up. Please try again.'
+        tr('Sign Up'),
+        tr('Could not complete Apple sign up. Please try again.')
       );
     } finally {
       setSubmitting(false);
@@ -330,7 +332,7 @@ export const OnboardingNavigator: FC = () => {
             <WeightScreen
               initialValue={state.initWeight}
               unitType={state.unitType}
-              title="What is your current weight?"
+              title={tr('What is your current weight?')}
               onSave={ret => {
                 const { unitType, weight } = ret;
                 dispatch({
@@ -376,7 +378,7 @@ export const OnboardingNavigator: FC = () => {
             <WeightScreen
               initialValue={state.weightGoal || state.initWeight}
               unitType={state.unitType}
-              title="What is your desired weight?"
+              title={tr('What is your desired weight?')}
               onSave={ret => {
                 const { unitType, weight } = ret;
                 dispatch({
@@ -563,7 +565,7 @@ export const OnboardingNavigator: FC = () => {
         <View style={onboardingNavStyles.activityWrapper}>
           <ActivityIndicator size="large" />
           <Text style={onboardingNavStyles.activityText}>
-            Creating your account…
+            {tr('Creating your account…')}
           </Text>
         </View>
       </Overlay>

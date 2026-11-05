@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Button, Icon } from '@rneui/themed';
@@ -21,6 +22,7 @@ export const GoalScreen = ({
   step = 0,
   totalSteps = 0,
 }: GoalScreenProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   const [selectedGoal, setSelectedGoal] = useState(initialValue);
@@ -40,7 +42,7 @@ export const GoalScreen = ({
         onPress={() => setSelectedGoal(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {value}
+          {tr(value)}
         </Text>
       </TouchableOpacity>
     );
@@ -68,9 +70,9 @@ export const GoalScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Which is your goal?</Text>
+        <Text style={styles.title}>{tr('Which is your goal?')}</Text>
         <Text style={styles.subtitle}>
-          This helps us personalize your training and nutrition strategy
+          {tr('This helps us personalize your training and nutrition strategy')}
         </Text>
 
         <View style={styles.optionsContainer}>
@@ -81,7 +83,7 @@ export const GoalScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={handleSave}
         disabled={!selectedGoal}
         buttonStyle={styles.nextButton}

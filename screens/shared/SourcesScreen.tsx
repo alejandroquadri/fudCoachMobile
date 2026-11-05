@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -11,6 +12,7 @@ import { COLORS, SharedStyles } from '@theme';
 import { Icon, Text } from '@rneui/themed';
 
 export const SourcesScreen = () => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const navigation = useNavigation();
 
@@ -37,87 +39,91 @@ export const SourcesScreen = () => {
             />
           </TouchableOpacity>
         </View>
-        <Text style={sourcesStyles.title}>Methodology and sources</Text>
+        <Text style={sourcesStyles.title}>{tr('Methodology and sources')}</Text>
       </View>
 
       <View style={sourcesStyles.content}>
         {/* <Text style={sourcesStyles.title}>Methodology and sources</Text> */}
 
         <Text style={sourcesStyles.sectionTitle}>
-          How your daily calorie target is calculated
+          {tr('How your daily calorie target is calculated')}
         </Text>
         <Text style={sourcesStyles.paragraph}>
-          FoodCoach estimates your nutrition targets using well established,
-          publicly available nutrition formulas. These methods are commonly used
-          in general wellness contexts and are not intended for medical
-          diagnosis or treatment.
+          {tr(
+            'FoodCoach estimates your nutrition targets using well established, publicly available nutrition formulas. These methods are commonly used in general wellness contexts and are not intended for medical diagnosis or treatment.'
+          )}
         </Text>
         <Text style={sourcesStyles.paragraph}>
-          1. Basal Metabolic Rate (BMR){'\n'}
-          We estimate your BMR with the Mifflin St Jeor equation. This equation
-          uses your age, sex, height and weight to estimate how much energy your
-          body requires at rest.
+          {tr('1. Basal Metabolic Rate (BMR)')}
+          {'\n'}
+          {tr(
+            'We estimate your BMR with the Mifflin St Jeor equation. This equation uses your age, sex, height and weight to estimate how much energy your body requires at rest.'
+          )}
         </Text>
         <Text style={sourcesStyles.paragraph}>
-          2. Total Daily Energy Expenditure (TDEE){'\n'}
-          TDEE adjusts your BMR based on your selected activity level. This
-          gives an estimate of the calories needed to maintain your current
-          weight.
+          {tr('2. Total Daily Energy Expenditure (TDEE)')}
+          {'\n'}
+          {tr(
+            'TDEE adjusts your BMR based on your selected activity level. This gives an estimate of the calories needed to maintain your current weight.'
+          )}
         </Text>
         <Text style={sourcesStyles.paragraph}>
-          3. Daily calorie goal{'\n'}
-          If you choose a weight loss goal, FoodCoach applies a moderate daily
-          calorie reduction. The size of the reduction is based on your weekly
-          weight loss target and on the common assumption that about 7700
-          kilocalories correspond to one kilogram of body weight. The app does
-          not recommend extreme calorie deficits or therapeutic diets.
+          {tr('3. Daily calorie goal')}
+          {'\n'}
+          {tr(
+            'If you choose a weight loss goal, FoodCoach applies a moderate daily calorie reduction. The size of the reduction is based on your weekly weight loss target and on the common assumption that about 7700 kilocalories correspond to one kilogram of body weight. The app does not recommend extreme calorie deficits or therapeutic diets.'
+          )}
         </Text>
 
         <Text style={sourcesStyles.sectionTitle}>
-          How your macronutrient targets are calculated
+          {tr('How your macronutrient targets are calculated')}
         </Text>
         <Text style={sourcesStyles.paragraph}>
-          Your carbohydrate, protein and fat goals are based on general wellness
-          recommendations that fall within the ranges published in public health
-          guidelines.
+          {tr(
+            'Your carbohydrate, protein and fat goals are based on general wellness recommendations that fall within the ranges published in public health guidelines.'
+          )}
         </Text>
         <Text style={sourcesStyles.paragraph}>
-          FoodCoach uses the following distribution:{'\n'}• 50 percent
-          carbohydrates{'\n'}• 30 percent protein{'\n'}• 20 percent fat
+          {tr('FoodCoach uses the following distribution:')}
+          {'\n'}
+          {tr('• 50 percent carbohydrates')}
+          {'\n'}
+          {tr('• 30 percent protein')}
+          {'\n'}
+          {tr('• 20 percent fat')}
         </Text>
         <Text style={sourcesStyles.paragraph}>
-          Once the calorie goal is calculated, grams are derived with standard
-          energy values: four kilocalories per gram of carbohydrates, four
-          kilocalories per gram of protein and nine kilocalories per gram of
-          fat. These targets are intended to support balanced eating habits for
-          general wellness.
-        </Text>
-
-        <Text style={sourcesStyles.sectionTitle}>Important note</Text>
-        <Text style={sourcesStyles.paragraph}>
-          FoodCoach provides general wellness information only. It is not a
-          medical device and does not diagnose, treat or manage medical
-          conditions. If you have a health condition, are pregnant, take
-          medication or follow a therapeutic diet, please consult a licensed
-          healthcare professional for personalised advice.
+          {tr(
+            'Once the calorie goal is calculated, grams are derived with standard energy values: four kilocalories per gram of carbohydrates, four kilocalories per gram of protein and nine kilocalories per gram of fat. These targets are intended to support balanced eating habits for general wellness.'
+          )}
         </Text>
 
-        <Text style={sourcesStyles.sectionTitle}>Sources and references</Text>
+        <Text style={sourcesStyles.sectionTitle}>{tr('Important note')}</Text>
         <Text style={sourcesStyles.paragraph}>
-          FoodCoach aligns its calculations and general nutrition guidance with
-          concepts published by major public health organisations. You can learn
-          more in the resources below.
+          {tr(
+            'FoodCoach provides general wellness information only. It is not a medical device and does not diagnose, treat or manage medical conditions. If you have a health condition, are pregnant, take medication or follow a therapeutic diet, please consult a licensed healthcare professional for personalised advice.'
+          )}
+        </Text>
+
+        <Text style={sourcesStyles.sectionTitle}>
+          {tr('Sources and references')}
+        </Text>
+        <Text style={sourcesStyles.paragraph}>
+          {tr(
+            'FoodCoach aligns its calculations and general nutrition guidance with concepts published by major public health organisations. You can learn more in the resources below.'
+          )}
         </Text>
 
         <TouchableOpacity
           onPress={() => openLink('https://www.dietaryguidelines.gov')}>
           <Text style={sourcesStyles.link}>
-            Dietary Guidelines for Americans 2020 to 2025
+            {tr('Dietary Guidelines for Americans 2020 to 2025')}
           </Text>
         </TouchableOpacity>
         <Text style={sourcesStyles.linkDescription}>
-          US Department of Agriculture and US Department of Health and Human
-          Services
+          {tr(
+            'US Department of Agriculture and US Department of Health and Human Services'
+          )}
         </Text>
 
         <TouchableOpacity
@@ -125,11 +131,11 @@ export const SourcesScreen = () => {
             openLink('https://www.ncbi.nlm.nih.gov/books/NBK56068/')
           }>
           <Text style={sourcesStyles.link}>
-            Acceptable Macronutrient Distribution Ranges (AMDR)
+            {tr('Acceptable Macronutrient Distribution Ranges (AMDR)')}
           </Text>
         </TouchableOpacity>
         <Text style={sourcesStyles.linkDescription}>
-          National Academies of Sciences, Engineering and Medicine
+          {tr('National Academies of Sciences, Engineering and Medicine')}
         </Text>
 
         <TouchableOpacity
@@ -139,7 +145,7 @@ export const SourcesScreen = () => {
             )
           }>
           <Text style={sourcesStyles.link}>
-            World Health Organization - Healthy diet
+            {tr('World Health Organization - Healthy diet')}
           </Text>
         </TouchableOpacity>
 
@@ -148,20 +154,17 @@ export const SourcesScreen = () => {
             openLink('https://www.cdc.gov/healthyweight/index.html')
           }>
           <Text style={sourcesStyles.link}>
-            Centers for Disease Control and Prevention - Healthy weight
+            {tr('Centers for Disease Control and Prevention - Healthy weight')}
           </Text>
         </TouchableOpacity>
 
         <Text style={sourcesStyles.sectionTitle}>
-          About AI generated suggestions
+          {tr('About AI generated suggestions')}
         </Text>
         <Text style={sourcesStyles.paragraph}>
-          The AI assistant in FoodCoach generates responses based on general
-          nutrition concepts drawn from scientific literature, public health
-          guidelines and wellness education resources. The assistant does not
-          have a fixed, citable bibliography and does not provide medical
-          advice. Please verify important health or diet decisions with
-          qualified professionals.
+          {tr(
+            'The AI assistant in FoodCoach generates responses based on general nutrition concepts drawn from scientific literature, public health guidelines and wellness education resources. The assistant does not have a fixed, citable bibliography and does not provide medical advice. Please verify important health or diet decisions with qualified professionals.'
+          )}
         </Text>
       </View>
     </ScrollView>

@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { StepProgressBar } from '@components';
@@ -23,6 +24,7 @@ export const GenderScreen = ({
   totalSteps = 0,
   standAlone = false,
 }: GenderScreenProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   const [selectedGender, setSelectedGender] = useState(initialValue);
@@ -42,7 +44,7 @@ export const GenderScreen = ({
         onPress={() => setSelectedGender(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {label}
+          {tr(label)}
         </Text>
       </TouchableOpacity>
     );
@@ -72,9 +74,9 @@ export const GenderScreen = ({
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Choose your gender</Text>
+        <Text style={styles.title}>{tr('Choose your gender')}</Text>
         <Text style={styles.subtitle}>
-          We will use it to calibrate your personalized plan
+          {tr('We will use it to calibrate your personalized plan')}
         </Text>
 
         <View style={styles.optionsContainer}>
@@ -84,7 +86,7 @@ export const GenderScreen = ({
       </View>
 
       <Button
-        title={standAlone ? 'Save' : 'Next'}
+        title={standAlone ? tr('Save') : tr('Next')}
         onPress={handleSave}
         disabled={!selectedGender}
         buttonStyle={styles.nextButton}

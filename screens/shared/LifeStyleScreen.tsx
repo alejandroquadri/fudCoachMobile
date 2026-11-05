@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { StepProgressBar } from '@components';
@@ -21,6 +22,7 @@ export const LifeStyleScreen = ({
   step = 0,
   totalSteps = 0,
 }: ActivityScreenProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
   const [selectedActivity, setSelectedActivity] = useState(initialValue);
 
@@ -39,7 +41,7 @@ export const LifeStyleScreen = ({
         onPress={() => setSelectedActivity(value)}>
         <Text
           style={[styles.optionText, selected && styles.optionTextSelected]}>
-          {label}
+          {tr(label)}
         </Text>
       </TouchableOpacity>
     );
@@ -68,10 +70,10 @@ export const LifeStyleScreen = ({
 
       <View style={styles.content}>
         <Text style={styles.title}>
-          Which of the following best describes your daily lifestyle?
+          {tr('Which of the following best describes your daily lifestyle?')}
         </Text>
         <Text style={styles.subtitle}>
-          We will use it to calibrate your personalized plan
+          {tr('We will use it to calibrate your personalized plan')}
         </Text>
 
         <View style={styles.optionsContainer}>
@@ -83,7 +85,7 @@ export const LifeStyleScreen = ({
       </View>
 
       <Button
-        title="Next"
+        title={tr('Next')}
         onPress={handleSave}
         disabled={!selectedActivity}
         buttonStyle={styles.nextButton}

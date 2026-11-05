@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates, localeTag } from '../../localization';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
 
@@ -35,6 +36,7 @@ const calcMinValue = (logs: { label: string; value: number }[]) => {
 };
 
 export const ProgressScreen = () => {
+  useLanguageUpdates();
   const styles = ProgressStyles();
   const [unit, setUnit] = useState<string>('kg');
   const [weightData, setWeightData] = useState<WeightLogInterface[]>([]);
@@ -49,7 +51,7 @@ export const ProgressScreen = () => {
       setWeightData(weightLogs);
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Failed to fetch food log data.');
+      Alert.alert(tr('Error'), tr('Failed to fetch food log data.'));
     }
   }, [user]);
 
@@ -126,7 +128,7 @@ export const ProgressScreen = () => {
       fetchWeightLogs();
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Failed to delete weight log.');
+      Alert.alert(tr('Error'), tr('Failed to delete weight log.'));
     }
   };
 
@@ -167,7 +169,7 @@ export const ProgressScreen = () => {
       {/* Weight Progress Card */}
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Weight Progress</Text>
+          <Text style={styles.cardTitle}>{tr('Weight Progress')}</Text>
 
           {/* Toggle Button for Units */}
           <View style={styles.unitToggleContainer}>
@@ -229,7 +231,7 @@ export const ProgressScreen = () => {
         {/* Last Recorded Weight and Record Button */}
         <View style={styles.recordSection}>
           <Text style={styles.lastWeightText}>
-            Last{' '}
+            {tr('Last')}{' '}
             <Text style={styles.lastWeightValue}>
               {getLogInCurrentUnit(
                 weightData[weightData?.length - 1]?.weightLog,
@@ -243,12 +245,14 @@ export const ProgressScreen = () => {
 
       {/* Weight History */}
       <View style={styles.historyCard}>
-        <Text style={styles.historyTitle}>History</Text>
+        <Text style={styles.historyTitle}>{tr('History')}</Text>
 
         {weightData.map((entry, index) => (
           <View key={index} style={styles.historyItem}>
             <Text style={styles.historyDate}>
-              {format(parseISO(entry.date), 'MMMM dd, yyyy')}
+              {parseISO(entry.date).toLocaleDateString(localeTag(), {
+                dateStyle: 'long',
+              })}
             </Text>
             <View style={styles.historySpacer}></View>
             <Text style={styles.historyWeight}>

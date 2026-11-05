@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useState } from 'react';
 import {
   ScrollView,
@@ -16,6 +17,7 @@ import { COLORS, SharedStyles } from '@theme';
 type Props = NativeStackScreenProps<ProfileStackParamList, 'EditNameScreen'>;
 
 export const EditNameScreen = ({ navigation }: Props) => {
+  useLanguageUpdates();
   const user = useCurrentUser();
   const styles = SharedStyles();
   const [name, setName] = useState(user.name ?? '');
@@ -24,7 +26,7 @@ export const EditNameScreen = ({ navigation }: Props) => {
 
   const validateName = (value: string) => {
     if (value.trim() === '') {
-      setNameError('Name cannot be empty');
+      setNameError(tr('Name cannot be empty'));
     } else {
       setNameError('');
     }
@@ -39,7 +41,7 @@ export const EditNameScreen = ({ navigation }: Props) => {
       await updateProfile(updated);
       navigation.goBack();
     } catch (err) {
-      Alert.alert('Error', 'Could not update name');
+      Alert.alert(tr('Error'), tr('Could not update name'));
     }
   };
 
@@ -61,18 +63,18 @@ export const EditNameScreen = ({ navigation }: Props) => {
       <View style={editNameStyles.container}>
         <View style={editNameStyles.inputContainer}>
           <Input
-            placeholder="Name"
+            placeholder={tr('Name')}
             value={name}
             onChangeText={value => {
               setName(value);
               validateName(value);
             }}
             onBlur={() => setNameBlurred(true)}
-            errorMessage={nameBlurred && nameError ? nameError : ''}
+            errorMessage={nameBlurred && nameError ? tr(nameError) : ''}
           />
         </View>
         <Button
-          title="Save"
+          title={tr('Save')}
           onPress={handleSave}
           buttonStyle={styles.nextButton}
           disabled={!!nameError || name.trim() === ''}

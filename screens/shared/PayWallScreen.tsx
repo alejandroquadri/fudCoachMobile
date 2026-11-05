@@ -1,3 +1,4 @@
+import { tr, useLanguageUpdates } from '../../localization';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
@@ -76,6 +77,7 @@ export const PaywallScreen = ({
   totalSteps = 0,
   modal = false,
 }: PaywallProps) => {
+  useLanguageUpdates();
   const styles = SharedStyles();
 
   const isFocused = useIsFocused();
@@ -103,9 +105,9 @@ export const PaywallScreen = ({
 
     alertShownRef.current = true;
 
-    Alert.alert('Subscription Error', lastError.message, [
+    Alert.alert(tr('Subscription Error'), lastError.message, [
       {
-        text: 'Ok',
+        text: tr('Ok'),
         onPress: () => {
           alertShownRef.current = false;
           clearError();
@@ -168,9 +170,11 @@ export const PaywallScreen = ({
         ]}
         onPress={() => setSelectedSku(id)}
         disabled={purchasing}>
-        <Text style={payWallStyles.optionText}>{metadata.displayTitle}</Text>
+        <Text style={payWallStyles.optionText}>
+          {tr(metadata.displayTitle)}
+        </Text>
         <Text style={payWallStyles.optionDescription}>
-          {metadata.displaySubTitle}
+          {tr(metadata.displaySubTitle)}
         </Text>
       </TouchableOpacity>
     );
@@ -218,7 +222,7 @@ export const PaywallScreen = ({
           style={payWallStyles.logoImg}
           resizeMode="contain"
         />
-        <Text style={payWallStyles.title}>Unlock Food Coach</Text>
+        <Text style={payWallStyles.title}>{tr('Unlock Food Coach')}</Text>
         <View style={payWallStyles.container}>
           {FEATURES.map((f, idx) => (
             <View key={idx} style={payWallStyles.item}>
@@ -228,7 +232,7 @@ export const PaywallScreen = ({
                 size={20}
                 color={COLORS.primaryColor}
               />
-              <Text style={payWallStyles.itemText}>{f.text}</Text>
+              <Text style={payWallStyles.itemText}>{tr(f.text)}</Text>
             </View>
           ))}
         </View>
@@ -238,7 +242,7 @@ export const PaywallScreen = ({
             subscriptions.sort(bySkuOrder).map(sub => renderOption(sub))
           ) : (
             <View style={styles.optionButton}>
-              <Text style={styles.optionText}>Loading options…</Text>
+              <Text style={styles.optionText}>{tr('Loading options…')}</Text>
             </View>
           )}
         </View>
@@ -246,7 +250,7 @@ export const PaywallScreen = ({
 
       <View>
         <Button
-          title={purchasing ? 'Processing…' : 'Continue'}
+          title={purchasing ? tr('Processing…') : tr('Continue')}
           loading={loadingProducts || purchasing}
           onPress={buy}
           disabled={!selectedSku || loadingProducts || purchasing}
@@ -258,19 +262,19 @@ export const PaywallScreen = ({
           <Text
             style={payWallStyles.linkText}
             onPress={() => Linking.openURL(TERMS_URL)}>
-            Terms of Use
+            {tr('Terms of Use')}
           </Text>
           <Text style={payWallStyles.dot}> · </Text>
 
           <Text style={payWallStyles.linkText} onPress={onRestore}>
-            Restore
+            {tr('Restore')}
           </Text>
           <Text style={payWallStyles.dot}> · </Text>
 
           <Text
             style={payWallStyles.linkText}
             onPress={() => Linking.openURL(PRIVACY_URL)}>
-            Privacy policy
+            {tr('Privacy policy')}
           </Text>
         </View>
       </View>
