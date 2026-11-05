@@ -143,11 +143,13 @@ export const SubscriptionProvider = (props: {
         );
       } else {
         // Leave an unverified transaction unfinished so it can be retried.
-        setStatus('inactive');
+        // A rejected StoreKit transaction does not revoke a separate manual grant.
+        // Recheck the server's account entitlement before changing access.
         setLastError({
           type: 'validation',
           message: 'Purchase could not be validated.',
         });
+        await checkSubscriptionStatus();
         console.warn('[IAP] validation error', res.error);
       }
     } catch (error) {
